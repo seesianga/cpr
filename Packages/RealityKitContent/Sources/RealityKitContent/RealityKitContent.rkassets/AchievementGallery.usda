@@ -1,0 +1,181 @@
+#usda 1.0
+(
+    defaultPrim = "AchievementGallery"
+    documentation = "Internal completion-record and achievement gallery. Nothing in this scene represents SRFAC certification."
+    metersPerUnit = 1
+    upAxis = "Y"
+)
+
+def Xform "AchievementGallery"
+{
+    def "achievement_vault_environment" ( prepend references = @Assets/achievement-vault-environment.usdz@ )
+    {
+        float3 xformOp:translate = (0, 0, -2.15)
+        float xformOp:rotateX = -90
+        float3 xformOp:scale = (4.8, 4.8, 4.8)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateX", "xformOp:scale"]
+    }
+    def "certificate_pedestal" ( prepend references = @Assets/certificate-pedestal.usdz@ )
+    {
+        float3 xformOp:translate = (0, 0.42, -0.92)
+        float xformOp:rotateX = -90
+        float3 xformOp:scale = (0.72, 0.72, 0.72)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateX", "xformOp:scale"]
+    }
+    def "xp_orb" ( prepend references = @Assets/xp-orb.usdz@ )
+    {
+        float3 xformOp:translate = (0, 1.18, -0.92)
+        float xformOp:rotateX = -90
+        float3 xformOp:scale = (0.24, 0.24, 0.24)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateX", "xformOp:scale"]
+    }
+
+    def "badge_m01" ( prepend references = @Assets/badge_m01.usdz@ )
+    {
+        float3 xformOp:translate = (-1.20, 1.28, -1.12)
+        float xformOp:rotateX = -90
+        float3 xformOp:scale = (0.19, 0.19, 0.19)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateX", "xformOp:scale"]
+    }
+    def "badge_m02" ( prepend references = @Assets/badge_m02.usdz@ )
+    {
+        float3 xformOp:translate = (-0.80, 1.28, -1.12)
+        float xformOp:rotateX = -90
+        float3 xformOp:scale = (0.19, 0.19, 0.19)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateX", "xformOp:scale"]
+    }
+    def "badge_m03" ( prepend references = @Assets/badge_m03.usdz@ )
+    {
+        float3 xformOp:translate = (-0.40, 1.28, -1.12)
+        float xformOp:rotateX = -90
+        float3 xformOp:scale = (0.19, 0.19, 0.19)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateX", "xformOp:scale"]
+    }
+    def "badge_m04" ( prepend references = @Assets/badge_m04.usdz@ )
+    {
+        float3 xformOp:translate = (0, 1.28, -1.12)
+        float xformOp:rotateX = -90
+        float3 xformOp:scale = (0.19, 0.19, 0.19)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateX", "xformOp:scale"]
+    }
+    def "badge_m05" ( prepend references = @Assets/badge_m05.usdz@ )
+    {
+        float3 xformOp:translate = (0.40, 1.28, -1.12)
+        float xformOp:rotateX = -90
+        float3 xformOp:scale = (0.19, 0.19, 0.19)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateX", "xformOp:scale"]
+    }
+    def "badge_m06" ( prepend references = @Assets/badge_m06.usdz@ )
+    {
+        float3 xformOp:translate = (0.80, 1.28, -1.12)
+        float xformOp:rotateX = -90
+        float3 xformOp:scale = (0.19, 0.19, 0.19)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateX", "xformOp:scale"]
+    }
+    def "badge_m07" ( prepend references = @Assets/badge_m07.usdz@ )
+    {
+        float3 xformOp:translate = (1.20, 1.28, -1.12)
+        float xformOp:rotateX = -90
+        float3 xformOp:scale = (0.19, 0.19, 0.19)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateX", "xformOp:scale"]
+    }
+    def "badge_m08" ( prepend references = @Assets/badge_m08.usdz@ )
+    {
+        float3 xformOp:translate = (-1.20, 0.86, -1.12)
+        float xformOp:rotateX = -90
+        float3 xformOp:scale = (0.19, 0.19, 0.19)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateX", "xformOp:scale"]
+    }
+    def "badge_m09" ( prepend references = @Assets/badge_m09.usdz@ )
+    {
+        float3 xformOp:translate = (-0.80, 0.86, -1.12)
+        float xformOp:rotateX = -90
+        float3 xformOp:scale = (0.19, 0.19, 0.19)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateX", "xformOp:scale"]
+    }
+    def "badge_m10" ( prepend references = @Assets/badge_m10.usdz@ )
+    {
+        float3 xformOp:translate = (-0.40, 0.86, -1.12)
+        float xformOp:rotateX = -90
+        float3 xformOp:scale = (0.19, 0.19, 0.19)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateX", "xformOp:scale"]
+    }
+    def "badge_m11" ( prepend references = @Assets/badge_m11.usdz@ )
+    {
+        float3 xformOp:translate = (0, 0.86, -1.12)
+        float xformOp:rotateX = -90
+        float3 xformOp:scale = (0.19, 0.19, 0.19)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateX", "xformOp:scale"]
+    }
+    def "badge_m12" ( prepend references = @Assets/badge_m12.usdz@ )
+    {
+        float3 xformOp:translate = (0.40, 0.86, -1.12)
+        float xformOp:rotateX = -90
+        float3 xformOp:scale = (0.19, 0.19, 0.19)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateX", "xformOp:scale"]
+    }
+    def "badge_m13" ( prepend references = @Assets/badge_m13.usdz@ )
+    {
+        float3 xformOp:translate = (0.80, 0.86, -1.12)
+        float xformOp:rotateX = -90
+        float3 xformOp:scale = (0.19, 0.19, 0.19)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateX", "xformOp:scale"]
+    }
+    def "badge_m14" ( prepend references = @Assets/badge_m14.usdz@ )
+    {
+        float3 xformOp:translate = (1.20, 0.86, -1.12)
+        float xformOp:rotateX = -90
+        float3 xformOp:scale = (0.19, 0.19, 0.19)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateX", "xformOp:scale"]
+    }
+
+    def "constellation_star_01" ( prepend references = @Assets/constellation-star.usdz@ )
+    {
+        float3 xformOp:translate = (-1.35, 1.78, -1.35)
+        float xformOp:rotateX = -90
+        float3 xformOp:scale = (0.10, 0.10, 0.10)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateX", "xformOp:scale"]
+    }
+    def "constellation_star_02" ( prepend references = @Assets/constellation-star.usdz@ )
+    {
+        float3 xformOp:translate = (-0.90, 1.92, -1.35)
+        float xformOp:rotateX = -90
+        float3 xformOp:scale = (0.10, 0.10, 0.10)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateX", "xformOp:scale"]
+    }
+    def "constellation_star_03" ( prepend references = @Assets/constellation-star.usdz@ )
+    {
+        float3 xformOp:translate = (-0.45, 1.80, -1.35)
+        float xformOp:rotateX = -90
+        float3 xformOp:scale = (0.10, 0.10, 0.10)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateX", "xformOp:scale"]
+    }
+    def "constellation_star_04" ( prepend references = @Assets/constellation-star.usdz@ )
+    {
+        float3 xformOp:translate = (0, 1.98, -1.35)
+        float xformOp:rotateX = -90
+        float3 xformOp:scale = (0.10, 0.10, 0.10)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateX", "xformOp:scale"]
+    }
+    def "constellation_star_05" ( prepend references = @Assets/constellation-star.usdz@ )
+    {
+        float3 xformOp:translate = (0.45, 1.80, -1.35)
+        float xformOp:rotateX = -90
+        float3 xformOp:scale = (0.10, 0.10, 0.10)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateX", "xformOp:scale"]
+    }
+    def "constellation_star_06" ( prepend references = @Assets/constellation-star.usdz@ )
+    {
+        float3 xformOp:translate = (0.90, 1.92, -1.35)
+        float xformOp:rotateX = -90
+        float3 xformOp:scale = (0.10, 0.10, 0.10)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateX", "xformOp:scale"]
+    }
+    def "constellation_star_07" ( prepend references = @Assets/constellation-star.usdz@ )
+    {
+        float3 xformOp:translate = (1.35, 1.78, -1.35)
+        float xformOp:rotateX = -90
+        float3 xformOp:scale = (0.10, 0.10, 0.10)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateX", "xformOp:scale"]
+    }
+}

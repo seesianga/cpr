@@ -1,0 +1,29 @@
+#usda 1.0
+(
+    defaultPrim = "AEDPreparationRoom"
+    documentation = "AED preparation practice with original, brand-neutral trainer props."
+    metersPerUnit = 1
+    upAxis = "Y"
+)
+
+def Xform "AEDPreparationRoom"
+{
+    def Cylinder "practice_floor"
+    {
+        uniform token axis = "Y"
+        double height = 0.025
+        double radius = 1.65
+        color3f[] primvars:displayColor = [(0.075, 0.085, 0.10)]
+    }
+    def Xform "training_manikin" ( prepend references = @TrainingManikin.usda@ )
+    {
+        float3 xformOp:translate = (-0.28, 0, -0.58)
+        uniform token[] xformOpOrder = ["xformOp:translate"]
+    }
+    def Xform "aed_trainer" ( prepend references = @AEDTrainer.usda@ )
+    {
+        float3 xformOp:translate = (0.55, 0, -0.15)
+        float3 xformOp:scale = (0.88, 0.88, 0.88)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+    }
+}

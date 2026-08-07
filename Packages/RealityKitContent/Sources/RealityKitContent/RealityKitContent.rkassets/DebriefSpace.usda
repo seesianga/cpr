@@ -1,0 +1,25 @@
+#usda 1.0
+(
+    defaultPrim = "DebriefSpace"
+    documentation = "Calm immersive debrief setting."
+    metersPerUnit = 1
+    upAxis = "Y"
+)
+
+def Xform "DebriefSpace"
+{
+    def "theatre_environment" ( prepend references = @Assets/theatre-environment.usdz@ )
+    {
+        float3 xformOp:translate = (0, 0, -2.25)
+        float xformOp:rotateX = -90
+        float3 xformOp:scale = (5.6, 5.6, 5.6)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateX", "xformOp:scale"]
+    }
+    def "control_panel" ( prepend references = @Assets/control-panel.usdz@ )
+    {
+        float3 xformOp:translate = (0, 0.56, -0.78)
+        float xformOp:rotateX = -90
+        float3 xformOp:scale = (0.62, 0.62, 0.62)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateX", "xformOp:scale"]
+    }
+}

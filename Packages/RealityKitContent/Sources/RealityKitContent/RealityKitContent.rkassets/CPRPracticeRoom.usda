@@ -1,0 +1,32 @@
+#usda 1.0
+(
+    defaultPrim = "CPRPracticeRoom"
+    documentation = "Hands-only CPR spatial practice. Geometry does not assess physical compression depth or force."
+    metersPerUnit = 1
+    upAxis = "Y"
+)
+
+def Xform "CPRPracticeRoom"
+{
+    def Cylinder "practice_floor"
+    {
+        uniform token axis = "Y"
+        double height = 0.025
+        double radius = 1.55
+        color3f[] primvars:displayColor = [(0.07, 0.08, 0.095)]
+    }
+    def Xform "clear_zone" ( prepend references = @ClearZone.usda@ ) { }
+    def Xform "training_manikin" ( prepend references = @TrainingManikin.usda@ )
+    {
+        float3 xformOp:translate = (0, 0, -0.58)
+        uniform token[] xformOpOrder = ["xformOp:translate"]
+    }
+    def "control_panel" ( prepend references = @Assets/control-panel.usdz@ )
+    {
+        float3 xformOp:translate = (0.78, 0.52, -0.82)
+        float xformOp:rotateX = -90
+        float xformOp:rotateY = -18
+        float3 xformOp:scale = (0.62, 0.62, 0.62)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateX", "xformOp:rotateY", "xformOp:scale"]
+    }
+}
