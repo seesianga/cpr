@@ -41,6 +41,13 @@ struct LifesaverVisionApp: App {
 private enum AppPersistence {
     @MainActor
     static func makeContainer() -> ModelContainer {
+        #if UITEST
+        do {
+            return try PersistenceBootstrap.makeModelContainer(inMemory: true)
+        } catch {
+            fatalError("Unable to initialise the isolated test learning store.")
+        }
+        #else
         do {
             return try PersistenceBootstrap.makeModelContainer()
         } catch {
@@ -52,5 +59,6 @@ private enum AppPersistence {
                 fatalError("Unable to initialise the local learning store.")
             }
         }
+        #endif
     }
 }
