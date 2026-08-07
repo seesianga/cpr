@@ -19,7 +19,7 @@ Current counts are 46 copied, 4 showcase-only, and 0 excluded.
 - Assets inventoried: 50 logical assets (221 files hashed incl. all tiers)
 - Tiers per asset: Source GLB (master, not shipped) -> Optimized GLB -> USDZ -> USDZ_Delivery (shipped)
 - Cross-tier duplicate hash groups: 51 (expected: many Optimized GLBs are byte-identical to Source because the original pipeline recorded "provider optimization unavailable" fallbacks; delivery USDZ files are distinct)
-- Excluded from clinical lessons: the 4 Vision-Pro-hardware props (headset-mockup, headband, light-seal-cushion, battery-prop) — clinically irrelevant; restricted to a credits/asset showcase context. No asset is corrupt or unlicensed; all were generated for this owner in the prior project.
+- Excluded from clinical lessons: the 4 Vision-Pro-hardware props (headset-mockup, headband, light-seal-cushion, battery-prop) — clinically irrelevant; restricted to a credits/asset showcase context. All 50 delivery files pass the recorded integrity checks; reuse approval and provenance come from the prior-project handoff.
 - No manikin / AED / heart / lungs / casualty models exist in the library. Clinical training models are therefore ORIGINAL hand-authored USDA / procedural RealityKit geometry (Tripo3D prohibited). This is deliberate: forcing non-clinical assets into lessons would be misleading.
 
 | Asset | Reuse class | Status | Planned use in Lifesaver Vision |
