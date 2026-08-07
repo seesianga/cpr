@@ -1,0 +1,120 @@
+name: LifesaverVision
+
+options:
+  deploymentTarget:
+    visionOS: "26.0"
+  generateEmptyDirectories: true
+
+configs:
+  Debug-Beta: debug
+  Release-Stable: release
+  UITest: debug
+  Demo: debug
+
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    SWIFT_STRICT_CONCURRENCY: complete
+    MARKETING_VERSION: "0.1.0"
+    CURRENT_PROJECT_VERSION: "1"
+
+packages:
+  RealityKitContent:
+    path: Packages/RealityKitContent
+
+targets:
+  LifesaverVision:
+    type: application
+    platform: visionOS
+    deploymentTarget: "26.0"
+    sources:
+      - path: App
+        excludes:
+          - PrivacyInfo.xcprivacy
+      - path: App/PrivacyInfo.xcprivacy
+        buildPhase: resources
+      - path: Core
+      - path: Features
+      - path: Spatial
+      - path: Audio
+      - path: Resources/Courses
+        buildPhase: resources
+    dependencies:
+      - package: RealityKitContent
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.lifesaver.vision
+        PRODUCT_NAME: LifesaverVision
+      configs:
+        Debug-Beta:
+          SWIFT_ACTIVE_COMPILATION_CONDITIONS: DEBUG BETA
+        Release-Stable:
+          SWIFT_ACTIVE_COMPILATION_CONDITIONS: STABLE
+        UITest:
+          SWIFT_ACTIVE_COMPILATION_CONDITIONS: DEBUG UITEST
+        Demo:
+          SWIFT_ACTIVE_COMPILATION_CONDITIONS: DEBUG DEMO
+    info:
+      path: App/Info.plist
+      properties:
+        CFBundleDisplayName: Lifesaver Vision
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        NSHandsTrackingUsageDescription: Optional practice uses hand position and motion to guide placement and rhythm. Hand data is processed on device and is not stored.
+        UIApplicationSceneManifest:
+          UIApplicationSupportsMultipleScenes: true
+          UIApplicationPreferredDefaultSceneSessionRole: UIWindowSceneSessionRoleApplication
+          UISceneConfigurations:
+            UISceneSessionRoleImmersiveSpaceApplication:
+              - UISceneInitialImmersionStyle: UIImmersionStyleMixed
+
+  LifesaverVisionTests:
+    type: bundle.unit-test
+    platform: visionOS
+    deploymentTarget: "26.0"
+    sources:
+      - path: Tests
+    dependencies:
+      - target: LifesaverVision
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+        PRODUCT_BUNDLE_IDENTIFIER: com.lifesaver.vision.tests
+
+  LifesaverVisionUITests:
+    type: bundle.ui-testing
+    platform: visionOS
+    deploymentTarget: "26.0"
+    sources:
+      - path: UITests
+    dependencies:
+      - target: LifesaverVision
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+        PRODUCT_BUNDLE_IDENTIFIER: com.lifesaver.vision.uitests
+        TEST_TARGET_NAME: LifesaverVision
+
+schemes:
+  LifesaverVision:
+    build:
+      targets:
+        LifesaverVision: all
+        LifesaverVisionTests:
+          - test
+        LifesaverVisionUITests:
+          - test
+    run:
+      config: Debug-Beta
+    test:
+      config: UITest
+      gatherCoverageData: true
+      targets:
+        - name: LifesaverVisionTests
+        - name: LifesaverVisionUITests
+    profile:
+      config: Release-Stable
+    analyze:
+      config: Debug-Beta
+    archive:
+      config: Release-Stable

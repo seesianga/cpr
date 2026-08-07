@@ -1,0 +1,1111 @@
+{
+ "asset_root": "/Users/angseesiang/Library/CloudStorage/GoogleDrive-ang.see.siang@gmail.com/My Drive/macbook/Apple Vision Pro user guide",
+ "count": 221,
+ "files": [
+  {
+   "path": "SpatialMastery/Docs/evidence/p6_gesturelab.png",
+   "bytes": 5188497,
+   "sha256": "f96e13b05ef6a1bb47b09c5aead2be47e4132ee2d60b2fc9cc023516085ede76"
+  },
+  {
+   "path": "SpatialMastery/Docs/evidence/p13_gesture.png",
+   "bytes": 6193799,
+   "sha256": "fffdab143eccf1b22aa6e9502131990f382c4c9b96740d1aacd41ee65e57d800"
+  },
+  {
+   "path": "SpatialMastery/Docs/evidence/p13_hub.png",
+   "bytes": 6718878,
+   "sha256": "0dd98a75b406bc07284a1e46f72306f31ce937fd1814552980de597c1e92e908"
+  },
+  {
+   "path": "SpatialMastery/Docs/evidence/p13_privacy.png",
+   "bytes": 6193799,
+   "sha256": "fffdab143eccf1b22aa6e9502131990f382c4c9b96740d1aacd41ee65e57d800"
+  },
+  {
+   "path": "SpatialMastery/Docs/evidence/p3_dashboard.png",
+   "bytes": 6182147,
+   "sha256": "f7d1ff709af08b0d58384dc7aea474b643cab8623535916dafb2a00fded29302"
+  },
+  {
+   "path": "SpatialMastery/Docs/evidence/p13_fitcare.png",
+   "bytes": 6190019,
+   "sha256": "8814e5d5faa605eafe9bb82682f39a8a69f87c196ced73afb1572c8b28a6dea4"
+  },
+  {
+   "path": "SpatialMastery/Docs/evidence/p1_launch.png",
+   "bytes": 6068194,
+   "sha256": "3ed7fdff06a772437195b86549b34aabfc2373779a2a1f61b6be2c7dc51aa592"
+  },
+  {
+   "path": "SpatialMastery/Docs/evidence/p13_gesturelab.png",
+   "bytes": 5374703,
+   "sha256": "4a4f3740e4a89b220f97a6e8bff41945d1af98673f9018ac255f75bad5348a67"
+  },
+  {
+   "path": "SpatialMastery/Packages/RealityKitContent/Sources/RealityKitContent/RealityKitContent.rkassets/SafetyLab.usda",
+   "bytes": 726,
+   "sha256": "8deb7ffd01def6adc80f3bd78cfd1f3ad8cec187f486e37843daf29421268cb7"
+  },
+  {
+   "path": "SpatialMastery/Packages/RealityKitContent/Sources/RealityKitContent/RealityKitContent.rkassets/AccessibilityLab.usda",
+   "bytes": 757,
+   "sha256": "94bb379a3c9b9be21cb23da98521467713671666c9ca3856d63b60391ca56326"
+  },
+  {
+   "path": "SpatialMastery/Packages/RealityKitContent/Sources/RealityKitContent/RealityKitContent.rkassets/FitCareWorkshop.usda",
+   "bytes": 735,
+   "sha256": "35a191d083b034c40295710eb68a57f0fde55cfa01c3340e052fc21c58a4f81e"
+  },
+  {
+   "path": "SpatialMastery/Packages/RealityKitContent/Sources/RealityKitContent/RealityKitContent.rkassets/RecoveryLab.usda",
+   "bytes": 735,
+   "sha256": "8ec0f928130d4d9f44c12719733eb884c560535256c65512d889d3fd5cde4810"
+  },
+  {
+   "path": "SpatialMastery/Packages/RealityKitContent/Sources/RealityKitContent/RealityKitContent.rkassets/LearningHub.usda",
+   "bytes": 51441,
+   "sha256": "8640a92ce46352a35c295852840fb17b009a5719bed20f35fdbe4606b958563b"
+  },
+  {
+   "path": "SpatialMastery/Packages/RealityKitContent/Sources/RealityKitContent/RealityKitContent.rkassets/WindowWorkshop.usda",
+   "bytes": 742,
+   "sha256": "f1b7e067985e9fb127446258c65e852506507310327d17714f44fe4d1a91e508"
+  },
+  {
+   "path": "SpatialMastery/Packages/RealityKitContent/Sources/RealityKitContent/RealityKitContent.rkassets/FinalCapstone.usda",
+   "bytes": 724,
+   "sha256": "23e5ae611cc754d6bbbd00eadc4ee10ac46b1a9c80d5ab7c395a1daa5ff0ca96"
+  },
+  {
+   "path": "SpatialMastery/Packages/RealityKitContent/Sources/RealityKitContent/RealityKitContent.rkassets/ProductivityLab.usda",
+   "bytes": 750,
+   "sha256": "fe7a2796c854c81959777c3cfaada9631f1868cdcb78c23693a5caf0f0c4342a"
+  },
+  {
+   "path": "SpatialMastery/Packages/RealityKitContent/Sources/RealityKitContent/RealityKitContent.rkassets/PrivacyLab.usda",
+   "bytes": 728,
+   "sha256": "cdc223508d10e894627d33d6553d1b89bbcb5ce9fa4ceb319ec1c2e380b7b88f"
+  },
+  {
+   "path": "SpatialMastery/Packages/RealityKitContent/Sources/RealityKitContent/RealityKitContent.rkassets/AchievementVault.usda",
+   "bytes": 4638,
+   "sha256": "4641f7ec0355ad6a7a684cf8a1aad4c35e404725c1a3740b4422661595d49dfc"
+  },
+  {
+   "path": "SpatialMastery/Packages/RealityKitContent/Sources/RealityKitContent/RealityKitContent.rkassets/GestureLab.usda",
+   "bytes": 732,
+   "sha256": "5d64ff96f179e7f6181d7c0a2bd111154c831acdf47aed5cbad7151caf28277b"
+  },
+  {
+   "path": "SpatialMastery/Packages/RealityKitContent/Sources/RealityKitContent/RealityKitContent.rkassets/ImmersiveTheatre.usda",
+   "bytes": 2293,
+   "sha256": "d3a049c79b120a63438c441e32710fa8b4607d10dbdc9dd2cd171306617b9009"
+  },
+  {
+   "path": "SpatialMastery/Packages/RealityKitContent/Sources/RealityKitContent/RealityKitContent.rkassets/CollaborationLab.usda",
+   "bytes": 743,
+   "sha256": "8f92391abdb2b8a83e135cd9d2bec3c1d25f7fa30a9f3fb02bf357b36164d3d0"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Source/gesture-practice-orb/model_1.glb",
+   "bytes": 7592924,
+   "sha256": "f27f909fd69b7cc8e291eff0d1ea857c537eaafbca95526063d17bafdf7ae91f"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Source/gesture-practice-ring/model_1.glb",
+   "bytes": 9307020,
+   "sha256": "c0dced7cd8f8f32c554b6eb733db5ffa8b4ca8b1450a77cbb58e2e528ac43587"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Source/portal_m01/model_1.glb",
+   "bytes": 9949452,
+   "sha256": "4da5f3318271ac325dcec8b479926d6a2d6daa1b0a37bcd4b96aaddfe72f07bf"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Source/portal_m06/model_1.glb",
+   "bytes": 9068780,
+   "sha256": "9c946907faed8d1e37d815c3b01f104df18678f8f571db2c411fd0aee4896674"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Source/badge_m12/model_1.glb",
+   "bytes": 8061296,
+   "sha256": "edc1e98826a1e9594a66c6557df2dbdaa39a1b0ec8166697be7a675e47099d04"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Source/portal_m08/model_1.glb",
+   "bytes": 6836716,
+   "sha256": "241ade6907591d5f4ef511b8824a43583fe34ce87089a3ac20a32e2838372e32"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Source/badge_m13/model_1.glb",
+   "bytes": 5098276,
+   "sha256": "6552071adbc4bfd6fd0d392200da099fad11362bcf3f99d9786617c220d04704"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Source/portal_m09/model_1.glb",
+   "bytes": 8818812,
+   "sha256": "fa65cd2385f9a4db98f45ecc22325135d714f5bb51bb284ed52e56929b140308"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Source/badge_m14/model_1.glb",
+   "bytes": 6664340,
+   "sha256": "87f8f60f5177fbb128443cbbea41b3add3ac0efc6aee299b78cb1ebc20f505f6"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Source/portal_m07/model_1.glb",
+   "bytes": 9280812,
+   "sha256": "774365100a181b271e401a784fcb8ac42a534dcf59c8e5a01258e3343da5838d"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Source/practice-window-frame/model_1.glb",
+   "bytes": 7442684,
+   "sha256": "9f3cf1e18d45c0e9270571e2df0cf04ffd6d1d4f746705a5ce27dbdd17eea492"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Source/accessibility-audio-beacon/model_1.glb",
+   "bytes": 10477324,
+   "sha256": "c71f10b28584397d3ad6026dd6206602bd4c83b5f0bf207f39fad1c10acb682b"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Source/badge_m07/model_1.glb",
+   "bytes": 5907316,
+   "sha256": "cd463d1155f1d6e46de648d6d511557919533269263129196e4674196c2ffb8d"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Source/accessibility-text-block/model_1.glb",
+   "bytes": 7091260,
+   "sha256": "6984d34b756434b4cace40e9d5c0fb524157f07e46c780e0d26f59d39651b6bd"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Source/badge_m09/model_1.glb",
+   "bytes": 5540376,
+   "sha256": "55fc6a5594ab75722eb614d1041875b42883b6596be17248cf77226f18df4a74"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Source/portal_m13/model_1.glb",
+   "bytes": 8674220,
+   "sha256": "49205da157ffd78f9a767373f3a9786b61d9c2161bb6de40bebbeeaaecb94311"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Source/portal_m14/model_1.glb",
+   "bytes": 8894380,
+   "sha256": "e236b38390df3b968b757d2c68197d01cb596758ac2dcd13ebab6b502d519026"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Source/battery-prop/model_1.glb",
+   "bytes": 10128060,
+   "sha256": "d4680c7ae794258fbdb11e52b2c0386e7a6d2839e9f4129f0509140963a10c76"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Source/xp-orb/model_1.glb",
+   "bytes": 8130572,
+   "sha256": "84bce4fd107a77d9b5cca652480cfc5216f15b662b06ff2375e1e83ab93fea70"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Source/badge_m08/model_1.glb",
+   "bytes": 6323944,
+   "sha256": "cfbe0ceadafb9e67c804e9a237d206e841b988fe938fccc2b2b46a22ac609443"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Source/portal_m12/model_1.glb",
+   "bytes": 9897228,
+   "sha256": "bf37e16cdcf8ca8f7bb319de06e02a4fb693d4448926b51dbfe248a99c1f27cc"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Source/badge_m01/model_1.glb",
+   "bytes": 3936964,
+   "sha256": "db8ae17cfd646c490b4d621c4b91b70c010cabb7e9d9c3e41cb893d9cb269fd5"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Source/badge_m06/model_1.glb",
+   "bytes": 3808496,
+   "sha256": "a9f0e888d5b77db0458f3c4bfdb939d8e9089319ac50a56916d62d9af183f987"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Source/control-panel/model_1.glb",
+   "bytes": 7870540,
+   "sha256": "13cd22e90a7ebfb5e035141c9a0c9cb266b8b451d2a755671928a1a85f147e31"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Source/accessibility-switch-puck/model_1.glb",
+   "bytes": 5048412,
+   "sha256": "366ff91d8d3278c3ffd30308b46023a457f3b8ec90881baffcef630b9329920b"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Source/achievement-vault-environment/model_1.glb",
+   "bytes": 11073340,
+   "sha256": "d99e1dcc37b456a9b6429fca06677221e7e9a517efdb04dd1545b36a0db5313a"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Source/gesture-practice-cube/model_1.glb",
+   "bytes": 6079340,
+   "sha256": "537f8a5e2f42b84606d7bd8a840dc09972c541f3a080650f6ff5ca2277e43e86"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Source/certificate-pedestal/model_1.glb",
+   "bytes": 6371340,
+   "sha256": "d499afe26e0d9481bd76e14fa6e1db0534a0b155ac5d34e24e57fb55c7d3eb86"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Source/headband/model_1.glb",
+   "bytes": 13187180,
+   "sha256": "69f6d72606e500bebc043351215de6745d95038cfd3f2475a2a755e996c036cd"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Source/portal_m05/model_1.glb",
+   "bytes": 8393260,
+   "sha256": "272fa51a21cc6f18b40692871230ddeb01f21187efccf642b4443a099306e78a"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Source/portal_m02/model_1.glb",
+   "bytes": 10001708,
+   "sha256": "14729f80d8876958840cb01667df955a0d47a583139107c42f3936a52c273e7b"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Source/badge_m11/model_1.glb",
+   "bytes": 6612840,
+   "sha256": "5640af86b1175ade46cbd058573dc1aedc5f6730055c4053a09fbe8e649aa663"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Source/badge_m10/model_1.glb",
+   "bytes": 7629804,
+   "sha256": "d5838af923bf7e1de995783f6c626b016326042b67ea3bc5b3907a4805de1af3"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Source/privacy-shield/model_1.glb",
+   "bytes": 7795612,
+   "sha256": "2d795b0566a093ff30bbd380e955211ba28489fe40e2e79699aaf19810e199d4"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Source/portal_m03/model_1.glb",
+   "bytes": 8441676,
+   "sha256": "138c7e3ffb5794dc803a5911043631053b62c0e4571270460f1714bcb41629d6"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Source/portal_m04/model_1.glb",
+   "bytes": 8231628,
+   "sha256": "5b2cf57f32880119fb879a648cc23e7b38d1a52592cfec0b333747280d24585f"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Source/badge_m03/model_1.glb",
+   "bytes": 8349252,
+   "sha256": "c8ca40f5ca1f8e71eb02355ed5623ba726567c136599c2298bef054ebf9e9451"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Source/badge_m04/model_1.glb",
+   "bytes": 5933396,
+   "sha256": "3b49cac76ae4ec02b62e7909b1d6612c7610a85ada37fdfed83fcf6e13ce44f5"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Source/observatory-environment/model_1.glb",
+   "bytes": 6985356,
+   "sha256": "db881b90233fdda33c69050ca05e79a1424131b89d8be56b971e87bedb6d77c0"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Source/portal_m10/model_1.glb",
+   "bytes": 8118972,
+   "sha256": "65671e59cb45c1aad975d0326465f70c41c1265889aca6205d26d645a82624f6"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Source/constellation-star/model_1.glb",
+   "bytes": 6980604,
+   "sha256": "a0f7313c617e2988ff6cbbaf11629957ef10bdc9b671bc7927364b8e46876097"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Source/safety-props-set/model_1.glb",
+   "bytes": 7561516,
+   "sha256": "58ca1619ed138388c3819982401ce7063202197f7e3f349ac1c7f784420cf847"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Source/capstone-environment/model_1.glb",
+   "bytes": 10993308,
+   "sha256": "656ca47388485609058ac2ddd574833d070ab394c9ba58b3a7a526596a9553af"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Source/portal_m11/model_1.glb",
+   "bytes": 7082972,
+   "sha256": "8577a2551963d3a02af9783513207bf8ec015a09786015b1397a9597b67f7114"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Source/badge_m05/model_1.glb",
+   "bytes": 4734604,
+   "sha256": "eaba5d56b032ea01beccf1539fc4fe17ef3aeb06e960faa5eb36b6551281718d"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Source/badge_m02/model_1.glb",
+   "bytes": 4398856,
+   "sha256": "4e7ed8e7d5b7e5548df544493d28b64b7427e63bcdeba3fd509d5cd0752b65ad"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Source/light-seal-cushion/model_1.glb",
+   "bytes": 9431596,
+   "sha256": "acbe5aeaf9319fed047de334d6150b3f5dbfb634f15ff4838f601101ed1948a5"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Source/headset-mockup/model_1.glb",
+   "bytes": 10648732,
+   "sha256": "4f25a49c05d262c29cafc1273cb579773bb343b75388e799da96bc9a56595fca"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Source/theatre-environment/model_1.glb",
+   "bytes": 7481868,
+   "sha256": "da991c4b902f584ad8b295a9f9cc00104ffc415b2a9a18de2ed0826c1b262453"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Source/companion-orb-bot/model_1.glb",
+   "bytes": 6601820,
+   "sha256": "f60aede5446484a1325dc0013bb7052c0928487ef98663679c3e37bd55562794"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ/portal_m10.usdz",
+   "bytes": 8036073,
+   "sha256": "7fbab7974fb831a61a2effb19382b61cde2b4d4caafae5e658739ae6bea39fea"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ/portal_m06.usdz",
+   "bytes": 8906957,
+   "sha256": "cc0ad0ff5dcdea9a4c1030bd7716058bce7dd6ce1ac6e01c0f46175dcf811f86"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ/safety-props-set.usdz",
+   "bytes": 8548658,
+   "sha256": "404e556ad20c46670da3c49ae87413635ba040c76e846441e5a810f21ee91b38"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ/badge_m01.usdz",
+   "bytes": 5779594,
+   "sha256": "97f49564b6f1f0bb6ecb795d3aef042996293cfacb0e0fe6f1c1f5b09cd207f2"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ/portal_m07.usdz",
+   "bytes": 9495359,
+   "sha256": "92c474bb5f23847f6afb0523c3a7a075aceb2b9bae091caf1ca9b4c210dc4db1"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ/accessibility-audio-beacon.usdz",
+   "bytes": 12300964,
+   "sha256": "7fbe0411db190f27809f6b46350236b3dcc48a3948f8e17ea2f8fcc5a7964efd"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ/portal_m11.usdz",
+   "bytes": 7349297,
+   "sha256": "9b22c6ba8dffeb62ec8c837028adb8f5c7764a6f9dfe23446b1aa29a76852183"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ/xp-orb.usdz",
+   "bytes": 10269573,
+   "sha256": "f07d3a7153d5ed42594d3486a8485eb9c60c2ee87f7150ded276cd4b25427898"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ/gesture-practice-cube.usdz",
+   "bytes": 5815682,
+   "sha256": "dccb0a861009f41d4638e4a4af24958f0f8ff0b9f04ebbd188911067f6f0ab9a"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ/battery-prop.usdz",
+   "bytes": 10111559,
+   "sha256": "ce171afce9419003c968114cab10d1ae587d782418f58bb885fb36fbdd3fd16a"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ/badge_m10.usdz",
+   "bytes": 6250593,
+   "sha256": "5ee834de54415548e799a952e4cbcb30db731a4f507ed70ea9addfe148df7447"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ/practice-window-frame.usdz",
+   "bytes": 7118673,
+   "sha256": "d06925b6dae11fa4167a8c2bc3957ee791c1b23fe2141928c51a8f41e3828dc6"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ/badge_m06.usdz",
+   "bytes": 6097488,
+   "sha256": "bf4cb590c502726bc8d3facdbe74a579fde863a643255499c72cffbd0c5faa4f"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ/accessibility-text-block.usdz",
+   "bytes": 6276798,
+   "sha256": "71335c7f8b316afef01a1cd3a0c20f4c6c630d7bc262c482d82d5bf12f2ca6e8"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ/badge_m07.usdz",
+   "bytes": 7611220,
+   "sha256": "553add5ce16378d1965eec7150db290e9d8765b90dfae0034182b5a50308dd72"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ/capstone-environment.usdz",
+   "bytes": 11779767,
+   "sha256": "0e7fd92d71b9dd0209d781e25ae8681feeaa005b7f2a825591c1cf99fe8be4f6"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ/badge_m11.usdz",
+   "bytes": 8894489,
+   "sha256": "53621633e39fca7eaffd5d990dd9f5acd6d0680e4c4aebd3b7e8aa7c79ba8502"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ/portal_m01.usdz",
+   "bytes": 9446404,
+   "sha256": "3f8cad1c7a8a48b157d40acf22d19526e359b3010fb2d039c9682769a5ee4644"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ/companion-orb-bot.usdz",
+   "bytes": 7081576,
+   "sha256": "ccf4d2a1723b079a05388fce8948739ba66a324722ce46ba30bcd5e9b636444f"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ/control-panel.usdz",
+   "bytes": 8504449,
+   "sha256": "79e15c64e73602c28d1571bcab822b096e816ea0a8a8836f3feab719a540cee5"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ/headset-mockup.usdz",
+   "bytes": 11864496,
+   "sha256": "e791b7a81e6b3c037c7df5d3e5b3f145bd255e6632962fd803672403959e36cf"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ/badge_m08.usdz",
+   "bytes": 8140154,
+   "sha256": "6c54401fae43d463d5f1e03d7a120cbea96569e669a8f8b36c409fca821e4d48"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ/achievement-vault-environment.usdz",
+   "bytes": 13401365,
+   "sha256": "9e3d433a20adf3f05bebee454f475869cbd41ea1bd7fce26b6356c77113fe54c"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ/theatre-environment.usdz",
+   "bytes": 7723784,
+   "sha256": "0436ab22d57f83d7e5920954c5ae7ceef3f9629b002389bcb3462c55c12d94af"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ/badge_m04.usdz",
+   "bytes": 8091641,
+   "sha256": "44b1370607e35d4d7ae3e7f9d711e14597f5e0881e6cb4c66deadc7f810a38f7"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ/badge_m12.usdz",
+   "bytes": 11249755,
+   "sha256": "71acb4caf887a7d6117931abea7aa88c1f5c7759e01e56f2aeb8d218c88a30d1"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ/portal_m02.usdz",
+   "bytes": 10706904,
+   "sha256": "ac5a93ce301e3de26ceefd01002cd18ba32e4379c72f4ad9b93fef830049c260"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ/portal_m14.usdz",
+   "bytes": 8900058,
+   "sha256": "2043b7594c08cf34a95b9602c836b27b767a64e65f619973255b032b012668d5"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ/accessibility-switch-puck.usdz",
+   "bytes": 4636021,
+   "sha256": "63a7ce15dbcadd1b96f56cb4ed96b85a0c9fa4d0a7e1f0847b48a647fa533d59"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ/portal_m03.usdz",
+   "bytes": 8220507,
+   "sha256": "3c66427c359cccb60c13412c0d5e04b68fb5c2f1945dfb0abefd838d295d5d56"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ/badge_m13.usdz",
+   "bytes": 7080987,
+   "sha256": "939696c39c1d7552637b5cf63bbad1551efc05ff0b5d1ade6395eae4c8557e59"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ/badge_m05.usdz",
+   "bytes": 6468518,
+   "sha256": "3d0c19ebc949f6c7306d67b5cf5803b53b5ab1f6a3630adfe1cf99f90a5ef88f"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ/privacy-shield.usdz",
+   "bytes": 9548596,
+   "sha256": "6a6ee3e215624b8a5f5f0cb11e47fb78a6a8c413a15c5723ae1cd29d31ca3beb"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ/certificate-pedestal.usdz",
+   "bytes": 6198466,
+   "sha256": "2979675620c9d523f81b9921f231565f0d115aaf204e5f65768e237fcfd6b466"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ/observatory-environment.usdz",
+   "bytes": 9175730,
+   "sha256": "48c7d5ba9d803864f3e03d3c460c220bd93606052ed352018e80ab550b656c00"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ/badge_m09.usdz",
+   "bytes": 7268763,
+   "sha256": "637e4ed44480be5afcd415f22ae63ed39046033f9358616ad31b12d5df7a774b"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ/badge_m02.usdz",
+   "bytes": 8885909,
+   "sha256": "841894892d1e0b3a399b8100f21b7b5cfa9c18c8aa764c8e9ebf554bddbea711"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ/badge_m14.usdz",
+   "bytes": 7752137,
+   "sha256": "366c4931b7f189d3459ad824073b8438b087039bb93778ae7fae3404c575b30c"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ/portal_m04.usdz",
+   "bytes": 7793626,
+   "sha256": "b39b27a5d699287885f0ec326852ff30f3e7c9ddfd61605dff0e886045ad29be"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ/gesture-practice-ring.usdz",
+   "bytes": 9179608,
+   "sha256": "b71624030648624845e69ce80d9ad6d9a5d2cb7cc18fe5b26a108ac4fb5ff7af"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ/gesture-practice-orb.usdz",
+   "bytes": 7408231,
+   "sha256": "85562e625f31dcda82e6e659eb328e33f8d0351f79211fded3da21c70c6eca1b"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ/portal_m12.usdz",
+   "bytes": 9873366,
+   "sha256": "2aa0b5083e52f6e94227801801dbebddcfbad1562d88e3b254bda55aef1a48c9"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ/headband.usdz",
+   "bytes": 13113553,
+   "sha256": "defaee8338937b6594fbdb77b65b19752cff593df2d944df247173253bf57554"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ/light-seal-cushion.usdz",
+   "bytes": 8981235,
+   "sha256": "74c5ff2a99f0b04f241cad71419ffacbf037c54f757c9c7eeadbe73d1c57f231"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ/constellation-star.usdz",
+   "bytes": 7512480,
+   "sha256": "611f9dd606672fb0a0b6ce7c0ba3e2804d9a1f493269ab87265e8a605cfeccb6"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ/portal_m08.usdz",
+   "bytes": 6712312,
+   "sha256": "98a42e89ef48484e968940a1f060bacc1fbeed9b84cf080432e7a740317e9e19"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ/portal_m09.usdz",
+   "bytes": 8000253,
+   "sha256": "e4ab7b24a73e1bd4e98e5487fbb99460bc63372d8ea9d8d5137a9e92bbe91001"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ/portal_m13.usdz",
+   "bytes": 9087527,
+   "sha256": "580f2ee153170e1383dd991e2b48e6c0d5f79b8a5c610ae2e30f75b0bb0518d3"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ/portal_m05.usdz",
+   "bytes": 9069559,
+   "sha256": "ec5451da802693c72c85a01b7ff42ee817a984147a5be0a5ea5141ea35fdfbf9"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ/badge_m03.usdz",
+   "bytes": 8859619,
+   "sha256": "84dd43ba47d7e10f5abcd4ea14be38278fd553bb54c3736836f0fa9af35fd504"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Optimized/gesture-practice-orb/gesture-practice-orb.glb",
+   "bytes": 7592924,
+   "sha256": "f27f909fd69b7cc8e291eff0d1ea857c537eaafbca95526063d17bafdf7ae91f"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Optimized/gesture-practice-ring/gesture-practice-ring.glb",
+   "bytes": 9307020,
+   "sha256": "c0dced7cd8f8f32c554b6eb733db5ffa8b4ca8b1450a77cbb58e2e528ac43587"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Optimized/portal_m01/portal_m01.glb",
+   "bytes": 9949452,
+   "sha256": "4da5f3318271ac325dcec8b479926d6a2d6daa1b0a37bcd4b96aaddfe72f07bf"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Optimized/portal_m06/portal_m06.glb",
+   "bytes": 9068780,
+   "sha256": "9c946907faed8d1e37d815c3b01f104df18678f8f571db2c411fd0aee4896674"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Optimized/badge_m12/badge_m12.glb",
+   "bytes": 8061296,
+   "sha256": "edc1e98826a1e9594a66c6557df2dbdaa39a1b0ec8166697be7a675e47099d04"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Optimized/portal_m08/portal_m08.glb",
+   "bytes": 6836716,
+   "sha256": "241ade6907591d5f4ef511b8824a43583fe34ce87089a3ac20a32e2838372e32"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Optimized/badge_m13/badge_m13.glb",
+   "bytes": 5098276,
+   "sha256": "6552071adbc4bfd6fd0d392200da099fad11362bcf3f99d9786617c220d04704"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Optimized/portal_m09/portal_m09.glb",
+   "bytes": 8818812,
+   "sha256": "fa65cd2385f9a4db98f45ecc22325135d714f5bb51bb284ed52e56929b140308"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Optimized/badge_m14/badge_m14.glb",
+   "bytes": 6664340,
+   "sha256": "87f8f60f5177fbb128443cbbea41b3add3ac0efc6aee299b78cb1ebc20f505f6"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Optimized/portal_m07/portal_m07.glb",
+   "bytes": 9280812,
+   "sha256": "774365100a181b271e401a784fcb8ac42a534dcf59c8e5a01258e3343da5838d"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Optimized/practice-window-frame/practice-window-frame.glb",
+   "bytes": 7442684,
+   "sha256": "9f3cf1e18d45c0e9270571e2df0cf04ffd6d1d4f746705a5ce27dbdd17eea492"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Optimized/accessibility-audio-beacon/accessibility-audio-beacon.glb",
+   "bytes": 10477324,
+   "sha256": "c71f10b28584397d3ad6026dd6206602bd4c83b5f0bf207f39fad1c10acb682b"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Optimized/badge_m07/badge_m07.glb",
+   "bytes": 5907316,
+   "sha256": "cd463d1155f1d6e46de648d6d511557919533269263129196e4674196c2ffb8d"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Optimized/accessibility-text-block/accessibility-text-block.glb",
+   "bytes": 7091260,
+   "sha256": "6984d34b756434b4cace40e9d5c0fb524157f07e46c780e0d26f59d39651b6bd"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Optimized/badge_m09/badge_m09.glb",
+   "bytes": 5540376,
+   "sha256": "55fc6a5594ab75722eb614d1041875b42883b6596be17248cf77226f18df4a74"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Optimized/portal_m13/portal_m13.glb",
+   "bytes": 8674220,
+   "sha256": "49205da157ffd78f9a767373f3a9786b61d9c2161bb6de40bebbeeaaecb94311"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Optimized/portal_m14/portal_m14.glb",
+   "bytes": 8894380,
+   "sha256": "e236b38390df3b968b757d2c68197d01cb596758ac2dcd13ebab6b502d519026"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Optimized/battery-prop/battery-prop.glb",
+   "bytes": 10128060,
+   "sha256": "d4680c7ae794258fbdb11e52b2c0386e7a6d2839e9f4129f0509140963a10c76"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Optimized/xp-orb/xp-orb.glb",
+   "bytes": 8130572,
+   "sha256": "84bce4fd107a77d9b5cca652480cfc5216f15b662b06ff2375e1e83ab93fea70"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Optimized/badge_m08/badge_m08.glb",
+   "bytes": 6323944,
+   "sha256": "cfbe0ceadafb9e67c804e9a237d206e841b988fe938fccc2b2b46a22ac609443"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Optimized/portal_m12/portal_m12.glb",
+   "bytes": 9897228,
+   "sha256": "bf37e16cdcf8ca8f7bb319de06e02a4fb693d4448926b51dbfe248a99c1f27cc"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Optimized/badge_m01/badge_m01.glb",
+   "bytes": 3936964,
+   "sha256": "db8ae17cfd646c490b4d621c4b91b70c010cabb7e9d9c3e41cb893d9cb269fd5"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Optimized/badge_m06/badge_m06.glb",
+   "bytes": 3808496,
+   "sha256": "a9f0e888d5b77db0458f3c4bfdb939d8e9089319ac50a56916d62d9af183f987"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Optimized/control-panel/control-panel.glb",
+   "bytes": 7870540,
+   "sha256": "13cd22e90a7ebfb5e035141c9a0c9cb266b8b451d2a755671928a1a85f147e31"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Optimized/accessibility-switch-puck/accessibility-switch-puck.glb",
+   "bytes": 5048412,
+   "sha256": "366ff91d8d3278c3ffd30308b46023a457f3b8ec90881baffcef630b9329920b"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Optimized/achievement-vault-environment/achievement-vault-environment.glb",
+   "bytes": 11073340,
+   "sha256": "d99e1dcc37b456a9b6429fca06677221e7e9a517efdb04dd1545b36a0db5313a"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Optimized/gesture-practice-cube/gesture-practice-cube.glb",
+   "bytes": 6079340,
+   "sha256": "537f8a5e2f42b84606d7bd8a840dc09972c541f3a080650f6ff5ca2277e43e86"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Optimized/certificate-pedestal/certificate-pedestal.glb",
+   "bytes": 6371340,
+   "sha256": "d499afe26e0d9481bd76e14fa6e1db0534a0b155ac5d34e24e57fb55c7d3eb86"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Optimized/headband/headband.glb",
+   "bytes": 13187180,
+   "sha256": "69f6d72606e500bebc043351215de6745d95038cfd3f2475a2a755e996c036cd"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Optimized/portal_m05/portal_m05.glb",
+   "bytes": 8393260,
+   "sha256": "272fa51a21cc6f18b40692871230ddeb01f21187efccf642b4443a099306e78a"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Optimized/portal_m02/portal_m02.glb",
+   "bytes": 10001708,
+   "sha256": "14729f80d8876958840cb01667df955a0d47a583139107c42f3936a52c273e7b"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Optimized/badge_m11/badge_m11.glb",
+   "bytes": 6612840,
+   "sha256": "5640af86b1175ade46cbd058573dc1aedc5f6730055c4053a09fbe8e649aa663"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Optimized/badge_m10/badge_m10.glb",
+   "bytes": 7629804,
+   "sha256": "d5838af923bf7e1de995783f6c626b016326042b67ea3bc5b3907a4805de1af3"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Optimized/privacy-shield/privacy-shield.glb",
+   "bytes": 7795612,
+   "sha256": "2d795b0566a093ff30bbd380e955211ba28489fe40e2e79699aaf19810e199d4"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Optimized/portal_m03/portal_m03.glb",
+   "bytes": 8441676,
+   "sha256": "138c7e3ffb5794dc803a5911043631053b62c0e4571270460f1714bcb41629d6"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Optimized/portal_m04/portal_m04.glb",
+   "bytes": 8231628,
+   "sha256": "5b2cf57f32880119fb879a648cc23e7b38d1a52592cfec0b333747280d24585f"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Optimized/badge_m03/badge_m03.glb",
+   "bytes": 8349252,
+   "sha256": "c8ca40f5ca1f8e71eb02355ed5623ba726567c136599c2298bef054ebf9e9451"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Optimized/badge_m04/badge_m04.glb",
+   "bytes": 5933396,
+   "sha256": "3b49cac76ae4ec02b62e7909b1d6612c7610a85ada37fdfed83fcf6e13ce44f5"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Optimized/observatory-environment/observatory-environment.glb",
+   "bytes": 6985356,
+   "sha256": "db881b90233fdda33c69050ca05e79a1424131b89d8be56b971e87bedb6d77c0"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Optimized/portal_m10/portal_m10.glb",
+   "bytes": 8118972,
+   "sha256": "65671e59cb45c1aad975d0326465f70c41c1265889aca6205d26d645a82624f6"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Optimized/constellation-star/constellation-star.glb",
+   "bytes": 6980604,
+   "sha256": "a0f7313c617e2988ff6cbbaf11629957ef10bdc9b671bc7927364b8e46876097"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Optimized/safety-props-set/safety-props-set.glb",
+   "bytes": 7561516,
+   "sha256": "58ca1619ed138388c3819982401ce7063202197f7e3f349ac1c7f784420cf847"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Optimized/capstone-environment/capstone-environment.glb",
+   "bytes": 10993308,
+   "sha256": "656ca47388485609058ac2ddd574833d070ab394c9ba58b3a7a526596a9553af"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Optimized/portal_m11/portal_m11.glb",
+   "bytes": 7082972,
+   "sha256": "8577a2551963d3a02af9783513207bf8ec015a09786015b1397a9597b67f7114"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Optimized/badge_m05/badge_m05.glb",
+   "bytes": 4734604,
+   "sha256": "eaba5d56b032ea01beccf1539fc4fe17ef3aeb06e960faa5eb36b6551281718d"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Optimized/badge_m02/badge_m02.glb",
+   "bytes": 4398856,
+   "sha256": "4e7ed8e7d5b7e5548df544493d28b64b7427e63bcdeba3fd509d5cd0752b65ad"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Optimized/light-seal-cushion/light-seal-cushion.glb",
+   "bytes": 9431596,
+   "sha256": "acbe5aeaf9319fed047de334d6150b3f5dbfb634f15ff4838f601101ed1948a5"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Optimized/headset-mockup/headset-mockup.glb",
+   "bytes": 10648732,
+   "sha256": "4f25a49c05d262c29cafc1273cb579773bb343b75388e799da96bc9a56595fca"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Optimized/theatre-environment/theatre-environment.glb",
+   "bytes": 7481868,
+   "sha256": "da991c4b902f584ad8b295a9f9cc00104ffc415b2a9a18de2ed0826c1b262453"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/Optimized/companion-orb-bot/companion-orb-bot.glb",
+   "bytes": 6601820,
+   "sha256": "f60aede5446484a1325dc0013bb7052c0928487ef98663679c3e37bd55562794"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ_Delivery/portal_m10.usdz",
+   "bytes": 3447505,
+   "sha256": "e2678f12dfec46703d52dc96a7a56f1c37142875bce88c6518a7c16196ca92dc"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ_Delivery/portal_m06.usdz",
+   "bytes": 3457170,
+   "sha256": "77417cd920e5d33f9e4d850e941d1ef6354ffc68dfac37d0235222f3e9cab1a0"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ_Delivery/safety-props-set.usdz",
+   "bytes": 3370692,
+   "sha256": "1c087fff0dc4ea0f81c2ea8640150cc3e84027d9326f3f38aff7da69ef58736c"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ_Delivery/badge_m01.usdz",
+   "bytes": 705636,
+   "sha256": "002671988de91c98858b6c32405916f8a4027425efd5727629fa3eb9248d7290"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ_Delivery/portal_m07.usdz",
+   "bytes": 3567401,
+   "sha256": "004a7604fb2c4cad8b9fc7e92cce7787a4b81d0cdc3d26defde515d9ba7d3d77"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ_Delivery/accessibility-audio-beacon.usdz",
+   "bytes": 4185776,
+   "sha256": "c7396c4fc3aa415b7913ed140e395db905959047e03b30b10ea93962adcdcd83"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ_Delivery/portal_m11.usdz",
+   "bytes": 3287848,
+   "sha256": "7cf5852182e1e2a62d8628441d631a22df65f0ac0cd4a02aec067a9d8da5d880"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ_Delivery/xp-orb.usdz",
+   "bytes": 3764606,
+   "sha256": "c5795f8285c96084eb9b109ed259b13fee74d4f3fe3807577de8266369c8302b"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ_Delivery/gesture-practice-cube.usdz",
+   "bytes": 2607501,
+   "sha256": "99071562775e6c3f542b6c10ba10d8c1b88a9facf3069a7faed210ea6945eb89"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ_Delivery/battery-prop.usdz",
+   "bytes": 3461510,
+   "sha256": "fc0bf8ca6e9293a9a8fd5e61133e671b3840498b4256d9e2b657c8e4ca6bb8ca"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ_Delivery/badge_m10.usdz",
+   "bytes": 522561,
+   "sha256": "743e5f45e6a75d7dc4ac6d3ada80415a07fe2757d137dfc96731b52f27524191"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ_Delivery/practice-window-frame.usdz",
+   "bytes": 3223301,
+   "sha256": "184c230deae0d377f9a1f84c8d64f8dbd59b1669bab59a650fb22b8bdf62feac"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ_Delivery/badge_m06.usdz",
+   "bytes": 870675,
+   "sha256": "da6d480ed2cb3772833c28a1b1622d56cf22298145e1fe16831b226fbd02466e"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ_Delivery/accessibility-text-block.usdz",
+   "bytes": 2712095,
+   "sha256": "842cb7a272f953a7830786ae47cea9a7df5aa5b2a10346cf52c602cb1a735ce0"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ_Delivery/badge_m07.usdz",
+   "bytes": 683942,
+   "sha256": "402f75a6c1231fddae1bfc4fee7d8105c412bc3e82ab899edb598de66799440a"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ_Delivery/capstone-environment.usdz",
+   "bytes": 4396468,
+   "sha256": "150c4c0ec4696243924fa5919fb8e058a21b9e7aceb6dbccdb28aa4ad489e547"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ_Delivery/badge_m11.usdz",
+   "bytes": 910810,
+   "sha256": "7b2cb76fb1b996a321509ee64dda4ce7470cdbb5abba0e4e4eaffe6510d560b2"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ_Delivery/portal_m01.usdz",
+   "bytes": 3041687,
+   "sha256": "3a0082171677d6c73850f2aabb75351829acab48870c940296a8d8f158586a98"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ_Delivery/companion-orb-bot.usdz",
+   "bytes": 4588898,
+   "sha256": "5e8043b05a427d1fbf8bade911e022089cf34495aed17ff339bcb1e22ebb700a"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ_Delivery/control-panel.usdz",
+   "bytes": 3566166,
+   "sha256": "a520eb16bdf9e55f1d8e2a56726a83af7a35dd5fad43dc2506cc1d6d74749590"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ_Delivery/headset-mockup.usdz",
+   "bytes": 6802243,
+   "sha256": "ecee5bada8a4bb176d59d1e97988b2f6d28a07f93f511687a615c99aab3a2bdb"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ_Delivery/badge_m08.usdz",
+   "bytes": 848577,
+   "sha256": "8e40709ee85c1bebd6458b9876ddde9342cddca3097e78260de7019738523d9f"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ_Delivery/achievement-vault-environment.usdz",
+   "bytes": 4902535,
+   "sha256": "e6048316a38723d89a07a1d0dd3ec2cda5f3aebd808f9de2b50b9ca4d52ac9ab"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ_Delivery/theatre-environment.usdz",
+   "bytes": 3095633,
+   "sha256": "7d691ee398b9437c8253bbf67fb6d99de8119237b9f2b0003329637070505f96"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ_Delivery/badge_m04.usdz",
+   "bytes": 859828,
+   "sha256": "7482b3cae2b272d7682ab0d41e110db78a093f71d32f45974fee53aadac3a59f"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ_Delivery/badge_m12.usdz",
+   "bytes": 985047,
+   "sha256": "31c16cee0213a6400ab255cfbcb788fa2ac9e1d63d62be4ad0571ca6c2f411af"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ_Delivery/portal_m02.usdz",
+   "bytes": 3676752,
+   "sha256": "f48ac7df48dee5171fe6cf3d9fbb92833071a69d4b404a43481dd4e9a737c623"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ_Delivery/portal_m14.usdz",
+   "bytes": 3543539,
+   "sha256": "2ff211f66389115b9d3ff28b7ab5028be9e38bfcebca263efb7524a34c6980d3"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ_Delivery/accessibility-switch-puck.usdz",
+   "bytes": 2457488,
+   "sha256": "884fac4ea9e64aa685353a567ad45254dc4e43bd58c4c901d21f2453f52379d1"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ_Delivery/portal_m03.usdz",
+   "bytes": 3430285,
+   "sha256": "a4bc6933587a0620e387e88cb3f606fce60a4249e9b2d45b2e01b9d858ce48c1"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ_Delivery/badge_m13.usdz",
+   "bytes": 875465,
+   "sha256": "e263409e4a8dd06e1135aaed491744fe2cad6aafe5f94800ee160227a0aafbbc"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ_Delivery/badge_m05.usdz",
+   "bytes": 814156,
+   "sha256": "a6c371e06c6a2d59c9a95e683aec9338b8b2e1b93847735bb3529357489982d2"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ_Delivery/privacy-shield.usdz",
+   "bytes": 3596454,
+   "sha256": "685c62f0e06179cbfee26c122d5572f4dfbf9b6c895ee0da94eaef0e05e41ed4"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ_Delivery/certificate-pedestal.usdz",
+   "bytes": 4345135,
+   "sha256": "ac531176a9bfb8216d24fdda589347415341b302993d51f95b13d4732d915588"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ_Delivery/observatory-environment.usdz",
+   "bytes": 4095809,
+   "sha256": "5a82a3233299385ef43b148ac62913ef1867a033e6769d032854000e780be991"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ_Delivery/badge_m09.usdz",
+   "bytes": 1089642,
+   "sha256": "efd0b7f9d27354a7c9bafab021de21e561bda45a0ffb29fbb1761f7c7ef9fe69"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ_Delivery/badge_m02.usdz",
+   "bytes": 1149200,
+   "sha256": "a5e6c978f4664448a37987b03a9733f7a7f2ccf0bb834809b333f5b2a8eff245"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ_Delivery/badge_m14.usdz",
+   "bytes": 744624,
+   "sha256": "3dd1e1d5831ff9cfbbe035bf9082941bb7c9bfb9b2587a71fa0b7e1d535c40a1"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ_Delivery/portal_m04.usdz",
+   "bytes": 3377270,
+   "sha256": "0f253516f3e2397c32f94164c66f7b65996aa2280d77b298aa424dc00b21fd47"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ_Delivery/gesture-practice-ring.usdz",
+   "bytes": 3035433,
+   "sha256": "1d008b8e4dfc9e4643252d834f84119dd2e5645d1020ec7aec4109d699132bc4"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ_Delivery/gesture-practice-orb.usdz",
+   "bytes": 2594741,
+   "sha256": "10070826477c7cdd7e022a861645c10ff046d0485d25fee777e896450da8f498"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ_Delivery/portal_m12.usdz",
+   "bytes": 3773175,
+   "sha256": "700aa7e95753529a69c5ab2a75c197d5c692e4079ac4ecf11f8513d4c1da00b2"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ_Delivery/headband.usdz",
+   "bytes": 4032306,
+   "sha256": "7a30d2149d7b492f418425492b0bc68c5fe7789b72147763b4e341c967331106"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ_Delivery/light-seal-cushion.usdz",
+   "bytes": 2754492,
+   "sha256": "cb8eb2f0360446fce56bc4c713c7ebe83fdfdbe03c29f899deb0f191c7d696e3"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ_Delivery/constellation-star.usdz",
+   "bytes": 3214505,
+   "sha256": "0c1371a343ded7f8a639e2e3c78f108cf737ca2bfc300e60ccc9fca0f171acfe"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ_Delivery/portal_m08.usdz",
+   "bytes": 3029192,
+   "sha256": "19cb2b2b540ba841bfe3cde39301aab2f7999a286e8dd821713caef6e04eaddc"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ_Delivery/portal_m09.usdz",
+   "bytes": 3430090,
+   "sha256": "1a8fb61f6a1dd6827801e5b7690db67da746f7ba4d6c9ac7f1014e6ed4084d14"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ_Delivery/portal_m13.usdz",
+   "bytes": 3632263,
+   "sha256": "e04178a01a55eaa84d9c5436c26c0e72362c95a4752c32188154be0d02ac383d"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ_Delivery/portal_m05.usdz",
+   "bytes": 3777153,
+   "sha256": "3ee9663b64f13b3f7af3544183e9e5c59a7ec86c2dcb224f9ac8edbab0617f59"
+  },
+  {
+   "path": "SpatialMastery/Media/3D/USDZ_Delivery/badge_m03.usdz",
+   "bytes": 672427,
+   "sha256": "5ce60d3b2b7fed19ce46a424737ad43255c2ca639fcdefe948a037204e4df3f2"
+  }
+ ]
+}

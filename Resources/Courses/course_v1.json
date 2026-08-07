@@ -1,0 +1,121 @@
+{
+  "id": "lifesaver-foundations",
+  "title": "CPR + AED Foundations",
+  "summary": "A versioned course shell awaiting clinical content review.",
+  "version": {
+    "schemaVersion": 1,
+    "contentVersion": "1.0.0",
+    "locale": "en-SG",
+    "releasedAt": null
+  },
+  "modules": [
+    {
+      "id": "module-orientation",
+      "title": "Orientation",
+      "summary": "Course structure and reviewed-content placeholder.",
+      "order": 1,
+      "lessons": [
+        {
+          "id": "lesson-clinical-review-placeholder",
+          "title": "Clinical Content Review Placeholder",
+          "summary": "Clinical instruction will be added only after source verification and SME review.",
+          "order": 1,
+          "learningObjectives": [
+            {
+              "id": "objective-review-status",
+              "statement": "Recognise when learning material is marked as awaiting clinical review.",
+              "sourceReferences": [
+                {
+                  "id": "source-placeholder-v1",
+                  "document": "Current SRFAC source to be confirmed",
+                  "edition": "Pending verification",
+                  "section": "Pending verification",
+                  "page": "Pending verification",
+                  "reviewStatus": "requires_sme_review",
+                  "reviewer": null,
+                  "lastClinicalReviewDate": null,
+                  "contentVersion": "1.0.0"
+                }
+              ]
+            }
+          ],
+          "contentBlocks": [
+            {
+              "id": "content-review-placeholder",
+              "kind": "callout",
+              "title": "Requires SME review",
+              "body": "No clinical instruction is included in this seed resource.",
+              "sourceReferences": [
+                {
+                  "id": "source-placeholder-v1",
+                  "document": "Current SRFAC source to be confirmed",
+                  "edition": "Pending verification",
+                  "section": "Pending verification",
+                  "page": "Pending verification",
+                  "reviewStatus": "requires_sme_review",
+                  "reviewer": null,
+                  "lastClinicalReviewDate": null,
+                  "contentVersion": "1.0.0"
+                }
+              ]
+            }
+          ],
+          "interactiveActivities": [],
+          "scenarios": [],
+          "assessments": [],
+          "sourceReferences": [
+            {
+              "id": "source-placeholder-v1",
+              "document": "Current SRFAC source to be confirmed",
+              "edition": "Pending verification",
+              "section": "Pending verification",
+              "page": "Pending verification",
+              "reviewStatus": "requires_sme_review",
+              "reviewer": null,
+              "lastClinicalReviewDate": null,
+              "contentVersion": "1.0.0"
+            }
+          ]
+        }
+      ],
+      "sourceReferences": [
+        {
+          "id": "source-placeholder-v1",
+          "document": "Current SRFAC source to be confirmed",
+          "edition": "Pending verification",
+          "section": "Pending verification",
+          "page": "Pending verification",
+          "reviewStatus": "requires_sme_review",
+          "reviewer": null,
+          "lastClinicalReviewDate": null,
+          "contentVersion": "1.0.0"
+        }
+      ]
+    }
+  ],
+  "instructorRequirement": {
+    "isRequired": true,
+    "requirementDescription": "Practical competency requires instructor sign-off.",
+    "recordLabel": "Internal completion record"
+  },
+  "completionRule": {
+    "requiredLessonIDs": [
+      "lesson-clinical-review-placeholder"
+    ],
+    "minimumAssessmentScore": null,
+    "requiresInstructorSignOff": true
+  },
+  "sourceReferences": [
+    {
+      "id": "source-placeholder-v1",
+      "document": "Current SRFAC source to be confirmed",
+      "edition": "Pending verification",
+      "section": "Pending verification",
+      "page": "Pending verification",
+      "reviewStatus": "requires_sme_review",
+      "reviewer": null,
+      "lastClinicalReviewDate": null,
+      "contentVersion": "1.0.0"
+    }
+  ]
+}

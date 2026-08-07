@@ -1,0 +1,19 @@
+# Xcode generated state
+DerivedData/
+.deriveddata/
+*.xcresult
+xcuserdata/
+*.xcuserstate
+
+# Swift Package Manager generated state
+.build/
+.swiftpm/
+Package.resolved
+
+# Local secrets and environment overrides
+.env
+.env.*
+!.env.example
+
+# macOS metadata
+.DS_Store

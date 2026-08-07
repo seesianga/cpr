@@ -1,0 +1,862 @@
+{
+  "version": "1.0",
+  "extractedAt": "2026-08-07",
+  "citationConvention": "CA-Manual-REV-1-2022.pdf and SRFAC-CPRHOAED-Manual-2018-2.pdf are cited by printed page number (PDF page = printed + 2 for the 2022 manual, printed + 4 for the 2018 manual). 03-SG-BCLSAED-Guidelines-2021.pdf has no printed numbers and is cited by PDF slide number. All cited pages were read in full during extraction on 2026-08-07.",
+  "languageNote": "Statements are paraphrased in British/Singapore English; no sentence is copied verbatim from any source.",
+  "facts": [
+    {
+      "id": "fact.recognition.cardiacArrestDefinition",
+      "statement": "In cardiac arrest the heart stops pumping blood; the casualty becomes unconscious and stops breathing normally. A chaotic rhythm called ventricular fibrillation (VF) develops in many cases.",
+      "values": {},
+      "sources": [
+        { "doc": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "1.5 What Happens in a Cardiac Arrest", "page": 8 },
+        { "doc": "SRFAC-CPRHOAED-Manual-2018-2.pdf", "edition": "2018", "section": "A-5", "page": 9 }
+      ],
+      "reviewStatus": "source_checked",
+      "supersedes2018": false,
+      "notes": "Identical framing in both manuals."
+    },
+    {
+      "id": "fact.recognition.heartAttackVsArrest",
+      "statement": "A heart attack is a blockage of a coronary artery causing heart muscle to die; untreated, it can deteriorate into sudden cardiac arrest. Heart-attack warning signs include chest or upper-abdominal tightness or discomfort (possibly spreading to left shoulder, left arm, neck or lower jaw), sudden breathlessness, sweating, nausea, vomiting or dizziness; call 995 and go to an Emergency Department.",
+      "values": { "emergencyNumber": "995" },
+      "sources": [
+        { "doc": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "1.4 What Happens in a Heart Attack", "page": 7 },
+        { "doc": "SRFAC-CPRHOAED-Manual-2018-2.pdf", "edition": "2018", "section": "A-4", "page": 8 }
+      ],
+      "reviewStatus": "source_checked",
+      "supersedes2018": false,
+      "notes": ""
+    },
+    {
+      "id": "fact.recognition.timeCriticality",
+      "statement": "Brain cells begin dying within about 4 to 6 minutes of cardiac arrest; irreversible brain damage starts if circulation is not restored within roughly 4 minutes. Survival can be around 90% if the arrest is reversed immediately, roughly 40-50% at 6 minutes and about 10% by 9 minutes.",
+      "values": { "brainInjuryOnsetMinutes": "4-6", "survivalImmediatePercent": 90, "survivalAt6MinPercent": "40-50", "survivalAt9MinPercent": 10 },
+      "sources": [
+        { "doc": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "1.5 / 1.7 / 2.1", "page": 8 },
+        { "doc": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "2.1 The Importance of Early CPR", "page": 16 },
+        { "doc": "SRFAC-CPRHOAED-Manual-2018-2.pdf", "edition": "2018", "section": "A-5 / B1", "page": 9 }
+      ],
+      "reviewStatus": "source_checked",
+      "supersedes2018": false,
+      "notes": "Same figures in both manuals."
+    },
+    {
+      "id": "fact.recognition.vfSurvivalDecay",
+      "statement": "The most common initial arrest rhythm is ventricular fibrillation or pulseless ventricular tachycardia (shockable). Survival falls by about 7-10% for every minute that treatment of VF is delayed; untreated VF degenerates into asystole, which cannot be shocked and is treated with CPR only.",
+      "values": { "survivalLossPerMinutePercent": "7-10" },
+      "sources": [
+        { "doc": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "3.1 The Importance of Early Defibrillation", "page": 30 },
+        { "doc": "SRFAC-CPRHOAED-Manual-2018-2.pdf", "edition": "2018", "section": "C-1", "page": 23 }
+      ],
+      "reviewStatus": "source_checked",
+      "supersedes2018": false,
+      "notes": "2022 manual explicitly adds pulseless VT alongside VF as a shockable rhythm."
+    },
+    {
+      "id": "fact.recognition.gaspingAbnormal",
+      "statement": "Gasping (agonal breathing) is not normal breathing; it is a sign of cardiac arrest. If breathing is absent, abnormal, or the rescuer is unsure, chest compressions must start immediately.",
+      "values": {},
+      "sources": [
+        { "doc": "03-SG-BCLSAED-Guidelines-2021.pdf", "edition": "2021", "section": "CPR summary table / key emphases", "page": 23 },
+        { "doc": "03-SG-BCLSAED-Guidelines-2021.pdf", "edition": "2021", "section": "Guidelines 2021 summary", "page": 29 },
+        { "doc": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "2.2 (B) Check for normal Breathing", "page": 19 },
+        { "doc": "SRFAC-CPRHOAED-Manual-2018-2.pdf", "edition": "2018", "section": "B2 Step 5", "page": 16 }
+      ],
+      "reviewStatus": "source_checked",
+      "supersedes2018": false,
+      "notes": "Unchanged across all three sources; both manuals note gasping can also occur in severe asthma."
+    },
+    {
+      "id": "fact.recognition.ohcaStatistics2019",
+      "statement": "Singapore's 2019 OHCA registry recorded 3,233 out-of-hospital cardiac arrests; about 74% occurred at home; bystander CPR was performed in 60% and bystander defibrillation in 10.5% of cases; 6.2% survived and 4.8% were discharged with good-to-moderate neurological function.",
+      "values": { "year": 2019, "cases": 3233, "atHomePercent": 74, "bystanderCprPercent": 60, "bystanderDefibPercent": 10.5, "survivalPercent": 6.2, "goodNeuroPercent": 4.8 },
+      "sources": [
+        { "doc": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "1.1 Introduction", "page": 2 }
+      ],
+      "reviewStatus": "source_checked",
+      "supersedes2018": true,
+      "notes": "2018 manual (A-1, p.3) used the 2015 registry: 2,374 cases, 69.8% at home, bystander CPR 54.1%, bystander defibrillation 4.1%, 3.24% good-neurological survival. Render 2019 figures; 2018 figures only for a 'what changed' comparison."
+    },
+    {
+      "id": "fact.chain.sevenRings",
+      "statement": "The current Chain of Survival has seven rings in order: Prevention; Early Activation and AED Access; Early CPR; Early Defibrillation; Emergency Medical Services (Ambulance); Advanced Cardiac Life Support; Recovery.",
+      "values": { "ringCount": 7, "order": ["Prevention", "Early Activation and AED Access", "Early CPR", "Early Defibrillation", "Emergency Medical Services (Ambulance)", "Advanced Cardiac Life Support", "Recovery"] },
+      "sources": [
+        { "doc": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "1.7 The Chain of Survival", "page": 11 }
+      ],
+      "reviewStatus": "requires_sme_review",
+      "supersedes2018": true,
+      "notes": "2018 manual (A-7, p.11) taught five rings: Early Recognition and Access, Early CPR, Early Defibrillation, EMS, ACLS. The 2021 townhall deck (slide 5) still illustrates a five-ring chain. Course follows the 2022 manual's seven rings; SME to confirm preferred official graphic (item S5 in COURSE_SOURCE_DIFFERENCES.md)."
+    },
+    {
+      "id": "fact.chain.ringDefinitions",
+      "statement": "Ring meanings: Prevention = healthy lifestyle and regular check-ups reduce risk. Early Activation and AED Access = dial 995, follow the SCDF dispatcher, and get an AED if visible and nearby. Early CPR = start CPR fast because brain cells begin dying within 4-6 minutes. Early Defibrillation = apply a community AED and be ready to shock. EMS = rapid ambulance response and transport. ACLS = hospital advanced care (IV/IO drugs, ventilation support). Recovery = community and medical rehabilitation support after survival.",
+      "values": {},
+      "sources": [
+        { "doc": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "1.7 The Chain of Survival", "page": 11 },
+        { "doc": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "1.7 (sixth and seventh rings)", "page": 12 }
+      ],
+      "reviewStatus": "source_checked",
+      "supersedes2018": true,
+      "notes": "Prevention and Recovery ring definitions have no 2018 counterpart."
+    },
+    {
+      "id": "fact.chain.earlyCprPlusDefib",
+      "statement": "Survival is highest when early CPR is combined with early defibrillation; historic outcome data show survival rising from 0-2% (no CPR, delayed shock) to about 30% with very early CPR, defibrillation and advanced care.",
+      "values": {},
+      "sources": [
+        { "doc": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "3.1 chain-of-survival outcome chart", "page": 31 },
+        { "doc": "SRFAC-CPRHOAED-Manual-2018-2.pdf", "edition": "2018", "section": "C-1", "page": 24 }
+      ],
+      "reviewStatus": "source_checked",
+      "supersedes2018": false,
+      "notes": "Chart attributed to AHA ACLS teaching material in the 2022 manual."
+    },
+    {
+      "id": "fact.drsabc.mnemonic",
+      "statement": "The response sequence is DRSABC: D check for Danger; R check Responsiveness; S Shout for help and call 995 for SCDF; A Ask someone to get an AED; B check for normal Breathing (trained healthcare providers also check the pulse); C provide continuous Chest Compressions.",
+      "values": { "mnemonic": "DRSABC" },
+      "sources": [
+        { "doc": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "2.2 Adult One-Rescuer CPR", "page": 17 },
+        { "doc": "03-SG-BCLSAED-Guidelines-2021.pdf", "edition": "2021", "section": "CPR and AED Use algorithm", "page": 12 },
+        { "doc": "SRFAC-CPRHOAED-Manual-2018-2.pdf", "edition": "2018", "section": "B2", "page": 14 }
+      ],
+      "reviewStatus": "source_checked",
+      "supersedes2018": false,
+      "notes": "Mnemonic unchanged since 2018; A and S step details differ (see fact.drsabc.getAed and fact.drsabc.call995)."
+    },
+    {
+      "id": "fact.drsabc.danger",
+      "statement": "Check for danger first: operate only in a safe environment. Start resuscitation where the casualty is found unless the site is unsafe or unsuitable (traffic, fire, wet floor, falling objects), in which case move the casualty to a safe, flat, open space as soon as possible.",
+      "values": {},
+      "sources": [
+        { "doc": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "2.2 (D) Check for Danger", "page": 18 },
+        { "doc": "03-SG-BCLSAED-Guidelines-2021.pdf", "edition": "2021", "section": "1. Stay Safe", "page": 12 },
+        { "doc": "SRFAC-CPRHOAED-Manual-2018-2.pdf", "edition": "2018", "section": "B2 Step 1", "page": 15 }
+      ],
+      "reviewStatus": "source_checked",
+      "supersedes2018": false,
+      "notes": ""
+    },
+    {
+      "id": "fact.drsabc.responsiveness",
+      "statement": "Check responsiveness by tapping the casualty's shoulders firmly and asking loudly whether they are okay. Do not shake violently, and avoid unnecessary neck movement in case of head or neck injury.",
+      "values": {},
+      "sources": [
+        { "doc": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "2.2 (R) Check for Responsiveness", "page": 18 },
+        { "doc": "03-SG-BCLSAED-Guidelines-2021.pdf", "edition": "2021", "section": "2. Tap and Shout", "page": 13 },
+        { "doc": "SRFAC-CPRHOAED-Manual-2018-2.pdf", "edition": "2018", "section": "B2 Step 2", "page": 15 }
+      ],
+      "reviewStatus": "source_checked",
+      "supersedes2018": false,
+      "notes": "Infant variant (tap shoulders and feet) is in fact.child.infantResponseCheck."
+    },
+    {
+      "id": "fact.drsabc.positionCasualty",
+      "statement": "Effective CPR requires the casualty to be on their back on a firm, flat surface. A casualty found prone or on their side must be rolled onto the back, supporting and turning the head, neck and body together to avoid aggravating possible spinal injury.",
+      "values": {},
+      "sources": [
+        { "doc": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "2.2 (R) note", "page": 18 },
+        { "doc": "SRFAC-CPRHOAED-Manual-2018-2.pdf", "edition": "2018", "section": "B2 Step 4", "page": 16 }
+      ],
+      "reviewStatus": "source_checked",
+      "supersedes2018": false,
+      "notes": "2018 manual carries the fuller simultaneous-support wording; 2022 manual states the same requirement in brief."
+    },
+    {
+      "id": "fact.drsabc.call995",
+      "statement": "If the casualty is unresponsive, shout for bystanders to call 995 for SCDF EMS (or activate the in-facility emergency response system). A lone rescuer should call 995 on a handphone in speaker mode and stay on the line: the SCDF dispatcher can help recognise cardiac arrest and coach chest compressions over the phone.",
+      "values": { "emergencyNumber": "995", "speakerMode": true },
+      "sources": [
+        { "doc": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "2.2 (S) Shout to get help", "page": 18 },
+        { "doc": "03-SG-BCLSAED-Guidelines-2021.pdf", "edition": "2021", "section": "3. Call 995 and get AED", "page": 14 },
+        { "doc": "03-SG-BCLSAED-Guidelines-2021.pdf", "edition": "2021", "section": "Guidelines 2021 summary", "page": 29 }
+      ],
+      "reviewStatus": "source_checked",
+      "supersedes2018": true,
+      "notes": "2018 (B2 Step 3, p.15) taught calling 995 with a list of dispatcher questions (location, callback number, what happened, number of casualties, hang up only when told) but did not emphasise speaker mode or dispatcher-assisted CPR. The question list remains reasonable background; teach the current speaker-mode flow."
+    },
+    {
+      "id": "fact.drsabc.dispatcherCapabilities",
+      "statement": "SCDF 995 dispatchers can locate the nearest AED, summon CPR-trained volunteers in the vicinity, and guide the caller through compressions; volunteer response through myResponder is voluntary.",
+      "values": {},
+      "sources": [
+        { "doc": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "2.2 (A) note", "page": 19 },
+        { "doc": "03-SG-BCLSAED-Guidelines-2021.pdf", "edition": "2021", "section": "Guidelines 2021 summary", "page": 29 },
+        { "doc": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "1.8 SCDF myResponder", "page": 14 }
+      ],
+      "reviewStatus": "source_checked",
+      "supersedes2018": true,
+      "notes": "No 2018 counterpart."
+    },
+    {
+      "id": "fact.drsabc.getAed",
+      "statement": "Ask another person to fetch an AED if one is within about a 60-second walking distance. A lone rescuer must not leave the casualty to search for an AED.",
+      "values": { "aedFetchWalkingDistanceSeconds": 60, "loneRescuerLeaves": false },
+      "sources": [
+        { "doc": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "2.2 (A) Ask someone to get an AED", "page": 19 },
+        { "doc": "03-SG-BCLSAED-Guidelines-2021.pdf", "edition": "2021", "section": "CPR summary table row A", "page": 23 },
+        { "doc": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "3.1", "page": 31 }
+      ],
+      "reviewStatus": "source_checked",
+      "supersedes2018": true,
+      "notes": "SAFETY-CRITICAL CHANGE. 2018 (B2 p.14; C-1 p.24) allowed a lone rescuer to personally get the AED if it was visible and nearby. Current rule: lone rescuer stays and compresses. Render a Guideline Update card."
+    },
+    {
+      "id": "fact.drsabc.remoteAreaException",
+      "statement": "Edge case: a lone rescuer in a remote area with no way to activate EMS should assess responsiveness and breathing, start chest compressions immediately if normal breathing is absent, and continue for at least two minutes before leaving the casualty to seek help.",
+      "values": { "minimumCprBeforeLeavingMinutes": 2 },
+      "sources": [
+        { "doc": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "2.2 (S), lone-rescuer remote note", "page": 19 }
+      ],
+      "reviewStatus": "source_checked",
+      "supersedes2018": true,
+      "notes": "New in 2022; no 2018 counterpart. Teach as an edge-case note, not the main flow."
+    },
+    {
+      "id": "fact.drsabc.breathingCheck",
+      "statement": "Check breathing by looking for the rise and fall of the chest for no more than 10 seconds. If normal breathing is absent (gasping is not normal breathing) or the rescuer is unsure, start CPR.",
+      "values": { "maxCheckSeconds": 10 },
+      "sources": [
+        { "doc": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "2.2 (B) Check for normal Breathing", "page": 19 },
+        { "doc": "03-SG-BCLSAED-Guidelines-2021.pdf", "edition": "2021", "section": "4. Check for Breathing", "page": 15 },
+        { "doc": "SRFAC-CPRHOAED-Manual-2018-2.pdf", "edition": "2018", "section": "B2 Step 5", "page": 16 }
+      ],
+      "reviewStatus": "source_checked",
+      "supersedes2018": false,
+      "notes": ""
+    },
+    {
+      "id": "fact.drsabc.pulseCheckHcpOnly",
+      "statement": "HCP-only: trained healthcare providers check the carotid pulse together with breathing, taking no more than 10 seconds; if there is no definite pulse, or any doubt, they assume cardiac arrest and start compressions. Lay rescuers are not taught pulse checks.",
+      "values": { "audience": "healthcare_provider", "maxCheckSeconds": 10 },
+      "sources": [
+        { "doc": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "2.2 for trained healthcare providers", "page": 20 },
+        { "doc": "03-SG-BCLSAED-Guidelines-2021.pdf", "edition": "2021", "section": "CPR summary table row B", "page": 23 }
+      ],
+      "reviewStatus": "source_checked",
+      "supersedes2018": true,
+      "notes": "2018 hands-only community manual had no pulse-check content. Must be visually labelled HCP-only in the app."
+    },
+    {
+      "id": "fact.drsabc.monitorIfBreathingNormally",
+      "statement": "If the casualty is breathing normally, do not start compressions; continue monitoring and wait for EMS to arrive.",
+      "values": {},
+      "sources": [
+        { "doc": "03-SG-BCLSAED-Guidelines-2021.pdf", "edition": "2021", "section": "RCA adult BLS algorithm for lay rescuers", "page": 11 },
+        { "doc": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "2.2 flowchart", "page": 17 }
+      ],
+      "reviewStatus": "source_checked",
+      "supersedes2018": false,
+      "notes": "Post-ROSC positioning is covered by fact.recovery.supineMonitor."
+    },
+    {
+      "id": "fact.compression.site",
+      "statement": "Compress at the centre of the chest over the lower half of the sternum (breastbone). Expose the chest adequately, and never compress on the xiphoid process at the lower tip of the breastbone.",
+      "values": { "landmark": "lower half of sternum", "avoid": "xiphoid process" },
+      "sources": [
+        { "doc": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "2.2 (C) Chest Compressions", "page": 20 },
+        { "doc": "03-SG-BCLSAED-Guidelines-2021.pdf", "edition": "2021", "section": "5. Start Chest Compression", "page": 18 },
+        { "doc": "SRFAC-CPRHOAED-Manual-2018-2.pdf", "edition": "2018", "section": "B2 Step 6", "page": 17 }
+      ],
+      "reviewStatus": "source_checked",
+      "supersedes2018": false,
+      "notes": "App scene entities: sternum_target, xiphoid_avoid_zone."
+    },
+    {
+      "id": "fact.compression.handMethodAdult",
+      "statement": "Adult technique: kneel beside the casualty; place the heel of one hand on the lower half of the sternum and the heel of the other hand on top; interlace the fingers and lift them off the chest wall; straighten and lock both elbows; position the shoulders directly above the casualty's chest and compress using body weight.",
+      "values": { "method": "heel of one hand, other hand on top, fingers interlaced and lifted" },
+      "sources": [
+        { "doc": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "2.2 (C) Chest Compressions", "page": 20 },
+        { "doc": "SRFAC-CPRHOAED-Manual-2018-2.pdf", "edition": "2018", "section": "B2 Step 7", "page": 18 },
+        { "doc": "03-SG-BCLSAED-Guidelines-2021.pdf", "edition": "2021", "section": "CPR summary table, compression method", "page": 23 }
+      ],
+      "reviewStatus": "source_checked",
+      "supersedes2018": false,
+      "notes": "Posture heuristics (locked elbows, shoulders over chest) are the app-assessable elements; real depth/force is never claimed to be measured."
+    },
+    {
+      "id": "fact.compression.depthAdult",
+      "statement": "Adult compression depth is at least 4 cm and not more than 6 cm.",
+      "values": { "minCm": 4, "maxCm": 6 },
+      "sources": [
+        { "doc": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "2.2 (C) Chest Compressions", "page": 20 },
+        { "doc": "03-SG-BCLSAED-Guidelines-2021.pdf", "edition": "2021", "section": "CPR summary table, compression depth", "page": 23 },
+        { "doc": "SRFAC-CPRHOAED-Manual-2018-2.pdf", "edition": "2018", "section": "B3", "page": 19 }
+      ],
+      "reviewStatus": "source_checked",
+      "supersedes2018": false,
+      "notes": "Unchanged since 2018. The RCA algorithm reproduced on 2021 slide 11 phrases it as approximately 5 cm and no more than 6 cm; any single-number coaching target requires SME approval (item S6). App labels depth as 'Not physically assessed'."
+    },
+    {
+      "id": "fact.compression.rate",
+      "statement": "Compression rate is 100 to 120 per minute for all ages.",
+      "values": { "minPerMinute": 100, "maxPerMinute": 120 },
+      "sources": [
+        { "doc": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "2.2 (C) Chest Compressions", "page": 20 },
+        { "doc": "03-SG-BCLSAED-Guidelines-2021.pdf", "edition": "2021", "section": "CPR summary table, compression rate", "page": 23 },
+        { "doc": "SRFAC-CPRHOAED-Manual-2018-2.pdf", "edition": "2018", "section": "B3", "page": 19 }
+      ],
+      "reviewStatus": "source_checked",
+      "supersedes2018": false,
+      "notes": "Rhythm is one of the app's assessable metrics."
+    },
+    {
+      "id": "fact.compression.recoil",
+      "statement": "Allow complete chest recoil after every compression, without lifting the heels of the hands off the chest between compressions.",
+      "values": { "fullRecoil": true, "handsStayOnChest": true },
+      "sources": [
+        { "doc": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "2.2 (C) Chest Compressions", "page": 20 },
+        { "doc": "SRFAC-CPRHOAED-Manual-2018-2.pdf", "edition": "2018", "section": "B3", "page": 19 },
+        { "doc": "03-SG-BCLSAED-Guidelines-2021.pdf", "edition": "2021", "section": "CPR summary table", "page": 23 }
+      ],
+      "reviewStatus": "source_checked",
+      "supersedes2018": false,
+      "notes": "The 'do not lift heels of hands' detail is spelt out in the 2018 manual and remains consistent with current teaching."
+    },
+    {
+      "id": "fact.compression.counting",
+      "statement": "Count compressions aloud in cycles of five up to 100 (e.g. one-and-two-and-three-and-four-and-five...) to keep rhythm and track the count.",
+      "values": { "countTarget": 100 },
+      "sources": [
+        { "doc": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "2.2 (C) loud counting", "page": 20 },
+        { "doc": "SRFAC-CPRHOAED-Manual-2018-2.pdf", "edition": "2018", "section": "B2 Step 7", "page": 18 }
+      ],
+      "reviewStatus": "source_checked",
+      "supersedes2018": false,
+      "notes": ""
+    },
+    {
+      "id": "fact.compression.restRule",
+      "statement": "A single rescuer who tires may rest for not more than 10 seconds, preferably only after each block of about 100 continuous compressions, then resume immediately.",
+      "values": { "maxRestSeconds": 10, "preferredAfterCompressions": 100 },
+      "sources": [
+        { "doc": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "2.2 flowchart notes / (C)", "page": 21 },
+        { "doc": "03-SG-BCLSAED-Guidelines-2021.pdf", "edition": "2021", "section": "algorithm note 1", "page": 12 },
+        { "doc": "SRFAC-CPRHOAED-Manual-2018-2.pdf", "edition": "2018", "section": "B3", "page": 19 }
+      ],
+      "reviewStatus": "source_checked",
+      "supersedes2018": false,
+      "notes": "Interruption budget is one of the app's assessable metrics."
+    },
+    {
+      "id": "fact.compression.minimiseInterruptions",
+      "statement": "Continuous compressions with minimal interruption are strongly recommended; any interruption can worsen survival. Pad application and chest preparation must happen with compressions continuing wherever possible.",
+      "values": {},
+      "sources": [
+        { "doc": "SRFAC-CPRHOAED-Manual-2018-2.pdf", "edition": "2018", "section": "B3", "page": 19 },
+        { "doc": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "3.4 highlighted rule", "page": 35 },
+        { "doc": "03-SG-BCLSAED-Guidelines-2021.pdf", "edition": "2021", "section": "RCA algorithm: minimise pauses", "page": 11 }
+      ],
+      "reviewStatus": "source_checked",
+      "supersedes2018": false,
+      "notes": ""
+    },
+    {
+      "id": "fact.compression.stopCriteria",
+      "statement": "Continue CPR until a paramedic or the in-facility emergency team takes over, the AED prompts that it is analysing, charging or about to shock, or the casualty wakes up or regains normal breathing.",
+      "values": {},
+      "sources": [
+        { "doc": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "3.5 step 7", "page": 37 },
+        { "doc": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "2.2 continue-until list", "page": 24 },
+        { "doc": "03-SG-BCLSAED-Guidelines-2021.pdf", "edition": "2021", "section": "algorithm: continue CPR until", "page": 12 }
+      ],
+      "reviewStatus": "source_checked",
+      "supersedes2018": false,
+      "notes": "2018 lay wording (pp.14, 19) additionally said 'regains normal breathing/pulse'; current lay wording avoids pulse language (SME item S9). Substance unchanged."
+    },
+    {
+      "id": "fact.ventilation.handsOnlyDefault",
+      "statement": "Rescuers who are untrained, unable or unwilling to give ventilations should perform continuous high-quality chest compressions only (hands-only CPR), which is easier to learn and as effective as standard CPR for community responders, and improves uptake, quality and skill retention.",
+      "values": { "layDefault": "hands_only" },
+      "sources": [
+        { "doc": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "2.1 The Importance of Early CPR", "page": 16 },
+        { "doc": "03-SG-BCLSAED-Guidelines-2021.pdf", "edition": "2021", "section": "CPR summary table / summary", "page": 23 },
+        { "doc": "03-SG-BCLSAED-Guidelines-2021.pdf", "edition": "2021", "section": "Guidelines 2021 summary", "page": 29 },
+        { "doc": "SRFAC-CPRHOAED-Manual-2018-2.pdf", "edition": "2018", "section": "B1", "page": 13 }
+      ],
+      "reviewStatus": "source_checked",
+      "supersedes2018": false,
+      "notes": "2018 phrased it as 'not less effective than standard CPR'; same substance."
+    },
+    {
+      "id": "fact.ventilation.thirtyToTwoIfTrained",
+      "statement": "Rescuers who are trained, able and willing to ventilate combine 30 compressions with 2 breaths (30:2), one second per breath, watching for chest rise.",
+      "values": { "ratio": "30:2", "breathDurationSeconds": 1 },
+      "sources": [
+        { "doc": "03-SG-BCLSAED-Guidelines-2021.pdf", "edition": "2021", "section": "CPR summary table, compression-ventilation ratio", "page": 23 },
+        { "doc": "03-SG-BCLSAED-Guidelines-2021.pdf", "edition": "2021", "section": "RCA algorithm step 5", "page": 11 },
+        { "doc": "SRFAC-CPRHOAED-Manual-2018-2.pdf", "edition": "2018", "section": "C-6 footnote", "page": 31 }
+      ],
+      "reviewStatus": "source_checked",
+      "supersedes2018": false,
+      "notes": ""
+    },
+    {
+      "id": "fact.ventilation.bvmForHcp",
+      "statement": "HCP-only: healthcare providers give 30 compressions then 2 ventilations via bag-valve-mask; because of COVID-19, BVM replaced mouth-to-mouth in provider training. Mouth-to-mouth remains an option for a trained and willing provider without a BVM; otherwise perform continuous compressions.",
+      "values": { "audience": "healthcare_provider", "ratio": "30:2", "device": "bag-valve-mask" },
+      "sources": [
+        { "doc": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "2.1 (COVID-19 note)", "page": 16 },
+        { "doc": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "2.2 notes", "page": 24 },
+        { "doc": "03-SG-BCLSAED-Guidelines-2021.pdf", "edition": "2021", "section": "algorithm note 2", "page": 12 }
+      ],
+      "reviewStatus": "source_checked",
+      "supersedes2018": true,
+      "notes": "No 2018 counterpart (2018 was a hands-only community manual)."
+    },
+    {
+      "id": "fact.ventilation.techniqueHcp",
+      "statement": "HCP-only: open the airway with head-tilt chin-lift; seal an appropriately sized mask with the E-C grip; squeeze the bag steadily over one second, delivering roughly 400-600 ml or just enough for visible chest rise; let the bag reinflate before the second breath; the 2 breaths must not interrupt compressions for more than 10 seconds; a single provider ventilates from the casualty's side to minimise interruptions.",
+      "values": { "audience": "healthcare_provider", "tidalVolumeMl": "400-600", "breathDurationSeconds": 1, "maxInterruptionSeconds": 10 },
+      "sources": [
+        { "doc": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "2.2 Perform BVM ventilations", "page": 22 },
+        { "doc": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "2.2 (mask seal, volumes, interruption limit)", "page": 23 },
+        { "doc": "03-SG-BCLSAED-Guidelines-2021.pdf", "edition": "2021", "section": "BVM at the side of the casualty", "page": 21 }
+      ],
+      "reviewStatus": "source_checked",
+      "supersedes2018": true,
+      "notes": "Cautions (2022 p.24): avoid pressing soft tissue under the chin, keep hands/mask off the eyes, avoid over-forceful insufflation (gastric distension)."
+    },
+    {
+      "id": "fact.ventilation.reassessCycleHcp",
+      "statement": "HCP-only: reassess breathing and pulse after every 5 cycles of 30:2 (checking no more than 10 seconds); if absent or unsure, continue CPR.",
+      "values": { "audience": "healthcare_provider", "reassessAfterCycles": 5 },
+      "sources": [
+        { "doc": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "2.2 for trained healthcare providers", "page": 24 },
+        { "doc": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "2.2 (5-cycle reassessment)", "page": 25 }
+      ],
+      "reviewStatus": "source_checked",
+      "supersedes2018": true,
+      "notes": ""
+    },
+    {
+      "id": "fact.ventilation.rescueBreathing",
+      "statement": "HCP-only: if a pulse is present but normal breathing is absent, give rescue breathing: adult 12 breaths per minute (one every 5 seconds), child 20 per minute (every 3 seconds), infant 30 per minute (every 2 seconds); reassess after 12 breaths (adult).",
+      "values": { "audience": "healthcare_provider", "adultPerMinute": 12, "childPerMinute": 20, "infantPerMinute": 30 },
+      "sources": [
+        { "doc": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "2.2 rescue breathing", "page": 26 },
+        { "doc": "03-SG-BCLSAED-Guidelines-2021.pdf", "edition": "2021", "section": "CPR summary table, rescue breathing", "page": 23 }
+      ],
+      "reviewStatus": "source_checked",
+      "supersedes2018": true,
+      "notes": "Child/infant rates come from the 2021 summary table; the 2022 manual covers the adult rate."
+    },
+    {
+      "id": "fact.aed.purpose",
+      "statement": "An AED analyses the heart rhythm through its pads, decides whether a shock is needed, charges automatically only for shockable rhythms, delivers the shock through the pads, and guides the rescuer with voice prompts; some models also give a compression-tempo count. AEDs let lay rescuers defibrillate safely.",
+      "values": {},
+      "sources": [
+        { "doc": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "3.2 Automated External Defibrillators", "page": 32 },
+        { "doc": "SRFAC-CPRHOAED-Manual-2018-2.pdf", "edition": "2018", "section": "C-2", "page": 25 }
+      ],
+      "reviewStatus": "source_checked",
+      "supersedes2018": false,
+      "notes": ""
+    },
+    {
+      "id": "fact.aed.bringToEveryArrest",
+      "statement": "An AED should be brought to every person in cardiac arrest: when calling 995, also direct bystanders to 'Get AED'. Early CPR combined with early defibrillation gives the best survival.",
+      "values": {},
+      "sources": [
+        { "doc": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "3.1", "page": 31 },
+        { "doc": "SRFAC-CPRHOAED-Manual-2018-2.pdf", "edition": "2018", "section": "C-1", "page": 24 }
+      ],
+      "reviewStatus": "source_checked",
+      "supersedes2018": false,
+      "notes": "Lone-rescuer behaviour changed since 2018 — see fact.drsabc.getAed."
+    },
+    {
+      "id": "fact.aed.hazards",
+      "statement": "Before using an AED, make the scene safe: move the casualty off metal surfaces (they conduct current to the rescuer), keep the chest and surfaces dry (sweat and water conduct electricity and stop pads sticking - wipe quickly with a towel), and move the casualty away from flammable gases or oxygen sources before applying the AED.",
+      "values": { "hazards": ["metal surfaces", "water/sweat", "flammable gas or oxygen"] },
+      "sources": [
+        { "doc": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "3.3 Preparation for AED use", "page": 32 },
+        { "doc": "03-SG-BCLSAED-Guidelines-2021.pdf", "edition": "2021", "section": "algorithm: check for AED hazards", "page": 12 },
+        { "doc": "SRFAC-CPRHOAED-Manual-2018-2.pdf", "edition": "2018", "section": "C-3", "page": 26 }
+      ],
+      "reviewStatus": "source_checked",
+      "supersedes2018": false,
+      "notes": ""
+    },
+    {
+      "id": "fact.aed.chestPrepHairyChest",
+      "statement": "If chest hair prevents good pad contact, shave the pad sites promptly; AEDs carry a shaver blade for this.",
+      "values": {},
+      "sources": [
+        { "doc": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "3.3 chest preparation", "page": 33 },
+        { "doc": "SRFAC-CPRHOAED-Manual-2018-2.pdf", "edition": "2018", "section": "C-3", "page": 26 }
+      ],
+      "reviewStatus": "source_checked",
+      "supersedes2018": false,
+      "notes": ""
+    },
+    {
+      "id": "fact.aed.chestPrepJewellery",
+      "statement": "Move metallic necklaces and chains away from the pad sites; metal near a shock can spark and burn the chest wall. Expose the chest, cutting clothing away if necessary.",
+      "values": {},
+      "sources": [
+        { "doc": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "3.3 chest preparation", "page": 33 },
+        { "doc": "SRFAC-CPRHOAED-Manual-2018-2.pdf", "edition": "2018", "section": "C-3", "page": 26 }
+      ],
+      "reviewStatus": "source_checked",
+      "supersedes2018": false,
+      "notes": ""
+    },
+    {
+      "id": "fact.aed.chestPrepImplantedDevices",
+      "statement": "For a casualty with a pacemaker or implanted cardiac defibrillator (visible as a lump/scar, typically on the right), place the pads at least four fingers' breadth away from the device.",
+      "values": { "clearance": "four fingers' breadth" },
+      "sources": [
+        { "doc": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "3.3 chest preparation", "page": 33 },
+        { "doc": "SRFAC-CPRHOAED-Manual-2018-2.pdf", "edition": "2018", "section": "C-3", "page": 26 }
+      ],
+      "reviewStatus": "source_checked",
+      "supersedes2018": false,
+      "notes": ""
+    },
+    {
+      "id": "fact.aed.chestPrepPatches",
+      "statement": "Remove medication patches and monitoring electrodes from the chest wall; they can interfere with pad placement.",
+      "values": {},
+      "sources": [
+        { "doc": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "3.3 chest preparation", "page": 33 },
+        { "doc": "SRFAC-CPRHOAED-Manual-2018-2.pdf", "edition": "2018", "section": "C-3", "page": 26 }
+      ],
+      "reviewStatus": "source_checked",
+      "supersedes2018": false,
+      "notes": ""
+    },
+    {
+      "id": "fact.aed.chestPrepWet",
+      "statement": "Wipe a wet or sweaty chest dry quickly so the pads adhere properly; apply pads fast, with minimal interruption to compressions.",
+      "values": {},
+      "sources": [
+        { "doc": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "3.3 chest preparation", "page": 33 },
+        { "doc": "SRFAC-CPRHOAED-Manual-2018-2.pdf", "edition": "2018", "section": "C-3", "page": 27 }
+      ],
+      "reviewStatus": "source_checked",
+      "supersedes2018": false,
+      "notes": ""
+    },
+    {
+      "id": "fact.aed.padPlacementAdult",
+      "statement": "Adult pad placement: switch the AED on first (some power on when the lid opens); right pad on the right chest just below the collarbone; left pad on the left chest just below and to the left of the left nipple; follow the pictures printed on the pads; plug in the connector (some models have pre-connected pads and start analysing once pads are on).",
+      "values": { "rightPad": "below right collarbone", "leftPad": "below and lateral to left nipple" },
+      "sources": [
+        { "doc": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "3.4 Placement of AED Electrode Pads", "page": 34 },
+        { "doc": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "3.4 (connector, pre-connected pads)", "page": 35 },
+        { "doc": "SRFAC-CPRHOAED-Manual-2018-2.pdf", "edition": "2018", "section": "C-4", "page": 28 }
+      ],
+      "reviewStatus": "source_checked",
+      "supersedes2018": false,
+      "notes": "App scene entities: aed_left_pad, aed_right_pad, aed_connector, aed_power_button."
+    },
+    {
+      "id": "fact.aed.analysisNoTouch",
+      "statement": "When the AED announces it is analysing, stop compressions; nobody touches the casualty. The rescuer spreads their arms and clearly says 'Stay Clear'.",
+      "values": { "voicePromptExample": "ANALYSING HEART RHYTHM. DO NOT TOUCH THE CASUALTY." },
+      "sources": [
+        { "doc": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "3.5 Defibrillation Procedures steps 1-2", "page": 36 },
+        { "doc": "SRFAC-CPRHOAED-Manual-2018-2.pdf", "edition": "2018", "section": "C-5 steps 1-2", "page": 29 }
+      ],
+      "reviewStatus": "source_checked",
+      "supersedes2018": false,
+      "notes": "App scene entity: clear_zone."
+    },
+    {
+      "id": "fact.aed.shockDelivery",
+      "statement": "If the rhythm is shockable the AED charges itself (warning tone; nobody touches the casualty). When prompted to press the shock button, the rescuer says 'Stay Clear', visually confirms nobody is in contact, then presses the shock button firmly.",
+      "values": {},
+      "sources": [
+        { "doc": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "3.5 steps 3-4", "page": 36 },
+        { "doc": "SRFAC-CPRHOAED-Manual-2018-2.pdf", "edition": "2018", "section": "C-5 steps 3-4", "page": 29 }
+      ],
+      "reviewStatus": "source_checked",
+      "supersedes2018": false,
+      "notes": ""
+    },
+    {
+      "id": "fact.aed.resumeAfterShock",
+      "statement": "Immediately after the shock is delivered, restart chest compressions and continue until the AED next announces analysis, which it repeats every 2 minutes.",
+      "values": { "reanalysisIntervalMinutes": 2 },
+      "sources": [
+        { "doc": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "3.5 step 5", "page": 37 },
+        { "doc": "03-SG-BCLSAED-Guidelines-2021.pdf", "edition": "2021", "section": "algorithm: AED re-analyses every 2 minutes", "page": 12 },
+        { "doc": "SRFAC-CPRHOAED-Manual-2018-2.pdf", "edition": "2018", "section": "C-5 step 5", "page": 29 }
+      ],
+      "reviewStatus": "source_checked",
+      "supersedes2018": false,
+      "notes": "The explicit 2-minute interval is stated in current sources; the 2018 flowchart showed re-analysis without an interval."
+    },
+    {
+      "id": "fact.aed.noShockAdvised",
+      "statement": "If the AED says no shock is advised, resume continuous chest compressions immediately and carry on until the emergency team takes over, the AED tells the rescuer not to touch the casualty, or the casualty starts breathing normally.",
+      "values": {},
+      "sources": [
+        { "doc": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "3.5 step 6", "page": 37 },
+        { "doc": "SRFAC-CPRHOAED-Manual-2018-2.pdf", "edition": "2018", "section": "C-5 step 6", "page": 30 }
+      ],
+      "reviewStatus": "source_checked",
+      "supersedes2018": false,
+      "notes": "HCP-only addition (2022 p.37): trained providers may pulse-check at each 2-minute analysis, max 10 s; if pulse present without breathing, start rescue breathing."
+    },
+    {
+      "id": "fact.aed.remainConnected",
+      "statement": "The AED stays switched on and connected to the casualty throughout, including after ROSC and during transport.",
+      "values": {},
+      "sources": [
+        { "doc": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "3.5 step 9", "page": 37 },
+        { "doc": "SRFAC-CPRHOAED-Manual-2018-2.pdf", "edition": "2018", "section": "C-5 step 8", "page": 30 }
+      ],
+      "reviewStatus": "source_checked",
+      "supersedes2018": false,
+      "notes": ""
+    },
+    {
+      "id": "fact.aed.applyDuringCpr",
+      "statement": "Apply the AED while compressions are in progress: continue compressions, open the box, power on, prepare the chest, apply pads right then left, plug in the connector, then let the AED analyse. Minimise every interruption.",
+      "values": {},
+      "sources": [
+        { "doc": "SRFAC-CPRHOAED-Manual-2018-2.pdf", "edition": "2018", "section": "C-5 summary of AED application sequence", "page": 30 },
+        { "doc": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "3.4 highlighted rule", "page": 35 }
+      ],
+      "reviewStatus": "source_checked",
+      "supersedes2018": false,
+      "notes": ""
+    },
+    {
+      "id": "fact.aed.retrievalSafety",
+      "statement": "Public-access AEDs in Singapore are often in locked break-glass boxes. Do not break the glass with bare hands or elbows (a common cause of responder injury); use an object such as a phone, shoe or keys, and clear glass fragments from the edges before reaching for the key.",
+      "values": {},
+      "sources": [
+        { "doc": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "3.7 Retrieval of AED", "page": 41 },
+        { "doc": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "3.7 recommendations", "page": 42 }
+      ],
+      "reviewStatus": "source_checked",
+      "supersedes2018": true,
+      "notes": "New in 2022; no 2018 counterpart."
+    },
+    {
+      "id": "fact.aed.myResponder",
+      "statement": "The SCDF myResponder app alerts Community First Responders to cardiac arrests within 400 m, maps nearby AEDs, and lets responders assist with CPR or an AED before the ambulance arrives; responding is voluntary.",
+      "values": { "alertRadiusMetres": 400 },
+      "sources": [
+        { "doc": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "1.8 SCDF myResponder", "page": 13 },
+        { "doc": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "1.8 (CFR mechanics)", "page": 14 }
+      ],
+      "reviewStatus": "source_checked",
+      "supersedes2018": true,
+      "notes": "New in 2022; no 2018 counterpart."
+    },
+    {
+      "id": "fact.aed.practiceScenarios",
+      "statement": "Instructor practice scenarios use varied shock sequences across three analyses (e.g. shock/no-shock/no-shock ... no-shock/no-shock/no-shock) so learners experience both outcomes.",
+      "values": { "sequences": ["S-N-N", "N-S-N", "S-S-N", "N-N-S", "N-N-N"] },
+      "sources": [
+        { "doc": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "3.8 Sample Practical Scenarios", "page": 43 },
+        { "doc": "SRFAC-CPRHOAED-Manual-2018-2.pdf", "edition": "2018", "section": "C-9", "page": 36 }
+      ],
+      "reviewStatus": "source_checked",
+      "supersedes2018": false,
+      "notes": "Useful as the app's scenario-engine shock scripts."
+    },
+    {
+      "id": "fact.recovery.noRecoveryPositionAfterRosc",
+      "statement": "The recovery position is no longer recommended for cardiac-arrest casualties who regain spontaneous circulation, because it may hide a re-arrest before EMS arrives. It is reserved for unresponsive, spontaneously breathing casualties with non-cardiac-arrest conditions (e.g. stroke, hypoglycaemia, fainting) and is taught in First Aid, not the CPR+AED course.",
+      "values": { "recoveryPositionAfterRosc": false },
+      "sources": [
+        { "doc": "03-SG-BCLSAED-Guidelines-2021.pdf", "edition": "2021", "section": "Recovery Position is no longer recommended", "page": 28 }
+      ],
+      "reviewStatus": "source_checked",
+      "supersedes2018": true,
+      "notes": "MAJOR CHANGE. 2018 manual taught the recovery position (B-4, pp.20-21) and directed rescuers to place a casualty who resumed normal breathing into it after AED use (C-5 step 7, p.30). Render a prominent Guideline Update card. Whether the app may demonstrate the technique at all (as first-aid context) is SME item S7."
+    },
+    {
+      "id": "fact.recovery.supineMonitor",
+      "statement": "After the casualty regains breathing/pulse, keep them lying on their back (supine), monitor them continuously until help arrives, and leave the AED pads connected.",
+      "values": { "position": "supine", "monitorContinuously": true },
+      "sources": [
+        { "doc": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "3.5 step 8", "page": 37 },
+        { "doc": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "2.2 (breathing and pulse present)", "page": 26 }
+      ],
+      "reviewStatus": "source_checked",
+      "supersedes2018": true,
+      "notes": "Replaces the 2018 post-ROSC recovery-position step; pairs with fact.recovery.noRecoveryPositionAfterRosc."
+    },
+    {
+      "id": "fact.child.aetiology",
+      "statement": "Paediatric out-of-hospital cardiac arrest is usually from non-cardiac causes and most children present with non-shockable rhythms, so ventilation and oxygenation matter greatly in paediatric resuscitation; still, shockable initial rhythms occur in about 5-19% of cases, more often in school-age children and adolescents.",
+      "values": { "shockableIncidencePercent": "5-19" },
+      "sources": [
+        { "doc": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "3.9 Use of AED in Children", "page": 44 }
+      ],
+      "reviewStatus": "source_checked",
+      "supersedes2018": true,
+      "notes": "2018 (C-8, p.34) noted only that shockable rhythms are very rare under 1 year."
+    },
+    {
+      "id": "fact.child.earlyAedAdvocated",
+      "statement": "ILCOR advocates early AED use on children in cardiac arrest; children with shockable rhythms treated early survive at higher rates than those with other rhythms.",
+      "values": {},
+      "sources": [
+        { "doc": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "3.9 Recommendation for AED Use in Children", "page": 44 }
+      ],
+      "reviewStatus": "source_checked",
+      "supersedes2018": false,
+      "notes": "2018 similarly stated AEDs are safe from age 1 and rarely advise an inappropriate shock (C-8, p.34)."
+    },
+    {
+      "id": "fact.child.doseAttenuation",
+      "statement": "For children aged 1-12 years, use a paediatric dose-attenuating system (paediatric pad-cable set, or a key/switch mode) to reduce the delivered energy; if no paediatric system is available, use a standard AED.",
+      "values": { "ageYears": "1-12" },
+      "sources": [
+        { "doc": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "3.9 Recommendation for AED Use in Children", "page": 44 },
+        { "doc": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "3.9 (fallback to standard AED)", "page": 45 }
+      ],
+      "reviewStatus": "requires_sme_review",
+      "supersedes2018": true,
+      "notes": "2018 gave ages 1-8 for paediatric pads (C-8, p.34); the 2021 summary table instead keys child pads to weight under 25 kg (slide 23). SME must set the single learner-facing rule (SME item S1)."
+    },
+    {
+      "id": "fact.child.padWeightRule",
+      "statement": "The 2021 summary table keys child defibrillation pads to casualty weight: for a child under 25 kg use child pads if available; adults use adult pads.",
+      "values": { "childPadWeightLimitKg": 25 },
+      "sources": [
+        { "doc": "03-SG-BCLSAED-Guidelines-2021.pdf", "edition": "2021", "section": "CPR summary table, use of AED", "page": 23 }
+      ],
+      "reviewStatus": "requires_sme_review",
+      "supersedes2018": true,
+      "notes": "Conflicts in form (weight vs age) with the 2022 manual's 1-12 years rule. Do not surface both to learners without SME reconciliation (SME item S1)."
+    },
+    {
+      "id": "fact.child.infantDefibrillation",
+      "statement": "For infants under 1 year, a manual defibrillator is preferred; if unavailable, use child pads. The supplied sources do not clearly authorise adult pads on an infant.",
+      "values": { "ageYears": "<1", "preferred": "manual defibrillator", "fallback": "child pads" },
+      "sources": [
+        { "doc": "03-SG-BCLSAED-Guidelines-2021.pdf", "edition": "2021", "section": "CPR summary table, use of AED (infant column)", "page": 23 },
+        { "doc": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "3.9 Use of AED for Child/Infant", "page": 45 }
+      ],
+      "reviewStatus": "requires_sme_review",
+      "supersedes2018": true,
+      "notes": "2018 (C-8, p.34): under 1 year shockable rhythms are very low but risk/benefit may favour AED use, preferably with paediatric pads. 2022 groups child/infant and permits adult pads when no paediatric option, without an explicit infant statement. App must not instruct adult pads on infants pending SME ruling (SME item S2)."
+    },
+    {
+      "id": "fact.child.adultPadsOnChild",
+      "statement": "If no AED with paediatric pads or mode is available for a child, an AED with adult pads may be used; the risk/benefit balance favours attempting defibrillation. Pads must never touch or overlap: with adult pads use anterior-posterior placement (front pad on the central sternum, back pad on the upper back between the shoulder blades).",
+      "values": { "placementWithAdultPads": "anterior-posterior" },
+      "sources": [
+        { "doc": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "3.9 Use of AED for Child/Infant", "page": 45 },
+        { "doc": "SRFAC-CPRHOAED-Manual-2018-2.pdf", "edition": "2018", "section": "C-8", "page": 34 }
+      ],
+      "reviewStatus": "source_checked",
+      "supersedes2018": true,
+      "notes": "2018 (p.35) framed anterior-posterior as the fallback 'if the pads are touching'; 2022 ties it explicitly to the adult-pads-on-child case."
+    },
+    {
+      "id": "fact.child.padSeparation",
+      "statement": "For anterior-anterior paediatric pad placement, the pads must not touch or overlap and must be at least 2 cm apart; follow the placement pictures.",
+      "values": { "minSeparationCm": 2 },
+      "sources": [
+        { "doc": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "3.9 Placement of Defibrillation Pads for Children/Infant", "page": 45 }
+      ],
+      "reviewStatus": "source_checked",
+      "supersedes2018": true,
+      "notes": "2018 (C-8, p.35) said 'at least 1-2 cm apart'. Teach the current at-least-2-cm value; show the old value only on the update card."
+    },
+    {
+      "id": "fact.child.compressionValues",
+      "statement": "Awareness-level paediatric compression values (2021 summary): child 1-12 years depth 4-5 cm, infant under 1 year depth 3-4 cm, both at 100-120/min with full recoil; child landmark lower half of sternum; infant landmark lower half of sternum about one finger's breadth below the line between the nipples.",
+      "values": { "childDepthCm": "4-5", "infantDepthCm": "3-4", "ratePerMinute": "100-120" },
+      "sources": [
+        { "doc": "03-SG-BCLSAED-Guidelines-2021.pdf", "edition": "2021", "section": "CPR summary table, compression depth/landmarks", "page": 23 }
+      ],
+      "reviewStatus": "requires_sme_review",
+      "supersedes2018": true,
+      "notes": "Not covered by either provider manual (both adult-focused). Only source is the 2021 townhall summary table, so teach as awareness content and confirm module depth with SME (item S4)."
+    },
+    {
+      "id": "fact.child.infantCompressionMethod",
+      "statement": "Awareness-level infant technique (2021 summary): two-thumbs-encircling-hands method, or the ring and middle fingers for lay rescuers; child uses the heel of one hand with the other on top.",
+      "values": {},
+      "sources": [
+        { "doc": "03-SG-BCLSAED-Guidelines-2021.pdf", "edition": "2021", "section": "CPR summary table, compression method", "page": 23 }
+      ],
+      "reviewStatus": "requires_sme_review",
+      "supersedes2018": true,
+      "notes": "Single-source (summary slide); awareness level only pending SME (item S4)."
+    },
+    {
+      "id": "fact.child.infantResponseCheck",
+      "statement": "Awareness-level: to check an infant's responsiveness, tap the shoulders and the feet.",
+      "values": {},
+      "sources": [
+        { "doc": "03-SG-BCLSAED-Guidelines-2021.pdf", "edition": "2021", "section": "CPR summary table row R", "page": 23 }
+      ],
+      "reviewStatus": "requires_sme_review",
+      "supersedes2018": true,
+      "notes": "Single-source (summary slide)."
+    },
+    {
+      "id": "fact.child.hcpRatios",
+      "statement": "HCP-only awareness: with a bag-valve-mask, healthcare providers use 30:2 for adults (one or two rescuers); for child/infant, 30:2 with one rescuer and 15:2 with two or more rescuers. HCPs also treat a child/infant pulse below 60/min as an indication to start compressions.",
+      "values": { "audience": "healthcare_provider", "adultRatio": "30:2", "paediatricTwoRescuerRatio": "15:2", "paediatricBradycardiaThresholdPerMinute": 60 },
+      "sources": [
+        { "doc": "03-SG-BCLSAED-Guidelines-2021.pdf", "edition": "2021", "section": "CPR summary table, ratios and pulse check", "page": 23 }
+      ],
+      "reviewStatus": "requires_sme_review",
+      "supersedes2018": true,
+      "notes": "Single-source (summary slide); the pulse-below-60 rule is SME item S3."
+    },
+    {
+      "id": "fact.postincident.handoverSummary",
+      "statement": "When paramedics take over, hand over: best-estimate time of collapse; whether an AED was used; how many shocks were delivered; any known medical history and medications; and any written record of events.",
+      "values": { "handoverItems": ["time of collapse", "AED used", "number of shocks", "medical history and medications", "written event record"] },
+      "sources": [
+        { "doc": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "3.6 Hand-over to emergency services", "page": 39 },
+        { "doc": "SRFAC-CPRHOAED-Manual-2018-2.pdf", "edition": "2018", "section": "C-7", "page": 32 }
+      ],
+      "reviewStatus": "source_checked",
+      "supersedes2018": false,
+      "notes": ""
+    },
+    {
+      "id": "fact.postincident.assistUntilLoaded",
+      "statement": "Assist the paramedics until the casualty is loaded into the ambulance; the AED pads stay on the casualty en route to hospital.",
+      "values": {},
+      "sources": [
+        { "doc": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "3.6", "page": 39 },
+        { "doc": "SRFAC-CPRHOAED-Manual-2018-2.pdf", "edition": "2018", "section": "C-7", "page": 32 }
+      ],
+      "reviewStatus": "source_checked",
+      "supersedes2018": false,
+      "notes": ""
+    },
+    {
+      "id": "fact.postincident.aedOwnerDuties",
+      "statement": "After use, inform the facility or safety manager. The AED owner (or vendor) returns the AED, replaces consumables (pads, shaver kit, towel, gloves), checks the battery, repairs any break-glass box, and can print the resuscitation record from the AED's memory chip for audit. Battery indicators are checked annually or as the vendor advises; HDB public-access AEDs travel with the casualty and are restocked and returned via SCDF and the vendor.",
+      "values": {},
+      "sources": [
+        { "doc": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "3.6 duties of the person in charge", "page": 39 },
+        { "doc": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "3.6 (battery cadence, HDB AEDs)", "page": 40 }
+      ],
+      "reviewStatus": "source_checked",
+      "supersedes2018": true,
+      "notes": "2018 (C-7, p.33) said the battery indicator should be checked daily. Operational change; teach the 2022 cadence (SME item S10 confirms no site-specific override)."
+    },
+    {
+      "id": "fact.specialsettings.environments",
+      "statement": "Rescuers should train for the environments they may face: on a trolley bed use a step stool so the elbows stay straight; with two or more rescuers split compressions, ventilations, calling 995 and AED tasks; in narrow spaces compressions may be delivered from over the casualty's head; on an aircraft, kneel in the leg space beside the seat unless the casualty can be moved quickly to the galley.",
+      "values": {},
+      "sources": [
+        { "doc": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "2.3 CPR in Special Circumstances", "page": 27 },
+        { "doc": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "2.3 (reference link caveat)", "page": 28 }
+      ],
+      "reviewStatus": "source_checked",
+      "supersedes2018": true,
+      "notes": "New in 2022; the chair-to-floor transfer link in the manual is explicitly non-definitive reference material."
+    }
+  ]
+}
