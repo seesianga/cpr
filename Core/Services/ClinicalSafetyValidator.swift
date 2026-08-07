@@ -246,7 +246,22 @@ struct CourseStructureValidator: Sendable {
                     try validateReferences(assessment.sourceReferences, course: course)
                     for question in assessment.questions {
                         try requireUnique(question.id, in: &identifiers)
-                        guard question.choices.indices.contains(question.correctChoiceIndex) else {
+                        let choiceIDs = Set(question.choices.map(\.id))
+                        let correctIDs = question.correctChoiceIDs
+                        let validCardinality: Bool
+                        switch question.type {
+                        case .singleChoice, .hotspotLite:
+                            validCardinality = correctIDs.count == 1
+                        case .multipleChoice:
+                            validCardinality = !correctIDs.isEmpty
+                        case .ordering:
+                            validCardinality = correctIDs.count == question.choices.count
+                        }
+                        guard Set(correctIDs).count == correctIDs.count,
+                              Set(question.choices.map(\.id)).count == question.choices.count,
+                              correctIDs.allSatisfy(choiceIDs.contains),
+                              validCardinality
+                        else {
                             throw CourseValidationError.invalidCorrectChoice(
                                 assessmentID: assessment.id,
                                 questionID: question.id

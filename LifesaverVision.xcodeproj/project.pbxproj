@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		007E19463129031B7CB4984C /* badge_rules.json in Resources */ = {isa = PBXBuildFile; fileRef = 784F8917C9890ED504C4BDFD /* badge_rules.json */; };
 		04A6DF8D691B32A94D7C445A /* CourseEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4096E33EEA85FA3A5E8C96B /* CourseEngine.swift */; };
+		05ECEC92388D8CA91BEABAD1 /* TheoryAssessmentModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BBFF70D43BAFE553153F9DD /* TheoryAssessmentModels.swift */; };
 		0A73E9810163DB68D273F78F /* SwiftDataModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B80330B316C610B9D0D074C /* SwiftDataModels.swift */; };
 		0BF6C30E7AF11CCDF9ABAAB1 /* CPRPracticeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DDBD4AFC87AA6D056BBF533 /* CPRPracticeView.swift */; };
 		14B8188F6AD841751980CE1B /* LifesaverVisionUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 088100D062186324E946AF5F /* LifesaverVisionUITests.swift */; };
@@ -24,6 +25,7 @@
 		4D0C4B048551D5D58293FF62 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 2C165DDD143CB188C78CE1C7 /* PrivacyInfo.xcprivacy */; };
 		5E2AC697B07D0A98C90CB0C9 /* SpatialRealityKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB1547039F983C313AA2675E /* SpatialRealityKit.swift */; };
 		66727961FCADD16E8DCD0FCE /* AdministrationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4288F4CE5F165813FEE282B1 /* AdministrationView.swift */; };
+		67651DBFFA041440042D1829 /* QuizSessionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60B2074500AA47F88C3F143E /* QuizSessionView.swift */; };
 		745ECE701565EDEBD7A4F820 /* RealityKitContent in Frameworks */ = {isa = PBXBuildFile; productRef = 176AB6C8009589981ABC8AA6 /* RealityKitContent */; };
 		74C6876CEE0B238317F4286C /* GamificationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95C6FF488A48BEF60D4365AB /* GamificationView.swift */; };
 		7D08CD511D4C00D9905DFDBD /* ClinicalSafetyValidator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55A97ECE5205E7A39EC1D407 /* ClinicalSafetyValidator.swift */; };
@@ -50,6 +52,7 @@
 		D0BB61CFD188CA0014CA1EB8 /* AssessmentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7EB61FE610FCF3F623AF4519 /* AssessmentView.swift */; };
 		D585502CA819241FB38649A3 /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C7C5D4BF061AE518210DAA /* DashboardView.swift */; };
 		DF85D43B3D24671C10922DF4 /* LifesaverVisionApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 353CA1EBE9AF3912F64E7C52 /* LifesaverVisionApp.swift */; };
+		E80AC71772F31DD2162EB8AF /* TheoryAssessmentEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6322623C46BC39DEF7B9137A /* TheoryAssessmentEngine.swift */; };
 		EF516A2309B8622C7201D308 /* Interactions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4232A9CDF551C554A082E3FB /* Interactions.swift */; };
 		F0F06BFCECB26ECF6ED5053E /* LearningLabRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80F49591654C43E80DB7F320 /* LearningLabRootView.swift */; };
 		F26B71208E2C08B006762FB3 /* InMemoryRepositories.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71D5BDBABCC18ADDCE23D262 /* InMemoryRepositories.swift */; };
@@ -87,6 +90,7 @@
 		33DD952BF355150BDED942C8 /* .gitkeep */ = {isa = PBXFileReference; path = .gitkeep; sourceTree = "<group>"; };
 		353CA1EBE9AF3912F64E7C52 /* LifesaverVisionApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LifesaverVisionApp.swift; sourceTree = "<group>"; };
 		379E0D7AB5D65014DC6EE94E /* course_v1.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = course_v1.json; sourceTree = "<group>"; };
+		3BBFF70D43BAFE553153F9DD /* TheoryAssessmentModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TheoryAssessmentModels.swift; sourceTree = "<group>"; };
 		3D2C956BBD135F60A883C223 /* SimulationSpaceRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimulationSpaceRootView.swift; sourceTree = "<group>"; };
 		412F10989BC2B1E1186ADE8C /* ClinicalContentModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClinicalContentModels.swift; sourceTree = "<group>"; };
 		4232A9CDF551C554A082E3FB /* Interactions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Interactions.swift; sourceTree = "<group>"; };
@@ -98,7 +102,9 @@
 		55A97ECE5205E7A39EC1D407 /* ClinicalSafetyValidator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClinicalSafetyValidator.swift; sourceTree = "<group>"; };
 		55C2483F4B9D5E2A0546A72F /* KeychainStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainStore.swift; sourceTree = "<group>"; };
 		5DDBD4AFC87AA6D056BBF533 /* CPRPracticeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CPRPracticeView.swift; sourceTree = "<group>"; };
+		60B2074500AA47F88C3F143E /* QuizSessionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuizSessionView.swift; sourceTree = "<group>"; };
 		624B50D487DE0A63705BF569 /* CLINICAL_FACTS_EXTRACT.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = CLINICAL_FACTS_EXTRACT.json; sourceTree = "<group>"; };
+		6322623C46BC39DEF7B9137A /* TheoryAssessmentEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TheoryAssessmentEngine.swift; sourceTree = "<group>"; };
 		67E2A5ADFE21D89BD1298071 /* .gitkeep */ = {isa = PBXFileReference; path = .gitkeep; sourceTree = "<group>"; };
 		6F67C420CD18EFAD3A3FFF70 /* PersistenceBootstrap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceBootstrap.swift; sourceTree = "<group>"; };
 		71D5BDBABCC18ADDCE23D262 /* InMemoryRepositories.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InMemoryRepositories.swift; sourceTree = "<group>"; };
@@ -283,6 +289,8 @@
 			isa = PBXGroup;
 			children = (
 				7EB61FE610FCF3F623AF4519 /* AssessmentView.swift */,
+				60B2074500AA47F88C3F143E /* QuizSessionView.swift */,
+				6322623C46BC39DEF7B9137A /* TheoryAssessmentEngine.swift */,
 			);
 			path = Assessment;
 			sourceTree = "<group>";
@@ -376,6 +384,7 @@
 				4E25577CD11456085CA5FC06 /* CourseModels.swift */,
 				09E3DE65241A278B4935FB43 /* GamificationModels.swift */,
 				99909D20EFD397C60F85B357 /* ScoringModels.swift */,
+				3BBFF70D43BAFE553153F9DD /* TheoryAssessmentModels.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -658,6 +667,7 @@
 				A1F1526A7F1EDBC8344A04B6 /* LocalAuthenticationService.swift in Sources */,
 				C95E563C97CB50F0AAB93400 /* OfflineFirstSyncService.swift in Sources */,
 				2CD8857302B9E609DCFBB356 /* PersistenceBootstrap.swift in Sources */,
+				67651DBFFA041440042D1829 /* QuizSessionView.swift in Sources */,
 				8D68767498262C9A01AA74A6 /* ScenariosView.swift in Sources */,
 				2689B063C77FD3438F4A1995 /* ScenePlacement.swift in Sources */,
 				91AFB7CC00E0D35B4427EB44 /* ScoringEngine.swift in Sources */,
@@ -669,6 +679,8 @@
 				5E2AC697B07D0A98C90CB0C9 /* SpatialRealityKit.swift in Sources */,
 				0A73E9810163DB68D273F78F /* SwiftDataModels.swift in Sources */,
 				FEDEEAA8E650DC042E77168B /* SwiftDataRepositories.swift in Sources */,
+				E80AC71772F31DD2162EB8AF /* TheoryAssessmentEngine.swift in Sources */,
+				05ECEC92388D8CA91BEABAD1 /* TheoryAssessmentModels.swift in Sources */,
 				CDE5B4858B2FE516B5BC1E3E /* TheoryLearningView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

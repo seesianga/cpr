@@ -94,14 +94,86 @@ struct Assessment: Codable, Identifiable, Sendable, Equatable {
     let sourceReferences: [SourceReference]
 }
 
-/// A multiple-choice assessment prompt and its remediation explanation.
+enum QuestionType: String, Codable, Sendable, CaseIterable {
+    case singleChoice
+    case multipleChoice
+    case ordering
+    case hotspotLite
+}
+
+struct QuestionChoice: Codable, Identifiable, Sendable, Equatable {
+    let id: String
+    let text: String
+}
+
+/// A traceable assessment prompt supporting accessible, non-timed interactions.
 struct Question: Codable, Identifiable, Sendable, Equatable {
     let id: String
+    let type: QuestionType
     let prompt: String
-    let choices: [String]
-    let correctChoiceIndex: Int
+    let choices: [QuestionChoice]
+    let correctChoiceIDs: [String]
     let explanation: String
     let sourceReferences: [SourceReference]
+
+    init(
+        id: String,
+        type: QuestionType = .singleChoice,
+        prompt: String,
+        choices: [QuestionChoice],
+        correctChoiceIDs: [String],
+        explanation: String,
+        sourceReferences: [SourceReference]
+    ) {
+        self.id = id
+        self.type = type
+        self.prompt = prompt
+        self.choices = choices
+        self.correctChoiceIDs = correctChoiceIDs
+        self.explanation = explanation
+        self.sourceReferences = sourceReferences
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case id, type, prompt, choices, correctChoiceIDs, correctChoiceIndex
+        case explanation, sourceReferences
+    }
+
+    init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decode(String.self, forKey: .id)
+        type = try container.decodeIfPresent(QuestionType.self, forKey: .type) ?? .singleChoice
+        prompt = try container.decode(String.self, forKey: .prompt)
+        if let typedChoices = try? container.decode([QuestionChoice].self, forKey: .choices) {
+            choices = typedChoices
+        } else {
+            let legacyChoices = try container.decode([String].self, forKey: .choices)
+            choices = legacyChoices.enumerated().map {
+                QuestionChoice(id: "choice-\($0.offset)", text: $0.element)
+            }
+        }
+        if let identifiers = try container.decodeIfPresent([String].self, forKey: .correctChoiceIDs) {
+            correctChoiceIDs = identifiers
+        } else {
+            let legacyIndex = try container.decode(Int.self, forKey: .correctChoiceIndex)
+            correctChoiceIDs = choices.indices.contains(legacyIndex)
+                ? [choices[legacyIndex].id]
+                : []
+        }
+        explanation = try container.decode(String.self, forKey: .explanation)
+        sourceReferences = try container.decode([SourceReference].self, forKey: .sourceReferences)
+    }
+
+    func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(id, forKey: .id)
+        try container.encode(type, forKey: .type)
+        try container.encode(prompt, forKey: .prompt)
+        try container.encode(choices, forKey: .choices)
+        try container.encode(correctChoiceIDs, forKey: .correctChoiceIDs)
+        try container.encode(explanation, forKey: .explanation)
+        try container.encode(sourceReferences, forKey: .sourceReferences)
+    }
 }
 
 /// A required or recommended action evaluated within a training scenario.
