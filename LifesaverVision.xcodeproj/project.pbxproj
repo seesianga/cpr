@@ -70,6 +70,7 @@
 		D585502CA819241FB38649A3 /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C7C5D4BF061AE518210DAA /* DashboardView.swift */; };
 		DF85D43B3D24671C10922DF4 /* LifesaverVisionApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 353CA1EBE9AF3912F64E7C52 /* LifesaverVisionApp.swift */; };
 		E190871532CA1C2BF590E1D4 /* CohortReportExportService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E06E4AB1904AE4C0999D10A3 /* CohortReportExportService.swift */; };
+		E78EF4E7D132349712AB38A3 /* RealityKitAssetTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB730BB4FFA4A509C7852563 /* RealityKitAssetTests.swift */; };
 		E79E1934814928D371DC6631 /* .gitkeep in Resources */ = {isa = PBXBuildFile; fileRef = 508127EED3172A0D03AD2283 /* .gitkeep */; };
 		E80AC71772F31DD2162EB8AF /* TheoryAssessmentEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6322623C46BC39DEF7B9137A /* TheoryAssessmentEngine.swift */; };
 		EF516A2309B8622C7201D308 /* Interactions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4232A9CDF551C554A082E3FB /* Interactions.swift */; };
@@ -180,6 +181,7 @@
 		F3528BDD94D2143F8CB99F69 /* AppleCredentialStateProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleCredentialStateProvider.swift; sourceTree = "<group>"; };
 		F4096E33EEA85FA3A5E8C96B /* CourseEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CourseEngine.swift; sourceTree = "<group>"; };
 		FB1547039F983C313AA2675E /* SpatialRealityKit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpatialRealityKit.swift; sourceTree = "<group>"; };
+		FB730BB4FFA4A509C7852563 /* RealityKitAssetTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealityKitAssetTests.swift; sourceTree = "<group>"; };
 		FBF3643E671D034583F581EB /* AEDPracticeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AEDPracticeView.swift; sourceTree = "<group>"; };
 		FC7A5D70E5C28C746F8B6EC8 /* CourseCatalogueView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CourseCatalogueView.swift; sourceTree = "<group>"; };
 		FDD50126F33D788CF6D448ED /* RealityKitContent */ = {isa = PBXFileReference; lastKnownFileType = folder; name = RealityKitContent; path = Packages/RealityKitContent; sourceTree = SOURCE_ROOT; };
@@ -376,6 +378,7 @@
 				485EC33251720F743FA78A97 /* LifesaverVisionTests.swift */,
 				98267160BB6426E0ED88E1E7 /* Phase3BSchemaTests.swift */,
 				252A06BBC531386D696A0CCB /* PrivacyOperationsTests.swift */,
+				FB730BB4FFA4A509C7852563 /* RealityKitAssetTests.swift */,
 				5376DB64FAF7B8041BB452BE /* ScoringAndGamificationTests.swift */,
 				0CC4C141810AE13647635AE6 /* SwiftDataRepositoryTests.swift */,
 				1CFD2BFF9AF0F7F90B7911D9 /* test_traceability_generator.py */,
@@ -636,6 +639,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 708A4B7624BD09792638678F /* Build configuration list for PBXNativeTarget "LifesaverVision" */;
 			buildPhases = (
+				5BD867CAA9623C85EDD0A8A5 /* Validate imported RealityKit delivery assets */,
 				2EC78C292EEE6FD327F1DC37 /* Sources */,
 				55399063C358FEAFC17AB5B0 /* Resources */,
 				A3EEB5FE1E182214179733C8 /* Frameworks */,
@@ -715,6 +719,28 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		5BD867CAA9623C85EDD0A8A5 /* Validate imported RealityKit delivery assets */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Validate imported RealityKit delivery assets";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "set -euo pipefail\nPYTHONDONTWRITEBYTECODE=1 /usr/bin/python3 \"$SRCROOT/Scripts/validate_assets.py\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		2EC78C292EEE6FD327F1DC37 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -788,6 +814,7 @@
 				F47929C9FA6E10B78A66F6F3 /* LifesaverVisionTests.swift in Sources */,
 				505DF9290C93533424D131AB /* Phase3BSchemaTests.swift in Sources */,
 				329A16FB9956C1AB206E861E /* PrivacyOperationsTests.swift in Sources */,
+				E78EF4E7D132349712AB38A3 /* RealityKitAssetTests.swift in Sources */,
 				D02C663BCD1B767798DD645C /* ScoringAndGamificationTests.swift in Sources */,
 				44250EB882FD971F6F235D37 /* SwiftDataRepositoryTests.swift in Sources */,
 				FDC63AC85FCA1A728E44F5FA /* TheoryAssessmentEngineTests.swift in Sources */,

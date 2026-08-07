@@ -27,6 +27,12 @@ targets:
     type: application
     platform: visionOS
     deploymentTarget: "26.0"
+    preBuildScripts:
+      - name: Validate imported RealityKit delivery assets
+        script: |
+          set -euo pipefail
+          PYTHONDONTWRITEBYTECODE=1 /usr/bin/python3 "$SRCROOT/Scripts/validate_assets.py"
+        basedOnDependencyAnalysis: false
     sources:
       - path: App
         excludes:
