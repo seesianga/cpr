@@ -13,18 +13,40 @@ struct ClinicalSafetyValidator: Sendable {
         var allIssues: [ClinicalSafetyIssue] = []
 
         for assessment in course.modules.flatMap(\.lessons).flatMap(\.assessments) {
-            let references = assessment.sourceReferences + assessment.questions.flatMap(\.sourceReferences)
-            let issues = issues(
-                for: references,
-                scoredItemID: assessment.id,
-                contentVersion: course.version.contentVersion,
-                facts: facts
-            )
-            if issues.isEmpty {
+            guard assessment.isScored else {
+                // Awareness-only questions remain available to learning views but can never
+                // enter the scored-content catalogue.
+                excludedAssessmentIDs.append(assessment.id)
+                continue
+            }
+
+            var assessmentIssues: [ClinicalSafetyIssue] = []
+            if assessment.questions.isEmpty || !assessment.sourceReferences.isEmpty {
+                assessmentIssues.append(
+                    contentsOf: issues(
+                        for: assessment.sourceReferences,
+                        scoredItemID: assessment.id,
+                        contentVersion: course.version.contentVersion,
+                        facts: facts
+                    )
+                )
+            }
+            for question in assessment.questions {
+                assessmentIssues.append(
+                    contentsOf: issues(
+                        for: question.sourceReferences,
+                        scoredItemID: "\(assessment.id)/\(question.id)",
+                        contentVersion: course.version.contentVersion,
+                        facts: facts
+                    )
+                )
+            }
+
+            if assessmentIssues.isEmpty {
                 eligibleAssessmentIDs.append(assessment.id)
             } else {
                 excludedAssessmentIDs.append(assessment.id)
-                allIssues.append(contentsOf: issues)
+                allIssues.append(contentsOf: assessmentIssues)
             }
         }
 

@@ -1,0 +1,1194 @@
+{
+  "schemaVersion": 1,
+  "courseID": "lifesaver-vision-cpr-aed-spatial-academy",
+  "contentVersion": "1.0.0",
+  "locale": "en-SG",
+  "moduleQuestionSets": [
+    {
+      "moduleID": "M0",
+      "assessmentID": "assessment-m0-diagnostic-v1",
+      "title": "Pre-course knowledge check",
+      "isScored": false,
+      "passingScore": 0.0,
+      "questions": [
+        {
+          "id": "q-m0-01",
+          "type": "singleChoice",
+          "prompt": "Which observation best matches cardiac arrest?",
+          "choices": [
+            { "id": "q-m0-01-a", "text": "The casualty is unconscious and is not breathing normally" },
+            { "id": "q-m0-01-b", "text": "The casualty is awake and reports ankle pain" },
+            { "id": "q-m0-01-c", "text": "The casualty is asleep and breathing normally" },
+            { "id": "q-m0-01-d", "text": "The casualty is conscious and coughing" }
+          ],
+          "correctChoiceIDs": ["q-m0-01-a"],
+          "explanation": "Cardiac arrest causes loss of consciousness and absence of normal breathing because the heart has stopped pumping blood effectively.",
+          "sourceReferences": [
+            { "id": "src-q-m0-01", "document": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "1.5 What Happens in a Cardiac Arrest", "page": "8", "reviewStatus": "source_checked", "reviewer": null, "lastClinicalReviewDate": null, "contentVersion": "1.0.0", "clinicalFactID": "fact.recognition.cardiacArrestDefinition" }
+          ]
+        },
+        {
+          "id": "q-m0-02",
+          "type": "singleChoice",
+          "prompt": "A casualty is unresponsive and gasping. How should the gasping be interpreted?",
+          "choices": [
+            { "id": "q-m0-02-a", "text": "As abnormal breathing that can indicate cardiac arrest" },
+            { "id": "q-m0-02-b", "text": "As proof that normal breathing has returned" },
+            { "id": "q-m0-02-c", "text": "As a reason to delay assessment for one minute" },
+            { "id": "q-m0-02-d", "text": "As normal breathing during sleep" }
+          ],
+          "correctChoiceIDs": ["q-m0-02-a"],
+          "explanation": "Gasping is not normal breathing. An unresponsive casualty who is gasping should be treated as being in cardiac arrest.",
+          "sourceReferences": [
+            { "id": "src-q-m0-02", "document": "03-SG-BCLSAED-Guidelines-2021.pdf", "edition": "2021", "section": "CPR summary table / key emphases", "page": "23", "reviewStatus": "source_checked", "reviewer": null, "lastClinicalReviewDate": null, "contentVersion": "1.0.0", "clinicalFactID": "fact.recognition.gaspingAbnormal" }
+          ]
+        },
+        {
+          "id": "q-m0-03",
+          "type": "singleChoice",
+          "prompt": "When alone with an unresponsive casualty, how should a rescuer use a handphone to call 995?",
+          "choices": [
+            { "id": "q-m0-03-a", "text": "Use speaker mode, stay on the line and follow the dispatcher" },
+            { "id": "q-m0-03-b", "text": "Leave the casualty and make the call from another room" },
+            { "id": "q-m0-03-c", "text": "End the call as soon as the number connects" },
+            { "id": "q-m0-03-d", "text": "Wait for an AED before calling" }
+          ],
+          "correctChoiceIDs": ["q-m0-03-a"],
+          "explanation": "A lone rescuer calls 995 in speaker mode, stays on the line and follows the SCDF dispatcher's guidance.",
+          "sourceReferences": [
+            { "id": "src-q-m0-03", "document": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "2.2 (S) Shout to get help", "page": "18", "reviewStatus": "source_checked", "reviewer": null, "lastClinicalReviewDate": null, "contentVersion": "1.0.0", "clinicalFactID": "fact.drsabc.call995" }
+          ]
+        },
+        {
+          "id": "q-m0-04",
+          "type": "singleChoice",
+          "prompt": "What is the supported chest-compression rate?",
+          "choices": [
+            { "id": "q-m0-04-a", "text": "100 to 120 compressions per minute" },
+            { "id": "q-m0-04-b", "text": "40 to 60 compressions per minute" },
+            { "id": "q-m0-04-c", "text": "70 to 80 compressions per minute" },
+            { "id": "q-m0-04-d", "text": "More than 150 compressions per minute" }
+          ],
+          "correctChoiceIDs": ["q-m0-04-a"],
+          "explanation": "The supported rate is 100 to 120 compressions per minute.",
+          "sourceReferences": [
+            { "id": "src-q-m0-04", "document": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "2.2 (C) Chest Compressions", "page": "20", "reviewStatus": "source_checked", "reviewer": null, "lastClinicalReviewDate": null, "contentVersion": "1.0.0", "clinicalFactID": "fact.compression.rate" }
+          ]
+        },
+        {
+          "id": "q-m0-05",
+          "type": "singleChoice",
+          "prompt": "What must everyone do while an AED is analysing the casualty's heart rhythm?",
+          "choices": [
+            { "id": "q-m0-05-a", "text": "Stop touching the casualty and stay clear" },
+            { "id": "q-m0-05-b", "text": "Hold both pads firmly against the chest" },
+            { "id": "q-m0-05-c", "text": "Continue moving the casualty" },
+            { "id": "q-m0-05-d", "text": "Disconnect the pads" }
+          ],
+          "correctChoiceIDs": ["q-m0-05-a"],
+          "explanation": "Compressions stop for analysis, and nobody touches the casualty while the AED checks the rhythm.",
+          "sourceReferences": [
+            { "id": "src-q-m0-05", "document": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "3.5 Defibrillation Procedures steps 1-2", "page": "36", "reviewStatus": "source_checked", "reviewer": null, "lastClinicalReviewDate": null, "contentVersion": "1.0.0", "clinicalFactID": "fact.aed.analysisNoTouch" }
+          ]
+        },
+        {
+          "id": "q-m0-06",
+          "type": "multipleChoice",
+          "prompt": "Which details belong in the handover when paramedics take over? Select all that apply.",
+          "choices": [
+            { "id": "q-m0-06-a", "text": "Best estimate of the time of collapse" },
+            { "id": "q-m0-06-b", "text": "Whether an AED was used" },
+            { "id": "q-m0-06-c", "text": "Number of shocks delivered" },
+            { "id": "q-m0-06-d", "text": "Known medical history and medications" },
+            { "id": "q-m0-06-e", "text": "Any written event record" },
+            { "id": "q-m0-06-f", "text": "An invented exact collapse time when no estimate is available" }
+          ],
+          "correctChoiceIDs": ["q-m0-06-a", "q-m0-06-b", "q-m0-06-c", "q-m0-06-d", "q-m0-06-e"],
+          "explanation": "Handover includes the collapse time, AED use, shock count, known history or medicines, and any written event record.",
+          "sourceReferences": [
+            { "id": "src-q-m0-06", "document": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "3.6 Hand-over to emergency services", "page": "39", "reviewStatus": "source_checked", "reviewer": null, "lastClinicalReviewDate": null, "contentVersion": "1.0.0", "clinicalFactID": "fact.postincident.handoverSummary" }
+          ]
+        }
+      ]
+    },
+    {
+      "moduleID": "M1",
+      "assessmentID": "assessment-m1-theory-v1",
+      "title": "Cardiac arrest and the body",
+      "isScored": true,
+      "passingScore": 0.8,
+      "questions": [
+        {
+          "id": "q-m1-01",
+          "type": "singleChoice",
+          "prompt": "What happens to blood flow during cardiac arrest?",
+          "choices": [
+            { "id": "q-m1-01-a", "text": "The heart stops pumping blood effectively" },
+            { "id": "q-m1-01-b", "text": "The heart pumps faster while circulation remains normal" },
+            { "id": "q-m1-01-c", "text": "Only blood flow to the legs stops" },
+            { "id": "q-m1-01-d", "text": "Blood flow is unaffected" }
+          ],
+          "correctChoiceIDs": ["q-m1-01-a"],
+          "explanation": "In cardiac arrest the heart stops pumping blood, leading to unconsciousness and abnormal or absent breathing.",
+          "sourceReferences": [
+            { "id": "src-q-m1-01", "document": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "1.5 What Happens in a Cardiac Arrest", "page": "8", "reviewStatus": "source_checked", "reviewer": null, "lastClinicalReviewDate": null, "contentVersion": "1.0.0", "clinicalFactID": "fact.recognition.cardiacArrestDefinition" }
+          ]
+        },
+        {
+          "id": "q-m1-02",
+          "type": "singleChoice",
+          "prompt": "Which statement correctly distinguishes a heart attack from cardiac arrest?",
+          "choices": [
+            { "id": "q-m1-02-a", "text": "A heart attack involves a blocked coronary artery; cardiac arrest means the heart has stopped pumping blood" },
+            { "id": "q-m1-02-b", "text": "They are two names for exactly the same event" },
+            { "id": "q-m1-02-c", "text": "A heart attack only affects breathing, while cardiac arrest only affects digestion" },
+            { "id": "q-m1-02-d", "text": "Cardiac arrest always leaves the casualty conscious" }
+          ],
+          "correctChoiceIDs": ["q-m1-02-a"],
+          "explanation": "A heart attack results from coronary-artery blockage and can deteriorate into cardiac arrest, in which the heart stops pumping blood.",
+          "sourceReferences": [
+            { "id": "src-q-m1-02", "document": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "1.4 What Happens in a Heart Attack", "page": "7", "reviewStatus": "source_checked", "reviewer": null, "lastClinicalReviewDate": null, "contentVersion": "1.0.0", "clinicalFactID": "fact.recognition.heartAttackVsArrest" },
+            { "id": "src-q-m1-02-b", "document": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "1.5 What Happens in a Cardiac Arrest", "page": "8", "reviewStatus": "source_checked", "reviewer": null, "lastClinicalReviewDate": null, "contentVersion": "1.0.0", "clinicalFactID": "fact.recognition.cardiacArrestDefinition" }
+          ]
+        },
+        {
+          "id": "q-m1-03",
+          "type": "multipleChoice",
+          "prompt": "Which can be warning signs of a heart attack? Select all that apply.",
+          "choices": [
+            { "id": "q-m1-03-a", "text": "Chest or upper-abdominal tightness or discomfort" },
+            { "id": "q-m1-03-b", "text": "Sudden breathlessness" },
+            { "id": "q-m1-03-c", "text": "Sweating, nausea, vomiting or dizziness" },
+            { "id": "q-m1-03-d", "text": "Discomfort spreading to the left arm, neck or lower jaw" },
+            { "id": "q-m1-03-e", "text": "Unconsciousness with no normal breathing as the defining presentation" }
+          ],
+          "correctChoiceIDs": ["q-m1-03-a", "q-m1-03-b", "q-m1-03-c", "q-m1-03-d"],
+          "explanation": "Supported warning signs include chest or upper-abdominal discomfort, breathlessness, sweating, nausea, vomiting, dizziness, and discomfort that spreads to the left shoulder or arm, neck or lower jaw.",
+          "sourceReferences": [
+            { "id": "src-q-m1-03", "document": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "1.4 What Happens in a Heart Attack", "page": "7", "reviewStatus": "source_checked", "reviewer": null, "lastClinicalReviewDate": null, "contentVersion": "1.0.0", "clinicalFactID": "fact.recognition.heartAttackVsArrest" }
+          ]
+        },
+        {
+          "id": "q-m1-04",
+          "type": "singleChoice",
+          "prompt": "Why is immediate action important after cardiac arrest?",
+          "choices": [
+            { "id": "q-m1-04-a", "text": "Brain cells can begin dying within about four to six minutes" },
+            { "id": "q-m1-04-b", "text": "There is always at least one hour before injury begins" },
+            { "id": "q-m1-04-c", "text": "Delay improves the chance of spontaneous recovery" },
+            { "id": "q-m1-04-d", "text": "Time has no effect on survival" }
+          ],
+          "correctChoiceIDs": ["q-m1-04-a"],
+          "explanation": "Without restored circulation, brain cells begin dying within roughly four to six minutes, so prompt action matters.",
+          "sourceReferences": [
+            { "id": "src-q-m1-04", "document": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "2.1 The Importance of Early CPR", "page": "16", "reviewStatus": "source_checked", "reviewer": null, "lastClinicalReviewDate": null, "contentVersion": "1.0.0", "clinicalFactID": "fact.recognition.timeCriticality" }
+          ]
+        },
+        {
+          "id": "q-m1-05",
+          "type": "singleChoice",
+          "prompt": "By approximately how much can survival fall for each minute that treatment of ventricular fibrillation is delayed?",
+          "choices": [
+            { "id": "q-m1-05-a", "text": "About 7 to 10 per cent" },
+            { "id": "q-m1-05-b", "text": "Less than 0.1 per cent" },
+            { "id": "q-m1-05-c", "text": "Exactly 25 per cent" },
+            { "id": "q-m1-05-d", "text": "Survival does not fall" }
+          ],
+          "correctChoiceIDs": ["q-m1-05-a"],
+          "explanation": "For untreated ventricular fibrillation, survival falls by about 7 to 10 per cent for each minute of delay.",
+          "sourceReferences": [
+            { "id": "src-q-m1-05", "document": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "3.1 The Importance of Early Defibrillation", "page": "30", "reviewStatus": "source_checked", "reviewer": null, "lastClinicalReviewDate": null, "contentVersion": "1.0.0", "clinicalFactID": "fact.recognition.vfSurvivalDecay" }
+          ]
+        },
+        {
+          "id": "q-m1-06",
+          "type": "singleChoice",
+          "prompt": "What proportion of Singapore's recorded out-of-hospital cardiac arrests in 2019 occurred at home?",
+          "choices": [
+            { "id": "q-m1-06-a", "text": "About 74 per cent" },
+            { "id": "q-m1-06-b", "text": "About 10 per cent" },
+            { "id": "q-m1-06-c", "text": "About 25 per cent" },
+            { "id": "q-m1-06-d", "text": "All cases" }
+          ],
+          "correctChoiceIDs": ["q-m1-06-a"],
+          "explanation": "The 2019 registry figures in the source record that about 74 per cent of out-of-hospital cardiac arrests occurred at home.",
+          "sourceReferences": [
+            { "id": "src-q-m1-06", "document": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "1.1 Introduction", "page": "2", "reviewStatus": "source_checked", "reviewer": null, "lastClinicalReviewDate": null, "contentVersion": "1.0.0", "clinicalFactID": "fact.recognition.ohcaStatistics2019" }
+          ]
+        }
+      ]
+    },
+    {
+      "moduleID": "M2",
+      "assessmentID": "assessment-m2-theory-v1",
+      "title": "Chain of Survival",
+      "isScored": true,
+      "passingScore": 0.8,
+      "questions": [
+        {
+          "id": "q-m2-01",
+          "type": "singleChoice",
+          "prompt": "What does the Prevention concept emphasise?",
+          "choices": [
+            { "id": "q-m2-01-a", "text": "Healthy living and regular health checks can reduce risk" },
+            { "id": "q-m2-01-b", "text": "Waiting for symptoms before considering health" },
+            { "id": "q-m2-01-c", "text": "Using an AED on every conscious person" },
+            { "id": "q-m2-01-d", "text": "Avoiding all physical activity" }
+          ],
+          "correctChoiceIDs": ["q-m2-01-a"],
+          "explanation": "Prevention concerns reducing risk through a healthy lifestyle and regular check-ups.",
+          "sourceReferences": [
+            { "id": "src-q-m2-01", "document": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "1.7 The Chain of Survival", "page": "11", "reviewStatus": "source_checked", "reviewer": null, "lastClinicalReviewDate": null, "contentVersion": "1.0.0", "clinicalFactID": "fact.chain.ringDefinitions" }
+          ]
+        },
+        {
+          "id": "q-m2-02",
+          "type": "singleChoice",
+          "prompt": "Which action belongs to Early Activation and AED Access?",
+          "choices": [
+            { "id": "q-m2-02-a", "text": "Call 995, follow the dispatcher and arrange for an AED" },
+            { "id": "q-m2-02-b", "text": "Wait silently for someone else to notice" },
+            { "id": "q-m2-02-c", "text": "Delay calling until after the third AED analysis" },
+            { "id": "q-m2-02-d", "text": "Drive the casualty to hospital before calling" }
+          ],
+          "correctChoiceIDs": ["q-m2-02-a"],
+          "explanation": "Early activation means contacting 995, following the dispatcher and arranging prompt AED access.",
+          "sourceReferences": [
+            { "id": "src-q-m2-02", "document": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "1.7 The Chain of Survival", "page": "11", "reviewStatus": "source_checked", "reviewer": null, "lastClinicalReviewDate": null, "contentVersion": "1.0.0", "clinicalFactID": "fact.chain.ringDefinitions" }
+          ]
+        },
+        {
+          "id": "q-m2-03",
+          "type": "singleChoice",
+          "prompt": "Why should Early CPR begin promptly?",
+          "choices": [
+            { "id": "q-m2-03-a", "text": "Brain cells can begin dying within four to six minutes" },
+            { "id": "q-m2-03-b", "text": "It guarantees that an AED will not be needed" },
+            { "id": "q-m2-03-c", "text": "It replaces the need to call 995" },
+            { "id": "q-m2-03-d", "text": "It is useful only after twenty minutes" }
+          ],
+          "correctChoiceIDs": ["q-m2-03-a"],
+          "explanation": "Early CPR supports circulation during a time-critical emergency in which brain cells can begin dying within four to six minutes.",
+          "sourceReferences": [
+            { "id": "src-q-m2-03", "document": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "1.7 The Chain of Survival", "page": "11", "reviewStatus": "source_checked", "reviewer": null, "lastClinicalReviewDate": null, "contentVersion": "1.0.0", "clinicalFactID": "fact.chain.ringDefinitions" }
+          ]
+        },
+        {
+          "id": "q-m2-04",
+          "type": "singleChoice",
+          "prompt": "What is the rescuer's role in Early Defibrillation?",
+          "choices": [
+            { "id": "q-m2-04-a", "text": "Apply a community AED and be ready to follow a shock prompt" },
+            { "id": "q-m2-04-b", "text": "Guess the heart rhythm without an AED" },
+            { "id": "q-m2-04-c", "text": "Deliver a shock before pads are attached" },
+            { "id": "q-m2-04-d", "text": "Turn off the AED as soon as it begins analysing" }
+          ],
+          "correctChoiceIDs": ["q-m2-04-a"],
+          "explanation": "Early Defibrillation means applying an AED promptly and being ready to follow its shock instructions.",
+          "sourceReferences": [
+            { "id": "src-q-m2-04", "document": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "1.7 The Chain of Survival", "page": "11", "reviewStatus": "source_checked", "reviewer": null, "lastClinicalReviewDate": null, "contentVersion": "1.0.0", "clinicalFactID": "fact.chain.ringDefinitions" }
+          ]
+        },
+        {
+          "id": "q-m2-05",
+          "type": "singleChoice",
+          "prompt": "What support is associated with Recovery after survival?",
+          "choices": [
+            { "id": "q-m2-05-a", "text": "Community and medical rehabilitation support" },
+            { "id": "q-m2-05-b", "text": "Immediate removal of all medical follow-up" },
+            { "id": "q-m2-05-c", "text": "AED analysis without pads" },
+            { "id": "q-m2-05-d", "text": "Delaying transport for several hours" }
+          ],
+          "correctChoiceIDs": ["q-m2-05-a"],
+          "explanation": "Recovery includes community and medical rehabilitation support for a survivor.",
+          "sourceReferences": [
+            { "id": "src-q-m2-05", "document": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "1.7 (sixth and seventh rings)", "page": "12", "reviewStatus": "source_checked", "reviewer": null, "lastClinicalReviewDate": null, "contentVersion": "1.0.0", "clinicalFactID": "fact.chain.ringDefinitions" }
+          ]
+        },
+        {
+          "id": "q-m2-06",
+          "type": "singleChoice",
+          "prompt": "Which combination is associated with the best chance of survival?",
+          "choices": [
+            { "id": "q-m2-06-a", "text": "Early CPR together with early defibrillation" },
+            { "id": "q-m2-06-b", "text": "Delayed CPR without arranging an AED" },
+            { "id": "q-m2-06-c", "text": "Waiting for the casualty to recover without intervention" },
+            { "id": "q-m2-06-d", "text": "Defibrillation without first applying pads" }
+          ],
+          "correctChoiceIDs": ["q-m2-06-a"],
+          "explanation": "Survival is highest when early CPR is combined with early defibrillation.",
+          "sourceReferences": [
+            { "id": "src-q-m2-06", "document": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "3.1 chain-of-survival outcome chart", "page": "31", "reviewStatus": "source_checked", "reviewer": null, "lastClinicalReviewDate": null, "contentVersion": "1.0.0", "clinicalFactID": "fact.chain.earlyCprPlusDefib" }
+          ]
+        }
+      ]
+    },
+    {
+      "moduleID": "M3",
+      "assessmentID": "assessment-m3-theory-v1",
+      "title": "DRSABC",
+      "isScored": true,
+      "passingScore": 0.8,
+      "questions": [
+        {
+          "id": "q-m3-01",
+          "type": "ordering",
+          "prompt": "Place the DRSABC stages in order.",
+          "choices": [
+            { "id": "q-m3-01-d", "text": "Check for Danger" },
+            { "id": "q-m3-01-r", "text": "Check Responsiveness" },
+            { "id": "q-m3-01-s", "text": "Shout for help and call 995" },
+            { "id": "q-m3-01-a", "text": "Ask someone to get an AED" },
+            { "id": "q-m3-01-b", "text": "Check for normal Breathing" },
+            { "id": "q-m3-01-c", "text": "Provide continuous Chest Compressions" }
+          ],
+          "correctChoiceIDs": ["q-m3-01-d", "q-m3-01-r", "q-m3-01-s", "q-m3-01-a", "q-m3-01-b", "q-m3-01-c"],
+          "explanation": "DRSABC proceeds through Danger, Responsiveness, Shout and call, AED, Breathing and Chest Compressions.",
+          "sourceReferences": [
+            { "id": "src-q-m3-01", "document": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "2.2 Adult One-Rescuer CPR", "page": "17", "reviewStatus": "source_checked", "reviewer": null, "lastClinicalReviewDate": null, "contentVersion": "1.0.0", "clinicalFactID": "fact.drsabc.mnemonic" }
+          ]
+        },
+        {
+          "id": "q-m3-02",
+          "type": "singleChoice",
+          "prompt": "A casualty is lying beside moving traffic. What comes first?",
+          "choices": [
+            { "id": "q-m3-02-a", "text": "Check the danger and move to a safe, flat, open space if necessary" },
+            { "id": "q-m3-02-b", "text": "Start compressions without considering traffic" },
+            { "id": "q-m3-02-c", "text": "Apply AED pads while vehicles continue to pass" },
+            { "id": "q-m3-02-d", "text": "Ignore the casualty until the road is empty" }
+          ],
+          "correctChoiceIDs": ["q-m3-02-a"],
+          "explanation": "The rescuer checks for danger first and uses a safe, flat, open location when the original site is unsafe or unsuitable.",
+          "sourceReferences": [
+            { "id": "src-q-m3-02", "document": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "2.2 (D) Check for Danger", "page": "18", "reviewStatus": "source_checked", "reviewer": null, "lastClinicalReviewDate": null, "contentVersion": "1.0.0", "clinicalFactID": "fact.drsabc.danger" }
+          ]
+        },
+        {
+          "id": "q-m3-03",
+          "type": "singleChoice",
+          "prompt": "How should responsiveness be checked?",
+          "choices": [
+            { "id": "q-m3-03-a", "text": "Tap the shoulders firmly and ask loudly whether the casualty is okay" },
+            { "id": "q-m3-03-b", "text": "Shake the casualty violently by the neck" },
+            { "id": "q-m3-03-c", "text": "Wait quietly without touching or speaking" },
+            { "id": "q-m3-03-d", "text": "Press on the abdomen" }
+          ],
+          "correctChoiceIDs": ["q-m3-03-a"],
+          "explanation": "Tap the shoulders firmly and speak loudly, while avoiding violent shaking and unnecessary neck movement.",
+          "sourceReferences": [
+            { "id": "src-q-m3-03", "document": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "2.2 (R) Check for Responsiveness", "page": "18", "reviewStatus": "source_checked", "reviewer": null, "lastClinicalReviewDate": null, "contentVersion": "1.0.0", "clinicalFactID": "fact.drsabc.responsiveness" }
+          ]
+        },
+        {
+          "id": "q-m3-04",
+          "type": "singleChoice",
+          "prompt": "A lone rescuer has a handphone beside an unresponsive casualty. What is the correct call flow?",
+          "choices": [
+            { "id": "q-m3-04-a", "text": "Call 995 on speaker, stay with the casualty and follow the dispatcher" },
+            { "id": "q-m3-04-b", "text": "Text a friend and wait for a reply" },
+            { "id": "q-m3-04-c", "text": "Walk away before making any call" },
+            { "id": "q-m3-04-d", "text": "Call only after the casualty starts breathing normally" }
+          ],
+          "correctChoiceIDs": ["q-m3-04-a"],
+          "explanation": "The lone rescuer calls 995 in speaker mode, stays on the line and follows dispatcher-assisted CPR guidance.",
+          "sourceReferences": [
+            { "id": "src-q-m3-04", "document": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "2.2 (S) Shout to get help", "page": "18", "reviewStatus": "source_checked", "reviewer": null, "lastClinicalReviewDate": null, "contentVersion": "1.0.0", "clinicalFactID": "fact.drsabc.call995" }
+          ]
+        },
+        {
+          "id": "q-m3-05",
+          "type": "singleChoice",
+          "prompt": "An AED is about forty seconds' walk away and a bystander is available. What should the rescuer do?",
+          "choices": [
+            { "id": "q-m3-05-a", "text": "Send the bystander for the AED while the rescuer stays with the casualty" },
+            { "id": "q-m3-05-b", "text": "Both people leave the casualty to look for the AED" },
+            { "id": "q-m3-05-c", "text": "Tell the bystander not to fetch the nearby AED" },
+            { "id": "q-m3-05-d", "text": "Wait for the ambulance before starting any action" }
+          ],
+          "correctChoiceIDs": ["q-m3-05-a"],
+          "explanation": "Ask another person to fetch an AED within about sixty seconds' walking distance. A lone rescuer must not leave the casualty to search for one.",
+          "sourceReferences": [
+            { "id": "src-q-m3-05", "document": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "2.2 (A) Ask someone to get an AED", "page": "19", "reviewStatus": "source_checked", "reviewer": null, "lastClinicalReviewDate": null, "contentVersion": "1.0.0", "clinicalFactID": "fact.drsabc.getAed" }
+          ]
+        },
+        {
+          "id": "q-m3-06",
+          "type": "multipleChoice",
+          "prompt": "Which breathing-check responses are correct? Select all that apply.",
+          "choices": [
+            { "id": "q-m3-06-a", "text": "Look for chest rise and fall for no more than ten seconds" },
+            { "id": "q-m3-06-b", "text": "Treat gasping as abnormal breathing and begin CPR" },
+            { "id": "q-m3-06-c", "text": "If breathing is normal, monitor the casualty and wait for EMS" },
+            { "id": "q-m3-06-d", "text": "Treat gasping as proof that CPR is unnecessary" },
+            { "id": "q-m3-06-e", "text": "Spend at least one minute checking breathing" }
+          ],
+          "correctChoiceIDs": ["q-m3-06-a", "q-m3-06-b", "q-m3-06-c"],
+          "explanation": "Check for no more than ten seconds. Gasping is not normal breathing; normal breathing means monitoring rather than starting compressions.",
+          "sourceReferences": [
+            { "id": "src-q-m3-06-a", "document": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "2.2 (B) Check for normal Breathing", "page": "19", "reviewStatus": "source_checked", "reviewer": null, "lastClinicalReviewDate": null, "contentVersion": "1.0.0", "clinicalFactID": "fact.drsabc.breathingCheck" },
+            { "id": "src-q-m3-06-b", "document": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "2.2 flowchart", "page": "17", "reviewStatus": "source_checked", "reviewer": null, "lastClinicalReviewDate": null, "contentVersion": "1.0.0", "clinicalFactID": "fact.drsabc.monitorIfBreathingNormally" }
+          ]
+        }
+      ]
+    },
+    {
+      "moduleID": "M4",
+      "assessmentID": "assessment-m4-theory-v1",
+      "title": "Hands-only CPR",
+      "isScored": true,
+      "passingScore": 0.8,
+      "questions": [
+        {
+          "id": "q-m4-01",
+          "type": "singleChoice",
+          "prompt": "What surface and position are needed for effective CPR?",
+          "choices": [
+            { "id": "q-m4-01-a", "text": "The casualty on their back on a firm, flat surface" },
+            { "id": "q-m4-01-b", "text": "The casualty seated upright on a soft sofa" },
+            { "id": "q-m4-01-c", "text": "The casualty standing against a wall" },
+            { "id": "q-m4-01-d", "text": "The casualty face down on a mattress" }
+          ],
+          "correctChoiceIDs": ["q-m4-01-a"],
+          "explanation": "Effective CPR requires the casualty to lie on their back on a firm, flat surface.",
+          "sourceReferences": [
+            { "id": "src-q-m4-01", "document": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "2.2 (R) note", "page": "18", "reviewStatus": "source_checked", "reviewer": null, "lastClinicalReviewDate": null, "contentVersion": "1.0.0", "clinicalFactID": "fact.drsabc.positionCasualty" }
+          ]
+        },
+        {
+          "id": "q-m4-02",
+          "type": "singleChoice",
+          "prompt": "Where should adult chest compressions be delivered?",
+          "choices": [
+            { "id": "q-m4-02-a", "text": "At the centre of the chest over the lower half of the sternum, avoiding the xiphoid process" },
+            { "id": "q-m4-02-b", "text": "Directly over the xiphoid process" },
+            { "id": "q-m4-02-c", "text": "Over the left collarbone" },
+            { "id": "q-m4-02-d", "text": "Over the abdomen below the ribs" }
+          ],
+          "correctChoiceIDs": ["q-m4-02-a"],
+          "explanation": "Use the lower half of the sternum at the centre of the chest and avoid the xiphoid process.",
+          "sourceReferences": [
+            { "id": "src-q-m4-02", "document": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "2.2 (C) Chest Compressions", "page": "20", "reviewStatus": "source_checked", "reviewer": null, "lastClinicalReviewDate": null, "contentVersion": "1.0.0", "clinicalFactID": "fact.compression.site" }
+          ]
+        },
+        {
+          "id": "q-m4-03",
+          "type": "singleChoice",
+          "prompt": "Which description matches adult hand and body position for compressions?",
+          "choices": [
+            { "id": "q-m4-03-a", "text": "One hand heel on the lower sternum, the other on top, fingers interlaced and lifted, elbows straight, shoulders above the chest" },
+            { "id": "q-m4-03-b", "text": "Both palms flat on the abdomen with elbows bent" },
+            { "id": "q-m4-03-c", "text": "Fingertips on the collarbone with shoulders behind the hips" },
+            { "id": "q-m4-03-d", "text": "One hand over the xiphoid process and the other on the neck" }
+          ],
+          "correctChoiceIDs": ["q-m4-03-a"],
+          "explanation": "Correct positioning uses stacked hand heels on the lower sternum, interlaced lifted fingers, straight elbows and shoulders directly above the chest.",
+          "sourceReferences": [
+            { "id": "src-q-m4-03", "document": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "2.2 (C) Chest Compressions", "page": "20", "reviewStatus": "source_checked", "reviewer": null, "lastClinicalReviewDate": null, "contentVersion": "1.0.0", "clinicalFactID": "fact.compression.handMethodAdult" }
+          ]
+        },
+        {
+          "id": "q-m4-04",
+          "type": "singleChoice",
+          "prompt": "What adult compression-depth range is stated in the source?",
+          "choices": [
+            { "id": "q-m4-04-a", "text": "At least 4 cm and not more than 6 cm" },
+            { "id": "q-m4-04-b", "text": "1 to 2 cm" },
+            { "id": "q-m4-04-c", "text": "Exactly 8 cm" },
+            { "id": "q-m4-04-d", "text": "More than 10 cm" }
+          ],
+          "correctChoiceIDs": ["q-m4-04-a"],
+          "explanation": "The source states an adult depth range of 4 to 6 cm. Lifesaver Vision does not physically assess depth without a verified external sensor.",
+          "sourceReferences": [
+            { "id": "src-q-m4-04", "document": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "2.2 (C) Chest Compressions", "page": "20", "reviewStatus": "source_checked", "reviewer": null, "lastClinicalReviewDate": null, "contentVersion": "1.0.0", "clinicalFactID": "fact.compression.depthAdult" }
+          ]
+        },
+        {
+          "id": "q-m4-05",
+          "type": "multipleChoice",
+          "prompt": "Which statements describe supported compression rhythm and recoil? Select all that apply.",
+          "choices": [
+            { "id": "q-m4-05-a", "text": "Use a rate of 100 to 120 compressions per minute" },
+            { "id": "q-m4-05-b", "text": "Allow full recoil after every compression" },
+            { "id": "q-m4-05-c", "text": "Keep the hand heels in contact with the chest between compressions" },
+            { "id": "q-m4-05-d", "text": "Use fewer than 40 compressions per minute" },
+            { "id": "q-m4-05-e", "text": "Lean continuously so the chest cannot recoil" }
+          ],
+          "correctChoiceIDs": ["q-m4-05-a", "q-m4-05-b", "q-m4-05-c"],
+          "explanation": "Use 100 to 120 compressions per minute and allow complete recoil while keeping the hand heels in contact with the chest.",
+          "sourceReferences": [
+            { "id": "src-q-m4-05-a", "document": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "2.2 (C) Chest Compressions", "page": "20", "reviewStatus": "source_checked", "reviewer": null, "lastClinicalReviewDate": null, "contentVersion": "1.0.0", "clinicalFactID": "fact.compression.rate" },
+            { "id": "src-q-m4-05-b", "document": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "2.2 (C) Chest Compressions", "page": "20", "reviewStatus": "source_checked", "reviewer": null, "lastClinicalReviewDate": null, "contentVersion": "1.0.0", "clinicalFactID": "fact.compression.recoil" }
+          ]
+        },
+        {
+          "id": "q-m4-06",
+          "type": "multipleChoice",
+          "prompt": "Which rules correctly limit interruptions or define when CPR stops? Select all that apply.",
+          "choices": [
+            { "id": "q-m4-06-a", "text": "A tired lone rescuer may rest for no more than ten seconds, preferably after about 100 compressions" },
+            { "id": "q-m4-06-b", "text": "Pause when the AED prompts analysis, charging or shock" },
+            { "id": "q-m4-06-c", "text": "Stop when paramedics take over or the casualty wakes or resumes normal breathing" },
+            { "id": "q-m4-06-d", "text": "Take an unrestricted break after every ten compressions" },
+            { "id": "q-m4-06-e", "text": "Stop permanently as soon as the AED arrives, before it gives a prompt" }
+          ],
+          "correctChoiceIDs": ["q-m4-06-a", "q-m4-06-b", "q-m4-06-c"],
+          "explanation": "Keep interruptions brief. The supported stop conditions are emergency-team takeover, AED analysis/charging/shock prompts, or the casualty waking or regaining normal breathing.",
+          "sourceReferences": [
+            { "id": "src-q-m4-06-a", "document": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "2.2 flowchart notes / (C)", "page": "21", "reviewStatus": "source_checked", "reviewer": null, "lastClinicalReviewDate": null, "contentVersion": "1.0.0", "clinicalFactID": "fact.compression.restRule" },
+            { "id": "src-q-m4-06-b", "document": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "3.5 step 7", "page": "37", "reviewStatus": "source_checked", "reviewer": null, "lastClinicalReviewDate": null, "contentVersion": "1.0.0", "clinicalFactID": "fact.compression.stopCriteria" }
+          ]
+        }
+      ]
+    },
+    {
+      "moduleID": "M5",
+      "assessmentID": "assessment-m5-theory-v1",
+      "title": "AED preparation",
+      "isScored": true,
+      "passingScore": 0.8,
+      "questions": [
+        {
+          "id": "q-m5-01",
+          "type": "singleChoice",
+          "prompt": "What does an AED do?",
+          "choices": [
+            { "id": "q-m5-01-a", "text": "It analyses the heart rhythm, decides whether a shock is needed and guides the rescuer" },
+            { "id": "q-m5-01-b", "text": "It shocks every casualty as soon as it is opened" },
+            { "id": "q-m5-01-c", "text": "It replaces the need for chest compressions" },
+            { "id": "q-m5-01-d", "text": "It measures blood pressure without pads" }
+          ],
+          "correctChoiceIDs": ["q-m5-01-a"],
+          "explanation": "An AED analyses rhythm through its pads, charges only for a shockable rhythm, and gives voice guidance to the rescuer.",
+          "sourceReferences": [
+            { "id": "src-q-m5-01", "document": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "3.2 Automated External Defibrillators", "page": "32", "reviewStatus": "source_checked", "reviewer": null, "lastClinicalReviewDate": null, "contentVersion": "1.0.0", "clinicalFactID": "fact.aed.purpose" }
+          ]
+        },
+        {
+          "id": "q-m5-02",
+          "type": "multipleChoice",
+          "prompt": "Which AED hazards must be made safe? Select all that apply.",
+          "choices": [
+            { "id": "q-m5-02-a", "text": "A wet chest or wet surface" },
+            { "id": "q-m5-02-b", "text": "Contact with a metal surface" },
+            { "id": "q-m5-02-c", "text": "Flammable gas or an oxygen source nearby" },
+            { "id": "q-m5-02-d", "text": "A dry, non-metallic surface with no flammable source nearby" },
+            { "id": "q-m5-02-e", "text": "A bare, dry chest on which the pads can adhere" }
+          ],
+          "correctChoiceIDs": ["q-m5-02-a", "q-m5-02-b", "q-m5-02-c"],
+          "explanation": "Address wet conditions, metal contact and flammable gases or oxygen sources before AED use.",
+          "sourceReferences": [
+            { "id": "src-q-m5-02", "document": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "3.3 Preparation for AED use", "page": "32", "reviewStatus": "source_checked", "reviewer": null, "lastClinicalReviewDate": null, "contentVersion": "1.0.0", "clinicalFactID": "fact.aed.hazards" }
+          ]
+        },
+        {
+          "id": "q-m5-03",
+          "type": "singleChoice",
+          "prompt": "What should be done if chest hair prevents an AED pad from sticking properly?",
+          "choices": [
+            { "id": "q-m5-03-a", "text": "Shave the pad sites promptly" },
+            { "id": "q-m5-03-b", "text": "Place the pads on top of the clothing" },
+            { "id": "q-m5-03-c", "text": "Abandon AED use" },
+            { "id": "q-m5-03-d", "text": "Cover the pad sites with water" }
+          ],
+          "correctChoiceIDs": ["q-m5-03-a"],
+          "explanation": "If hair prevents pad contact, shave the required pad sites promptly using the AED kit's shaver.",
+          "sourceReferences": [
+            { "id": "src-q-m5-03", "document": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "3.3 chest preparation", "page": "33", "reviewStatus": "source_checked", "reviewer": null, "lastClinicalReviewDate": null, "contentVersion": "1.0.0", "clinicalFactID": "fact.aed.chestPrepHairyChest" }
+          ]
+        },
+        {
+          "id": "q-m5-04",
+          "type": "singleChoice",
+          "prompt": "How should metallic necklaces or chains be managed before pad placement?",
+          "choices": [
+            { "id": "q-m5-04-a", "text": "Move them clear of the pad sites" },
+            { "id": "q-m5-04-b", "text": "Place a pad directly over them" },
+            { "id": "q-m5-04-c", "text": "Hold them against the chest during shock" },
+            { "id": "q-m5-04-d", "text": "Leave a chain crossing a pad site because it is outside the adhesive edge" }
+          ],
+          "correctChoiceIDs": ["q-m5-04-a"],
+          "explanation": "Move metallic jewellery away from the pad sites because metal near a shock can spark and burn.",
+          "sourceReferences": [
+            { "id": "src-q-m5-04", "document": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "3.3 chest preparation", "page": "33", "reviewStatus": "source_checked", "reviewer": null, "lastClinicalReviewDate": null, "contentVersion": "1.0.0", "clinicalFactID": "fact.aed.chestPrepJewellery" }
+          ]
+        },
+        {
+          "id": "q-m5-05",
+          "type": "singleChoice",
+          "prompt": "Where should an AED pad be placed relative to a visible implanted pacemaker or defibrillator?",
+          "choices": [
+            { "id": "q-m5-05-a", "text": "At least four fingers' breadth away from the device" },
+            { "id": "q-m5-05-b", "text": "Directly over the device" },
+            { "id": "q-m5-05-c", "text": "On top of the device scar" },
+            { "id": "q-m5-05-d", "text": "No clearance is needed" }
+          ],
+          "correctChoiceIDs": ["q-m5-05-a"],
+          "explanation": "Keep AED pads at least four fingers' breadth from an implanted pacemaker or defibrillator.",
+          "sourceReferences": [
+            { "id": "src-q-m5-05", "document": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "3.3 chest preparation", "page": "33", "reviewStatus": "source_checked", "reviewer": null, "lastClinicalReviewDate": null, "contentVersion": "1.0.0", "clinicalFactID": "fact.aed.chestPrepImplantedDevices" }
+          ]
+        },
+        {
+          "id": "q-m5-06",
+          "type": "multipleChoice",
+          "prompt": "Which chest-preparation actions are supported? Select all that apply.",
+          "choices": [
+            { "id": "q-m5-06-a", "text": "Remove medication patches and monitoring electrodes from the pad area" },
+            { "id": "q-m5-06-b", "text": "Wipe a wet or sweaty chest dry quickly" },
+            { "id": "q-m5-06-c", "text": "Keep interruptions to compressions as short as possible" },
+            { "id": "q-m5-06-d", "text": "Apply pads over a wet chest" },
+            { "id": "q-m5-06-e", "text": "Leave medication patches under the pads" }
+          ],
+          "correctChoiceIDs": ["q-m5-06-a", "q-m5-06-b", "q-m5-06-c"],
+          "explanation": "Remove patches or electrodes, dry the chest quickly and minimise interruption while preparing and applying the pads.",
+          "sourceReferences": [
+            { "id": "src-q-m5-06-a", "document": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "3.3 chest preparation", "page": "33", "reviewStatus": "source_checked", "reviewer": null, "lastClinicalReviewDate": null, "contentVersion": "1.0.0", "clinicalFactID": "fact.aed.chestPrepPatches" },
+            { "id": "src-q-m5-06-b", "document": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "3.3 chest preparation", "page": "33", "reviewStatus": "source_checked", "reviewer": null, "lastClinicalReviewDate": null, "contentVersion": "1.0.0", "clinicalFactID": "fact.aed.chestPrepWet" }
+          ]
+        }
+      ]
+    },
+    {
+      "moduleID": "M6",
+      "assessmentID": "assessment-m6-theory-v1",
+      "title": "AED pads and defibrillation",
+      "isScored": true,
+      "passingScore": 0.8,
+      "questions": [
+        {
+          "id": "q-m6-01",
+          "type": "ordering",
+          "prompt": "Order the AED application actions while another rescuer continues compressions where possible.",
+          "choices": [
+            { "id": "q-m6-01-a", "text": "Continue chest compressions" },
+            { "id": "q-m6-01-b", "text": "Open the AED box" },
+            { "id": "q-m6-01-c", "text": "Power on the AED" },
+            { "id": "q-m6-01-d", "text": "Prepare the chest" },
+            { "id": "q-m6-01-e", "text": "Apply the right pad" },
+            { "id": "q-m6-01-f", "text": "Apply the left pad" },
+            { "id": "q-m6-01-g", "text": "Plug in the connector if required" },
+            { "id": "q-m6-01-h", "text": "Let the AED analyse and keep everyone clear" }
+          ],
+          "correctChoiceIDs": ["q-m6-01-a", "q-m6-01-b", "q-m6-01-c", "q-m6-01-d", "q-m6-01-e", "q-m6-01-f", "q-m6-01-g", "q-m6-01-h"],
+          "explanation": "Keep compressions going while the AED is opened, powered on, the chest prepared, pads applied right then left and the connector attached; pause when analysis begins.",
+          "sourceReferences": [
+            { "id": "src-q-m6-01", "document": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "3.4 highlighted rule", "page": "35", "reviewStatus": "source_checked", "reviewer": null, "lastClinicalReviewDate": null, "contentVersion": "1.0.0", "clinicalFactID": "fact.aed.applyDuringCpr" }
+          ]
+        },
+        {
+          "id": "q-m6-02",
+          "type": "multipleChoice",
+          "prompt": "Which statements describe adult AED pad placement? Select all that apply.",
+          "choices": [
+            { "id": "q-m6-02-a", "text": "Place the right pad just below the right collarbone" },
+            { "id": "q-m6-02-b", "text": "Place the left pad below and to the left of the left nipple" },
+            { "id": "q-m6-02-c", "text": "Follow the placement pictures printed on the pads" },
+            { "id": "q-m6-02-d", "text": "Place both pads on top of each other" },
+            { "id": "q-m6-02-e", "text": "Place both pads over clothing" }
+          ],
+          "correctChoiceIDs": ["q-m6-02-a", "q-m6-02-b", "q-m6-02-c"],
+          "explanation": "The adult pads go below the right collarbone and below-left of the left nipple, following the diagrams on the pads.",
+          "sourceReferences": [
+            { "id": "src-q-m6-02", "document": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "3.4 Placement of AED Electrode Pads", "page": "34", "reviewStatus": "source_checked", "reviewer": null, "lastClinicalReviewDate": null, "contentVersion": "1.0.0", "clinicalFactID": "fact.aed.padPlacementAdult" }
+          ]
+        },
+        {
+          "id": "q-m6-03",
+          "type": "singleChoice",
+          "prompt": "What should happen as soon as the AED announces that it is analysing?",
+          "choices": [
+            { "id": "q-m6-03-a", "text": "Stop compressions, spread the arms, say 'Stay Clear' and ensure nobody touches the casualty" },
+            { "id": "q-m6-03-b", "text": "Keep one hand on the casualty throughout analysis" },
+            { "id": "q-m6-03-c", "text": "Remove both pads" },
+            { "id": "q-m6-03-d", "text": "Move the casualty while the rhythm is analysed" }
+          ],
+          "correctChoiceIDs": ["q-m6-03-a"],
+          "explanation": "AED analysis requires a clear casualty: stop compressions, state the clear command and ensure nobody is touching.",
+          "sourceReferences": [
+            { "id": "src-q-m6-03", "document": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "3.5 Defibrillation Procedures steps 1-2", "page": "36", "reviewStatus": "source_checked", "reviewer": null, "lastClinicalReviewDate": null, "contentVersion": "1.0.0", "clinicalFactID": "fact.aed.analysisNoTouch" }
+          ]
+        },
+        {
+          "id": "q-m6-04",
+          "type": "singleChoice",
+          "prompt": "The AED is charged and prompts for a shock. What must the rescuer do before pressing the button?",
+          "choices": [
+            { "id": "q-m6-04-a", "text": "Say 'Stay Clear' and visually confirm that nobody is touching the casualty" },
+            { "id": "q-m6-04-b", "text": "Ask someone to hold the casualty still" },
+            { "id": "q-m6-04-c", "text": "Place a hand on the chest to check the pads" },
+            { "id": "q-m6-04-d", "text": "Disconnect the pad cable" }
+          ],
+          "correctChoiceIDs": ["q-m6-04-a"],
+          "explanation": "Before delivering a prompted shock, state the clear command and visually verify that nobody is in contact with the casualty.",
+          "sourceReferences": [
+            { "id": "src-q-m6-04", "document": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "3.5 steps 3-4", "page": "36", "reviewStatus": "source_checked", "reviewer": null, "lastClinicalReviewDate": null, "contentVersion": "1.0.0", "clinicalFactID": "fact.aed.shockDelivery" }
+          ]
+        },
+        {
+          "id": "q-m6-05",
+          "type": "singleChoice",
+          "prompt": "What happens immediately after a shock is delivered?",
+          "choices": [
+            { "id": "q-m6-05-a", "text": "Restart chest compressions and continue until the next AED analysis, normally after two minutes" },
+            { "id": "q-m6-05-b", "text": "Wait two minutes before restarting compressions" },
+            { "id": "q-m6-05-c", "text": "Remove the pads and switch off the AED" },
+            { "id": "q-m6-05-d", "text": "Assume the casualty has recovered" }
+          ],
+          "correctChoiceIDs": ["q-m6-05-a"],
+          "explanation": "Resume compressions immediately after a shock. The AED repeats rhythm analysis every two minutes.",
+          "sourceReferences": [
+            { "id": "src-q-m6-05", "document": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "3.5 step 5", "page": "37", "reviewStatus": "source_checked", "reviewer": null, "lastClinicalReviewDate": null, "contentVersion": "1.0.0", "clinicalFactID": "fact.aed.resumeAfterShock" }
+          ]
+        },
+        {
+          "id": "q-m6-06",
+          "type": "multipleChoice",
+          "prompt": "The AED says 'No shock advised'. Which actions are correct? Select all that apply.",
+          "choices": [
+            { "id": "q-m6-06-a", "text": "Resume continuous chest compressions immediately" },
+            { "id": "q-m6-06-b", "text": "Leave the AED switched on and connected" },
+            { "id": "q-m6-06-c", "text": "Continue following subsequent AED prompts" },
+            { "id": "q-m6-06-d", "text": "Disconnect the pads because no shock was advised" },
+            { "id": "q-m6-06-e", "text": "Stop all care and leave" }
+          ],
+          "correctChoiceIDs": ["q-m6-06-a", "q-m6-06-b", "q-m6-06-c"],
+          "explanation": "A no-shock decision is followed by immediate compressions. Keep the AED on and connected and continue to follow its prompts.",
+          "sourceReferences": [
+            { "id": "src-q-m6-06-a", "document": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "3.5 step 6", "page": "37", "reviewStatus": "source_checked", "reviewer": null, "lastClinicalReviewDate": null, "contentVersion": "1.0.0", "clinicalFactID": "fact.aed.noShockAdvised" },
+            { "id": "src-q-m6-06-b", "document": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "3.5 step 9", "page": "37", "reviewStatus": "source_checked", "reviewer": null, "lastClinicalReviewDate": null, "contentVersion": "1.0.0", "clinicalFactID": "fact.aed.remainConnected" }
+          ]
+        }
+      ]
+    },
+    {
+      "moduleID": "M7",
+      "assessmentID": "assessment-m7-theory-v1",
+      "title": "Special circumstances",
+      "isScored": true,
+      "passingScore": 0.8,
+      "questions": [
+        {
+          "id": "q-m7-01",
+          "type": "singleChoice",
+          "prompt": "What can help a rescuer keep straight elbows when giving compressions to a casualty on a trolley bed?",
+          "choices": [
+            { "id": "q-m7-01-a", "text": "Use a step stool" },
+            { "id": "q-m7-01-b", "text": "Sit on the trolley beside the casualty" },
+            { "id": "q-m7-01-c", "text": "Raise both elbows above the shoulders" },
+            { "id": "q-m7-01-d", "text": "Move the casualty onto a pillow" }
+          ],
+          "correctChoiceIDs": ["q-m7-01-a"],
+          "explanation": "For CPR on a trolley bed, a step stool helps the rescuer keep the elbows straight.",
+          "sourceReferences": [
+            { "id": "src-q-m7-01", "document": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "2.3 CPR in Special Circumstances", "page": "27", "reviewStatus": "source_checked", "reviewer": null, "lastClinicalReviewDate": null, "contentVersion": "1.0.0", "clinicalFactID": "fact.specialsettings.environments" }
+          ]
+        },
+        {
+          "id": "q-m7-02",
+          "type": "singleChoice",
+          "prompt": "How can two or more rescuers organise the response?",
+          "choices": [
+            { "id": "q-m7-02-a", "text": "Split compressions, ventilations, the 995 call and AED tasks" },
+            { "id": "q-m7-02-b", "text": "All rescuers perform compressions at the same time" },
+            { "id": "q-m7-02-c", "text": "Nobody calls 995 until the AED has shocked" },
+            { "id": "q-m7-02-d", "text": "One rescuer does every task while the others wait" }
+          ],
+          "correctChoiceIDs": ["q-m7-02-a"],
+          "explanation": "With multiple rescuers, divide the compression, ventilation, emergency-call and AED roles.",
+          "sourceReferences": [
+            { "id": "src-q-m7-02", "document": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "2.3 CPR in Special Circumstances", "page": "27", "reviewStatus": "source_checked", "reviewer": null, "lastClinicalReviewDate": null, "contentVersion": "1.0.0", "clinicalFactID": "fact.specialsettings.environments" }
+          ]
+        },
+        {
+          "id": "q-m7-03",
+          "type": "singleChoice",
+          "prompt": "Which alternative compression position is described for a narrow space?",
+          "choices": [
+            { "id": "q-m7-03-a", "text": "Deliver compressions from over the casualty's head" },
+            { "id": "q-m7-03-b", "text": "Deliver compressions through the casualty's feet" },
+            { "id": "q-m7-03-c", "text": "Delay compressions until a wider area becomes available" },
+            { "id": "q-m7-03-d", "text": "Use abdominal pressure instead of chest compressions" }
+          ],
+          "correctChoiceIDs": ["q-m7-03-a"],
+          "explanation": "In a narrow space, the source allows compressions from over the casualty's head.",
+          "sourceReferences": [
+            { "id": "src-q-m7-03", "document": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "2.3 CPR in Special Circumstances", "page": "27", "reviewStatus": "source_checked", "reviewer": null, "lastClinicalReviewDate": null, "contentVersion": "1.0.0", "clinicalFactID": "fact.specialsettings.environments" }
+          ]
+        },
+        {
+          "id": "q-m7-04",
+          "type": "singleChoice",
+          "prompt": "On an aircraft, where may a rescuer position themselves if the casualty cannot quickly be moved to the galley?",
+          "choices": [
+            { "id": "q-m7-04-a", "text": "Kneel in the leg space beside the seat" },
+            { "id": "q-m7-04-b", "text": "Remain in the aisle and reach across the seat" },
+            { "id": "q-m7-04-c", "text": "Move to the galley without the casualty" },
+            { "id": "q-m7-04-d", "text": "Wait until the aircraft lands before acting" }
+          ],
+          "correctChoiceIDs": ["q-m7-04-a"],
+          "explanation": "The aircraft technique places the rescuer in the leg space beside the seat unless the casualty can be moved quickly to the galley.",
+          "sourceReferences": [
+            { "id": "src-q-m7-04", "document": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "2.3 CPR in Special Circumstances", "page": "27", "reviewStatus": "source_checked", "reviewer": null, "lastClinicalReviewDate": null, "contentVersion": "1.0.0", "clinicalFactID": "fact.specialsettings.environments" }
+          ]
+        },
+        {
+          "id": "q-m7-05",
+          "type": "multipleChoice",
+          "prompt": "A public AED is inside a break-glass box. Which retrieval actions are supported? Select all that apply.",
+          "choices": [
+            { "id": "q-m7-05-a", "text": "Use an object such as a phone, shoe or keys to break the glass" },
+            { "id": "q-m7-05-b", "text": "Clear fragments from the edges before reaching for the key" },
+            { "id": "q-m7-05-c", "text": "Avoid using bare hands or elbows to break the glass" },
+            { "id": "q-m7-05-d", "text": "Strike the glass with a bare elbow" },
+            { "id": "q-m7-05-e", "text": "Reach through sharp fragments immediately" }
+          ],
+          "correctChoiceIDs": ["q-m7-05-a", "q-m7-05-b", "q-m7-05-c"],
+          "explanation": "Use an object rather than bare hands or elbows, and clear glass fragments before reaching into the box.",
+          "sourceReferences": [
+            { "id": "src-q-m7-05", "document": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "3.7 Retrieval of AED", "page": "41", "reviewStatus": "source_checked", "reviewer": null, "lastClinicalReviewDate": null, "contentVersion": "1.0.0", "clinicalFactID": "fact.aed.retrievalSafety" }
+          ]
+        },
+        {
+          "id": "q-m7-06",
+          "type": "singleChoice",
+          "prompt": "A lone rescuer in a remote area cannot activate EMS and finds no normal breathing. What does the source say to do before leaving to seek help?",
+          "choices": [
+            { "id": "q-m7-06-a", "text": "Start compressions and continue for at least two minutes" },
+            { "id": "q-m7-06-b", "text": "Leave immediately without assessing breathing" },
+            { "id": "q-m7-06-c", "text": "Wait fifteen minutes without giving compressions" },
+            { "id": "q-m7-06-d", "text": "Search for an AED before starting any care" }
+          ],
+          "correctChoiceIDs": ["q-m7-06-a"],
+          "explanation": "In this remote no-phone exception, begin compressions and continue for at least two minutes before leaving to seek help.",
+          "sourceReferences": [
+            { "id": "src-q-m7-06", "document": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "2.2 (S), lone-rescuer remote note", "page": "19", "reviewStatus": "source_checked", "reviewer": null, "lastClinicalReviewDate": null, "contentVersion": "1.0.0", "clinicalFactID": "fact.drsabc.remoteAreaException" }
+          ]
+        }
+      ]
+    },
+    {
+      "moduleID": "M8",
+      "assessmentID": "assessment-m8-theory-v1",
+      "title": "Integrated scenarios",
+      "isScored": true,
+      "passingScore": 0.8,
+      "questions": [
+        {
+          "id": "q-m8-01",
+          "type": "singleChoice",
+          "prompt": "How many AED analyses are represented in each approved practice shock sequence?",
+          "choices": [
+            { "id": "q-m8-01-a", "text": "Three" },
+            { "id": "q-m8-01-b", "text": "One" },
+            { "id": "q-m8-01-c", "text": "Five" },
+            { "id": "q-m8-01-d", "text": "Ten" }
+          ],
+          "correctChoiceIDs": ["q-m8-01-a"],
+          "explanation": "The practice patterns vary the shock decision across three AED analyses.",
+          "sourceReferences": [
+            { "id": "src-q-m8-01", "document": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "3.8 Sample Practical Scenarios", "page": "43", "reviewStatus": "source_checked", "reviewer": null, "lastClinicalReviewDate": null, "contentVersion": "1.0.0", "clinicalFactID": "fact.aed.practiceScenarios" }
+          ]
+        },
+        {
+          "id": "q-m8-02",
+          "type": "multipleChoice",
+          "prompt": "Which three-analysis shock patterns are in the approved practice pool? Select all that apply.",
+          "choices": [
+            { "id": "q-m8-02-a", "text": "Shock – No shock – No shock" },
+            { "id": "q-m8-02-b", "text": "No shock – Shock – No shock" },
+            { "id": "q-m8-02-c", "text": "No shock – No shock – No shock" },
+            { "id": "q-m8-02-d", "text": "Shock – Shock – Shock" },
+            { "id": "q-m8-02-e", "text": "No shock – Shock – Shock" }
+          ],
+          "correctChoiceIDs": ["q-m8-02-a", "q-m8-02-b", "q-m8-02-c"],
+          "explanation": "The supplied pool includes S-N-N, N-S-N, S-S-N, N-N-S and N-N-N. It does not include S-S-S or N-S-S.",
+          "sourceReferences": [
+            { "id": "src-q-m8-02", "document": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "3.8 Sample Practical Scenarios", "page": "43", "reviewStatus": "source_checked", "reviewer": null, "lastClinicalReviewDate": null, "contentVersion": "1.0.0", "clinicalFactID": "fact.aed.practiceScenarios" }
+          ]
+        },
+        {
+          "id": "q-m8-03",
+          "type": "singleChoice",
+          "prompt": "A scenario randomises the next AED decision to 'shock'. What clinical action follows a delivered shock?",
+          "choices": [
+            { "id": "q-m8-03-a", "text": "Resume chest compressions immediately" },
+            { "id": "q-m8-03-b", "text": "Wait for the next analysis before compressing" },
+            { "id": "q-m8-03-c", "text": "Remove the pads" },
+            { "id": "q-m8-03-d", "text": "Switch off the AED" }
+          ],
+          "correctChoiceIDs": ["q-m8-03-a"],
+          "explanation": "Randomisation changes the simulated rhythm decision, not the clinical rule: after a delivered shock, restart compressions immediately.",
+          "sourceReferences": [
+            { "id": "src-q-m8-03-a", "document": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "3.8 Sample Practical Scenarios", "page": "43", "reviewStatus": "source_checked", "reviewer": null, "lastClinicalReviewDate": null, "contentVersion": "1.0.0", "clinicalFactID": "fact.aed.practiceScenarios" },
+            { "id": "src-q-m8-03-b", "document": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "3.5 step 5", "page": "37", "reviewStatus": "source_checked", "reviewer": null, "lastClinicalReviewDate": null, "contentVersion": "1.0.0", "clinicalFactID": "fact.aed.resumeAfterShock" }
+          ]
+        },
+        {
+          "id": "q-m8-04",
+          "type": "singleChoice",
+          "prompt": "In any integrated scenario, what should happen if the casualty's location is unsafe?",
+          "choices": [
+            { "id": "q-m8-04-a", "text": "Move the casualty to a safe, flat, open space as soon as possible" },
+            { "id": "q-m8-04-b", "text": "Ignore the hazard and continue in place" },
+            { "id": "q-m8-04-c", "text": "Apply AED pads while standing in water" },
+            { "id": "q-m8-04-d", "text": "Wait beside the hazard without moving the casualty or beginning care" }
+          ],
+          "correctChoiceIDs": ["q-m8-04-a"],
+          "explanation": "Clinical rules remain fixed across settings: make the scene safe and use a safe, flat, open location when necessary.",
+          "sourceReferences": [
+            { "id": "src-q-m8-04", "document": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "2.2 (D) Check for Danger", "page": "18", "reviewStatus": "source_checked", "reviewer": null, "lastClinicalReviewDate": null, "contentVersion": "1.0.0", "clinicalFactID": "fact.drsabc.danger" }
+          ]
+        },
+        {
+          "id": "q-m8-05",
+          "type": "singleChoice",
+          "prompt": "A scenario casualty is unresponsive and gasping. Which branch is correct?",
+          "choices": [
+            { "id": "q-m8-05-a", "text": "Treat the gasping as abnormal and start chest compressions" },
+            { "id": "q-m8-05-b", "text": "Treat the gasping as normal breathing and wait" },
+            { "id": "q-m8-05-c", "text": "Ask the casualty to walk around" },
+            { "id": "q-m8-05-d", "text": "Delay action until the gasping stops" }
+          ],
+          "correctChoiceIDs": ["q-m8-05-a"],
+          "explanation": "Gasping is abnormal breathing and can indicate cardiac arrest; start compressions when normal breathing is absent or uncertain.",
+          "sourceReferences": [
+            { "id": "src-q-m8-05", "document": "03-SG-BCLSAED-Guidelines-2021.pdf", "edition": "2021", "section": "CPR summary table / key emphases", "page": "23", "reviewStatus": "source_checked", "reviewer": null, "lastClinicalReviewDate": null, "contentVersion": "1.0.0", "clinicalFactID": "fact.recognition.gaspingAbnormal" }
+          ]
+        },
+        {
+          "id": "q-m8-06",
+          "type": "singleChoice",
+          "prompt": "Before a scenario shock is delivered, what verifies a safe clear zone?",
+          "choices": [
+            { "id": "q-m8-06-a", "text": "The rescuer says 'Stay Clear' and visually checks that nobody is touching the casualty" },
+            { "id": "q-m8-06-b", "text": "A bystander keeps one hand on the casualty" },
+            { "id": "q-m8-06-c", "text": "The rescuer presses shock without looking around" },
+            { "id": "q-m8-06-d", "text": "A bystander is asked to press both pads down during shock" }
+          ],
+          "correctChoiceIDs": ["q-m8-06-a"],
+          "explanation": "The rescuer must give a clear command and visually ensure that nobody is in contact before pressing the shock button.",
+          "sourceReferences": [
+            { "id": "src-q-m8-06", "document": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "3.5 steps 3-4", "page": "36", "reviewStatus": "source_checked", "reviewer": null, "lastClinicalReviewDate": null, "contentVersion": "1.0.0", "clinicalFactID": "fact.aed.shockDelivery" }
+          ]
+        }
+      ]
+    },
+    {
+      "moduleID": "M9",
+      "assessmentID": "assessment-m9-awareness-v1",
+      "title": "Child and infant AED awareness",
+      "isScored": false,
+      "passingScore": 0.0,
+      "questions": [
+        {
+          "id": "q-m9-01",
+          "type": "singleChoice",
+          "prompt": "Which statement describes paediatric out-of-hospital cardiac arrest in the supplied source?",
+          "choices": [
+            { "id": "q-m9-01-a", "text": "It is usually caused by non-cardiac conditions, and most children initially have a non-shockable rhythm" },
+            { "id": "q-m9-01-b", "text": "Every paediatric arrest begins with a shockable rhythm" },
+            { "id": "q-m9-01-c", "text": "Ventilation and oxygenation never matter" },
+            { "id": "q-m9-01-d", "text": "AEDs have no possible role in paediatric arrest" }
+          ],
+          "correctChoiceIDs": ["q-m9-01-a"],
+          "explanation": "The source says paediatric arrest is usually non-cardiac and commonly begins with a non-shockable rhythm, making ventilation and oxygenation important.",
+          "sourceReferences": [
+            { "id": "src-q-m9-01", "document": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "3.9 Use of AED in Children", "page": "44", "reviewStatus": "source_checked", "reviewer": null, "lastClinicalReviewDate": null, "contentVersion": "1.0.0", "clinicalFactID": "fact.child.aetiology" }
+          ]
+        },
+        {
+          "id": "q-m9-02",
+          "type": "singleChoice",
+          "prompt": "What does the supplied source say about early AED use for children in cardiac arrest?",
+          "choices": [
+            { "id": "q-m9-02-a", "text": "ILCOR advocates early AED use" },
+            { "id": "q-m9-02-b", "text": "An AED must never be brought near a child" },
+            { "id": "q-m9-02-c", "text": "AED use should always wait until hospital arrival" },
+            { "id": "q-m9-02-d", "text": "Only an adult casualty can have a shockable rhythm" }
+          ],
+          "correctChoiceIDs": ["q-m9-02-a"],
+          "explanation": "The source records ILCOR support for early AED use in children with cardiac arrest.",
+          "sourceReferences": [
+            { "id": "src-q-m9-02", "document": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "3.9 Recommendation for AED Use in Children", "page": "44", "reviewStatus": "source_checked", "reviewer": null, "lastClinicalReviewDate": null, "contentVersion": "1.0.0", "clinicalFactID": "fact.child.earlyAedAdvocated" }
+          ]
+        },
+        {
+          "id": "q-m9-03",
+          "type": "multipleChoice",
+          "prompt": "If no paediatric pads or mode are available for a child, which awareness statements are supported? Select all that apply.",
+          "choices": [
+            { "id": "q-m9-03-a", "text": "An AED with adult pads may be used" },
+            { "id": "q-m9-03-b", "text": "Use front-and-back placement with adult pads" },
+            { "id": "q-m9-03-c", "text": "The pads must never touch or overlap" },
+            { "id": "q-m9-03-d", "text": "Overlap the pads to improve contact" },
+            { "id": "q-m9-03-e", "text": "Place both adult pads on the same spot" }
+          ],
+          "correctChoiceIDs": ["q-m9-03-a", "q-m9-03-b", "q-m9-03-c"],
+          "explanation": "For a child, a standard AED with adult pads may be used when there is no paediatric option; use front-and-back placement and never let pads touch or overlap.",
+          "sourceReferences": [
+            { "id": "src-q-m9-03", "document": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "3.9 Use of AED for Child/Infant", "page": "45", "reviewStatus": "source_checked", "reviewer": null, "lastClinicalReviewDate": null, "contentVersion": "1.0.0", "clinicalFactID": "fact.child.adultPadsOnChild" }
+          ]
+        },
+        {
+          "id": "q-m9-04",
+          "type": "singleChoice",
+          "prompt": "For anterior-anterior paediatric pad placement, what minimum separation is stated in the current source?",
+          "choices": [
+            { "id": "q-m9-04-a", "text": "At least 2 cm, with no touching or overlap" },
+            { "id": "q-m9-04-b", "text": "No separation is needed" },
+            { "id": "q-m9-04-c", "text": "The pads should overlap by 2 cm" },
+            { "id": "q-m9-04-d", "text": "A gap of only 1 cm" }
+          ],
+          "correctChoiceIDs": ["q-m9-04-a"],
+          "explanation": "The current source requires at least 2 cm between anterior-anterior paediatric pads, with no touching or overlap.",
+          "sourceReferences": [
+            { "id": "src-q-m9-04", "document": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "3.9 Placement of Defibrillation Pads for Children/Infant", "page": "45", "reviewStatus": "source_checked", "reviewer": null, "lastClinicalReviewDate": null, "contentVersion": "1.0.0", "clinicalFactID": "fact.child.padSeparation" }
+          ]
+        },
+        {
+          "id": "q-m9-05",
+          "type": "singleChoice",
+          "prompt": "Why is the child pad-selection rule awaiting SME approval in this course?",
+          "choices": [
+            { "id": "q-m9-05-a", "text": "One current source uses ages 1–12, while another uses a weight threshold below 25 kg" },
+            { "id": "q-m9-05-b", "text": "Neither current source mentions paediatric pads" },
+            { "id": "q-m9-05-c", "text": "Both current sources give an identical age-only rule" },
+            { "id": "q-m9-05-d", "text": "The sources say that pad choice is random" }
+          ],
+          "correctChoiceIDs": ["q-m9-05-a"],
+          "explanation": "The current sources express the selection rule differently: the 2022 manual uses ages 1–12, while the 2021 summary uses weight below 25 kg. A qualified SME must reconcile them before learner-facing instruction is approved.",
+          "sourceReferences": [
+            { "id": "src-q-m9-05-a", "document": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "3.9 Recommendation for AED Use in Children", "page": "44", "reviewStatus": "requires_sme_review", "reviewer": null, "lastClinicalReviewDate": null, "contentVersion": "1.0.0", "clinicalFactID": "fact.child.doseAttenuation" },
+            { "id": "src-q-m9-05-b", "document": "03-SG-BCLSAED-Guidelines-2021.pdf", "edition": "2021", "section": "CPR summary table, use of AED", "page": "23", "reviewStatus": "requires_sme_review", "reviewer": null, "lastClinicalReviewDate": null, "contentVersion": "1.0.0", "clinicalFactID": "fact.child.padWeightRule" }
+          ]
+        },
+        {
+          "id": "q-m9-06",
+          "type": "singleChoice",
+          "prompt": "Which statement accurately reflects the unresolved infant defibrillation evidence supplied to the course?",
+          "choices": [
+            { "id": "q-m9-06-a", "text": "For an infant under one year, a manual defibrillator is preferred and child pads are the stated fallback; adult pads are not clearly authorised by the supplied sources" },
+            { "id": "q-m9-06-b", "text": "Adult pads are explicitly required for every infant" },
+            { "id": "q-m9-06-c", "text": "The sources prohibit all defibrillation for infants" },
+            { "id": "q-m9-06-d", "text": "Pad choice is identical for every age without exception" }
+          ],
+          "correctChoiceIDs": ["q-m9-06-a"],
+          "explanation": "This is awareness-only content awaiting SME review: a manual defibrillator is preferred, child pads are the stated fallback, and adult-pad use on an infant is not clearly authorised in the supplied sources.",
+          "sourceReferences": [
+            { "id": "src-q-m9-06-a", "document": "03-SG-BCLSAED-Guidelines-2021.pdf", "edition": "2021", "section": "CPR summary table, use of AED (infant column)", "page": "23", "reviewStatus": "requires_sme_review", "reviewer": null, "lastClinicalReviewDate": null, "contentVersion": "1.0.0", "clinicalFactID": "fact.child.infantDefibrillation" },
+            { "id": "src-q-m9-06-b", "document": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "3.9 Use of AED for Child/Infant", "page": "45", "reviewStatus": "requires_sme_review", "reviewer": null, "lastClinicalReviewDate": null, "contentVersion": "1.0.0", "clinicalFactID": "fact.child.infantDefibrillation" }
+          ]
+        }
+      ]
+    },
+    {
+      "moduleID": "M10",
+      "assessmentID": "assessment-m10-theory-v1",
+      "title": "Post-incident handover and reflection",
+      "isScored": true,
+      "passingScore": 0.8,
+      "questions": [
+        {
+          "id": "q-m10-01",
+          "type": "multipleChoice",
+          "prompt": "Which information should be handed to paramedics? Select all that apply.",
+          "choices": [
+            { "id": "q-m10-01-a", "text": "Best estimate of the collapse time" },
+            { "id": "q-m10-01-b", "text": "Whether an AED was used and the number of shocks" },
+            { "id": "q-m10-01-c", "text": "Known medical history and medications" },
+            { "id": "q-m10-01-d", "text": "Any written event record" },
+            { "id": "q-m10-01-e", "text": "A guess about facts that were not observed" }
+          ],
+          "correctChoiceIDs": ["q-m10-01-a", "q-m10-01-b", "q-m10-01-c", "q-m10-01-d"],
+          "explanation": "Provide observed or known information: collapse time, AED and shock details, medical history or medicines, and any written record.",
+          "sourceReferences": [
+            { "id": "src-q-m10-01", "document": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "3.6 Hand-over to emergency services", "page": "39", "reviewStatus": "source_checked", "reviewer": null, "lastClinicalReviewDate": null, "contentVersion": "1.0.0", "clinicalFactID": "fact.postincident.handoverSummary" }
+          ]
+        },
+        {
+          "id": "q-m10-02",
+          "type": "singleChoice",
+          "prompt": "How long should the rescuer continue assisting the paramedics?",
+          "choices": [
+            { "id": "q-m10-02-a", "text": "Until the casualty is loaded into the ambulance" },
+            { "id": "q-m10-02-b", "text": "Only until the ambulance becomes visible" },
+            { "id": "q-m10-02-c", "text": "Stop as soon as a siren is heard" },
+            { "id": "q-m10-02-d", "text": "Leave before giving any handover" }
+          ],
+          "correctChoiceIDs": ["q-m10-02-a"],
+          "explanation": "Assist the paramedics until the casualty is loaded into the ambulance.",
+          "sourceReferences": [
+            { "id": "src-q-m10-02", "document": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "3.6", "page": "39", "reviewStatus": "source_checked", "reviewer": null, "lastClinicalReviewDate": null, "contentVersion": "1.0.0", "clinicalFactID": "fact.postincident.assistUntilLoaded" }
+          ]
+        },
+        {
+          "id": "q-m10-03",
+          "type": "singleChoice",
+          "prompt": "What happens to the AED after the casualty resumes normal breathing or is transported?",
+          "choices": [
+            { "id": "q-m10-03-a", "text": "It stays switched on and connected to the casualty" },
+            { "id": "q-m10-03-b", "text": "Its pads are removed immediately" },
+            { "id": "q-m10-03-c", "text": "It is switched off before paramedics arrive" },
+            { "id": "q-m10-03-d", "text": "It stays connected but is switched off" }
+          ],
+          "correctChoiceIDs": ["q-m10-03-a"],
+          "explanation": "The AED remains on and connected throughout, including after return of spontaneous circulation and during transport.",
+          "sourceReferences": [
+            { "id": "src-q-m10-03", "document": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "3.5 step 9", "page": "37", "reviewStatus": "source_checked", "reviewer": null, "lastClinicalReviewDate": null, "contentVersion": "1.0.0", "clinicalFactID": "fact.aed.remainConnected" }
+          ]
+        },
+        {
+          "id": "q-m10-04",
+          "type": "singleChoice",
+          "prompt": "After the casualty regains breathing, what position and monitoring are supported for the cardiac-arrest flow?",
+          "choices": [
+            { "id": "q-m10-04-a", "text": "Keep the casualty lying on their back and monitor continuously" },
+            { "id": "q-m10-04-b", "text": "Sit the casualty upright and stop monitoring" },
+            { "id": "q-m10-04-c", "text": "Ask the casualty to walk around" },
+            { "id": "q-m10-04-d", "text": "Remove the AED pads and leave" }
+          ],
+          "correctChoiceIDs": ["q-m10-04-a"],
+          "explanation": "Keep the casualty supine, monitor continuously until help arrives, and leave the AED connected.",
+          "sourceReferences": [
+            { "id": "src-q-m10-04", "document": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "3.5 step 8", "page": "37", "reviewStatus": "source_checked", "reviewer": null, "lastClinicalReviewDate": null, "contentVersion": "1.0.0", "clinicalFactID": "fact.recovery.supineMonitor" }
+          ]
+        },
+        {
+          "id": "q-m10-05",
+          "type": "singleChoice",
+          "prompt": "Why is the recovery position not used after a cardiac-arrest casualty regains circulation?",
+          "choices": [
+            { "id": "q-m10-05-a", "text": "It may hide a re-arrest before EMS arrives" },
+            { "id": "q-m10-05-b", "text": "It always disconnects the AED automatically" },
+            { "id": "q-m10-05-c", "text": "It makes the casualty immediately conscious" },
+            { "id": "q-m10-05-d", "text": "It is required for every cardiac-arrest casualty" }
+          ],
+          "correctChoiceIDs": ["q-m10-05-a"],
+          "explanation": "Current guidance keeps the post-arrest casualty supine because the recovery position can make a re-arrest harder to detect.",
+          "sourceReferences": [
+            { "id": "src-q-m10-05", "document": "03-SG-BCLSAED-Guidelines-2021.pdf", "edition": "2021", "section": "Recovery Position is no longer recommended", "page": "28", "reviewStatus": "source_checked", "reviewer": null, "lastClinicalReviewDate": null, "contentVersion": "1.0.0", "clinicalFactID": "fact.recovery.noRecoveryPositionAfterRosc" }
+          ]
+        },
+        {
+          "id": "q-m10-06",
+          "type": "multipleChoice",
+          "prompt": "Which actions belong to post-use AED owner or vendor duties? Select all that apply.",
+          "choices": [
+            { "id": "q-m10-06-a", "text": "Inform the facility or safety manager" },
+            { "id": "q-m10-06-b", "text": "Replace used consumables such as pads and the shaver kit" },
+            { "id": "q-m10-06-c", "text": "Check the battery and repair the break-glass box if needed" },
+            { "id": "q-m10-06-d", "text": "Check battery indicators annually or as the vendor advises" },
+            { "id": "q-m10-06-e", "text": "Return the AED without replacing used pads" }
+          ],
+          "correctChoiceIDs": ["q-m10-06-a", "q-m10-06-b", "q-m10-06-c", "q-m10-06-d"],
+          "explanation": "Post-use duties include notifying the responsible manager, replacing consumables, checking the battery, repairing the cabinet and following the annual or vendor-advised battery cadence.",
+          "sourceReferences": [
+            { "id": "src-q-m10-06-a", "document": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "3.6 duties of the person in charge", "page": "39", "reviewStatus": "source_checked", "reviewer": null, "lastClinicalReviewDate": null, "contentVersion": "1.0.0", "clinicalFactID": "fact.postincident.aedOwnerDuties" },
+            { "id": "src-q-m10-06-b", "document": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "3.6 (battery cadence, HDB AEDs)", "page": "40", "reviewStatus": "source_checked", "reviewer": null, "lastClinicalReviewDate": null, "contentVersion": "1.0.0", "clinicalFactID": "fact.postincident.aedOwnerDuties" }
+          ]
+        }
+      ]
+    }
+  ]
+}

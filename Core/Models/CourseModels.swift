@@ -28,6 +28,63 @@ struct Module: Codable, Identifiable, Sendable, Equatable {
     let order: Int
     let lessons: [Lesson]
     let sourceReferences: [SourceReference]
+    let reviewStatus: ContentLifecycle
+    let accessRequirements: ModuleAccessRequirements
+
+    init(
+        id: String,
+        title: String,
+        summary: String,
+        order: Int,
+        lessons: [Lesson],
+        sourceReferences: [SourceReference],
+        reviewStatus: ContentLifecycle = .sourceChecked,
+        accessRequirements: ModuleAccessRequirements = .open
+    ) {
+        self.id = id
+        self.title = title
+        self.summary = summary
+        self.order = order
+        self.lessons = lessons
+        self.sourceReferences = sourceReferences
+        self.reviewStatus = reviewStatus
+        self.accessRequirements = accessRequirements
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case id, title, summary, order, lessons, sourceReferences
+        case reviewStatus, accessRequirements
+    }
+
+    init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decode(String.self, forKey: .id)
+        title = try container.decode(String.self, forKey: .title)
+        summary = try container.decode(String.self, forKey: .summary)
+        order = try container.decode(Int.self, forKey: .order)
+        lessons = try container.decode([Lesson].self, forKey: .lessons)
+        sourceReferences = try container.decode([SourceReference].self, forKey: .sourceReferences)
+        reviewStatus = try container.decodeIfPresent(
+            ContentLifecycle.self,
+            forKey: .reviewStatus
+        ) ?? .sourceChecked
+        accessRequirements = try container.decodeIfPresent(
+            ModuleAccessRequirements.self,
+            forKey: .accessRequirements
+        ) ?? .open
+    }
+
+    func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(id, forKey: .id)
+        try container.encode(title, forKey: .title)
+        try container.encode(summary, forKey: .summary)
+        try container.encode(order, forKey: .order)
+        try container.encode(lessons, forKey: .lessons)
+        try container.encode(sourceReferences, forKey: .sourceReferences)
+        try container.encode(reviewStatus, forKey: .reviewStatus)
+        try container.encode(accessRequirements, forKey: .accessRequirements)
+    }
 }
 
 /// A single learning unit containing objectives and versioned learning material.
@@ -58,6 +115,50 @@ struct ContentBlock: Codable, Identifiable, Sendable, Equatable {
     let title: String
     let body: String
     let sourceReferences: [SourceReference]
+    let reviewStatus: ContentLifecycle
+
+    init(
+        id: String,
+        kind: ContentBlockKind,
+        title: String,
+        body: String,
+        sourceReferences: [SourceReference],
+        reviewStatus: ContentLifecycle = .sourceChecked
+    ) {
+        self.id = id
+        self.kind = kind
+        self.title = title
+        self.body = body
+        self.sourceReferences = sourceReferences
+        self.reviewStatus = reviewStatus
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case id, kind, title, body, sourceReferences, reviewStatus
+    }
+
+    init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decode(String.self, forKey: .id)
+        kind = try container.decode(ContentBlockKind.self, forKey: .kind)
+        title = try container.decode(String.self, forKey: .title)
+        body = try container.decode(String.self, forKey: .body)
+        sourceReferences = try container.decode([SourceReference].self, forKey: .sourceReferences)
+        reviewStatus = try container.decodeIfPresent(
+            ContentLifecycle.self,
+            forKey: .reviewStatus
+        ) ?? .sourceChecked
+    }
+
+    func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(id, forKey: .id)
+        try container.encode(kind, forKey: .kind)
+        try container.encode(title, forKey: .title)
+        try container.encode(body, forKey: .body)
+        try container.encode(sourceReferences, forKey: .sourceReferences)
+        try container.encode(reviewStatus, forKey: .reviewStatus)
+    }
 }
 
 /// Supported presentation categories for a lesson content block.
@@ -92,6 +193,47 @@ struct Assessment: Codable, Identifiable, Sendable, Equatable {
     let passingScore: Double
     let questions: [Question]
     let sourceReferences: [SourceReference]
+    let isScored: Bool
+
+    init(
+        id: String,
+        title: String,
+        passingScore: Double,
+        questions: [Question],
+        sourceReferences: [SourceReference],
+        isScored: Bool = true
+    ) {
+        self.id = id
+        self.title = title
+        self.passingScore = passingScore
+        self.questions = questions
+        self.sourceReferences = sourceReferences
+        self.isScored = isScored
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case id, title, passingScore, questions, sourceReferences, isScored
+    }
+
+    init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decode(String.self, forKey: .id)
+        title = try container.decode(String.self, forKey: .title)
+        passingScore = try container.decode(Double.self, forKey: .passingScore)
+        questions = try container.decode([Question].self, forKey: .questions)
+        sourceReferences = try container.decode([SourceReference].self, forKey: .sourceReferences)
+        isScored = try container.decodeIfPresent(Bool.self, forKey: .isScored) ?? true
+    }
+
+    func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(id, forKey: .id)
+        try container.encode(title, forKey: .title)
+        try container.encode(passingScore, forKey: .passingScore)
+        try container.encode(questions, forKey: .questions)
+        try container.encode(sourceReferences, forKey: .sourceReferences)
+        try container.encode(isScored, forKey: .isScored)
+    }
 }
 
 enum QuestionType: String, Codable, Sendable, CaseIterable {
