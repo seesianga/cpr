@@ -1,0 +1,11 @@
+[
+  {"id":"danger-detective","title":"Danger Detective","metric":"dangerChecks","comparison":"atLeast","target":1},
+  {"id":"call-for-help","title":"Call for Help","metric":"activationChecks","comparison":"atLeast","target":1},
+  {"id":"rhythm-keeper","title":"Rhythm Keeper","metric":"rhythmAccuracy","comparison":"atLeast","target":0.8},
+  {"id":"minimal-interruption","title":"Minimal Interruption","metric":"longestInterruptionSeconds","comparison":"atMost","target":10},
+  {"id":"pad-placement-pro","title":"Pad Placement Pro","metric":"padPlacementAccuracy","comparison":"atLeast","target":0.9},
+  {"id":"everybody-clear","title":"Everybody Clear","metric":"clearChecks","comparison":"atLeast","target":1},
+  {"id":"calm-responder","title":"Calm Responder","metric":"communicationScore","comparison":"atLeast","target":0.8},
+  {"id":"practice-makes-ready","title":"Practice Makes Ready","metric":"successfulPracticeCount","comparison":"atLeast","target":5},
+  {"id":"instructor-verified","title":"Instructor Verified","metric":"approvedSignOffCount","comparison":"atLeast","target":1}
+]

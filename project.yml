@@ -39,6 +39,8 @@ targets:
       - path: Audio
       - path: Resources/Courses
         buildPhase: resources
+      - path: Resources/Configuration
+        buildPhase: resources
       - path: Docs/CLINICAL_FACTS_EXTRACT.json
         buildPhase: resources
     dependencies:

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		007E19463129031B7CB4984C /* badge_rules.json in Resources */ = {isa = PBXBuildFile; fileRef = 784F8917C9890ED504C4BDFD /* badge_rules.json */; };
 		04A6DF8D691B32A94D7C445A /* CourseEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4096E33EEA85FA3A5E8C96B /* CourseEngine.swift */; };
 		0A73E9810163DB68D273F78F /* SwiftDataModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B80330B316C610B9D0D074C /* SwiftDataModels.swift */; };
 		0BF6C30E7AF11CCDF9ABAAB1 /* CPRPracticeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DDBD4AFC87AA6D056BBF533 /* CPRPracticeView.swift */; };
@@ -29,11 +30,15 @@
 		80470F2BE3E7E02110AC9AE2 /* AEDPracticeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBF3643E671D034583F581EB /* AEDPracticeView.swift */; };
 		89DCBC5D348AABEAEE3FF85A /* ClinicalContentModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 412F10989BC2B1E1186ADE8C /* ClinicalContentModels.swift */; };
 		8D68767498262C9A01AA74A6 /* ScenariosView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B7788B494A1474F6109D2E0 /* ScenariosView.swift */; };
+		91AFB7CC00E0D35B4427EB44 /* ScoringEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AAEC527E57ED3C59CEFECE2 /* ScoringEngine.swift */; };
 		9DC84AE15CC29590B0D83D06 /* SpatialAccessibility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C003D64334B45957501A233 /* SpatialAccessibility.swift */; };
+		A1CC684DBDA6ED7DCE94AEE3 /* GamificationModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09E3DE65241A278B4935FB43 /* GamificationModels.swift */; };
 		A1F1526A7F1EDBC8344A04B6 /* LocalAuthenticationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9C327C0164543F660D42C98 /* LocalAuthenticationService.swift */; };
 		A5A61C60D0423286BCA40725 /* AuthenticationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19DF7FD751A607D822ACA9E0 /* AuthenticationView.swift */; };
 		A7023ABF38CEC51E560B0F6D /* AppleCredentialStateProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3528BDD94D2143F8CB99F69 /* AppleCredentialStateProvider.swift */; };
+		AE47F6695CB5AC73BF5D6031 /* GamificationEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF2CECDD36F556E590240A07 /* GamificationEngine.swift */; };
 		AFF03048BB35D9490863D65E /* KeychainStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55C2483F4B9D5E2A0546A72F /* KeychainStore.swift */; };
+		B629B6D72F0419BF48541F7E /* ScoringModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99909D20EFD397C60F85B357 /* ScoringModels.swift */; };
 		B7D83DFFB99193477D5E3ED8 /* SpatialLaboratoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1332AC8581AF5C4C69654B21 /* SpatialLaboratoryView.swift */; };
 		B8EFF88EFCD81430447C537A /* AudioDirector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BB18FB85B195587F2494CA4 /* AudioDirector.swift */; };
 		BBE811FE446E1AB7EDF5848A /* AppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA008142D9428529D8C9B406 /* AppModel.swift */; };
@@ -73,6 +78,7 @@
 
 /* Begin PBXFileReference section */
 		088100D062186324E946AF5F /* LifesaverVisionUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LifesaverVisionUITests.swift; sourceTree = "<group>"; };
+		09E3DE65241A278B4935FB43 /* GamificationModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GamificationModels.swift; sourceTree = "<group>"; };
 		1332AC8581AF5C4C69654B21 /* SpatialLaboratoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpatialLaboratoryView.swift; sourceTree = "<group>"; };
 		19DF7FD751A607D822ACA9E0 /* AuthenticationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationView.swift; sourceTree = "<group>"; };
 		1B80330B316C610B9D0D074C /* SwiftDataModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftDataModels.swift; sourceTree = "<group>"; };
@@ -96,6 +102,7 @@
 		67E2A5ADFE21D89BD1298071 /* .gitkeep */ = {isa = PBXFileReference; path = .gitkeep; sourceTree = "<group>"; };
 		6F67C420CD18EFAD3A3FFF70 /* PersistenceBootstrap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceBootstrap.swift; sourceTree = "<group>"; };
 		71D5BDBABCC18ADDCE23D262 /* InMemoryRepositories.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InMemoryRepositories.swift; sourceTree = "<group>"; };
+		784F8917C9890ED504C4BDFD /* badge_rules.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = badge_rules.json; sourceTree = "<group>"; };
 		7BB18FB85B195587F2494CA4 /* AudioDirector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioDirector.swift; sourceTree = "<group>"; };
 		7DF5B09C284C49F4693D26AA /* LifesaverVision.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = LifesaverVision.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7E52C2BF6FA4F38A8D57346F /* LifesaverVision.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = LifesaverVision.entitlements; sourceTree = "<group>"; };
@@ -106,11 +113,14 @@
 		8C003D64334B45957501A233 /* SpatialAccessibility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpatialAccessibility.swift; sourceTree = "<group>"; };
 		92385E507D55CA1777A3F4C7 /* HandTrackingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HandTrackingService.swift; sourceTree = "<group>"; };
 		95C6FF488A48BEF60D4365AB /* GamificationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GamificationView.swift; sourceTree = "<group>"; };
+		99909D20EFD397C60F85B357 /* ScoringModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoringModels.swift; sourceTree = "<group>"; };
+		9AAEC527E57ED3C59CEFECE2 /* ScoringEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoringEngine.swift; sourceTree = "<group>"; };
 		9F17515043A751995B34EA45 /* TheoryLearningView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TheoryLearningView.swift; sourceTree = "<group>"; };
 		9FD4D21E092ACBB990924248 /* ContentVersionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentVersionService.swift; sourceTree = "<group>"; };
 		A1F54BAD8AA4DF74871D356B /* InstructorDashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstructorDashboardView.swift; sourceTree = "<group>"; };
 		A75B557DE09FD3DBDC1E12D4 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		AA008142D9428529D8C9B406 /* AppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModel.swift; sourceTree = "<group>"; };
+		AF2CECDD36F556E590240A07 /* GamificationEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GamificationEngine.swift; sourceTree = "<group>"; };
 		B645A9F3813782C7AB7F53F8 /* SwiftDataRepositories.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftDataRepositories.swift; sourceTree = "<group>"; };
 		C2FD9ED93E2327ADBB08FEDC /* OfflineFirstSyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfflineFirstSyncService.swift; sourceTree = "<group>"; };
 		CA757C1AD1292C2B8B01A5D0 /* AuthenticationModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationModel.swift; sourceTree = "<group>"; };
@@ -200,12 +210,23 @@
 			path = Packages;
 			sourceTree = "<group>";
 		};
+		2F812571553883EC326E2A5D /* Configuration */ = {
+			isa = PBXGroup;
+			children = (
+				784F8917C9890ED504C4BDFD /* badge_rules.json */,
+			);
+			name = Configuration;
+			path = Resources/Configuration;
+			sourceTree = "<group>";
+		};
 		3ED3E1F1A1169B46CA45F009 /* Services */ = {
 			isa = PBXGroup;
 			children = (
 				55A97ECE5205E7A39EC1D407 /* ClinicalSafetyValidator.swift */,
 				9FD4D21E092ACBB990924248 /* ContentVersionService.swift */,
 				F4096E33EEA85FA3A5E8C96B /* CourseEngine.swift */,
+				AF2CECDD36F556E590240A07 /* GamificationEngine.swift */,
+				9AAEC527E57ED3C59CEFECE2 /* ScoringEngine.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -353,6 +374,8 @@
 			children = (
 				412F10989BC2B1E1186ADE8C /* ClinicalContentModels.swift */,
 				4E25577CD11456085CA5FC06 /* CourseModels.swift */,
+				09E3DE65241A278B4935FB43 /* GamificationModels.swift */,
+				99909D20EFD397C60F85B357 /* ScoringModels.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -394,6 +417,7 @@
 			children = (
 				42DB68DD5563584E7ED3812E /* App */,
 				19B0825EFD2B40535327666E /* Audio */,
+				2F812571553883EC326E2A5D /* Configuration */,
 				4D993081A60D60723283D444 /* Core */,
 				0CD3CD8CD595B45452914C66 /* Courses */,
 				CE87E78559955DB4B7B82DE8 /* Docs */,
@@ -591,6 +615,7 @@
 			files = (
 				25E2E6ABF69D8A3BBFBAA1A3 /* CLINICAL_FACTS_EXTRACT.json in Resources */,
 				4D0C4B048551D5D58293FF62 /* PrivacyInfo.xcprivacy in Resources */,
+				007E19463129031B7CB4984C /* badge_rules.json in Resources */,
 				FBC50F12E137A5F0BAA80369 /* course_v1.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -620,6 +645,8 @@
 				1F4D323D9AE81F20A41C1BD9 /* CourseModels.swift in Sources */,
 				BE7AF60656B0432F667F75B0 /* DashboardRootView.swift in Sources */,
 				D585502CA819241FB38649A3 /* DashboardView.swift in Sources */,
+				AE47F6695CB5AC73BF5D6031 /* GamificationEngine.swift in Sources */,
+				A1CC684DBDA6ED7DCE94AEE3 /* GamificationModels.swift in Sources */,
 				74C6876CEE0B238317F4286C /* GamificationView.swift in Sources */,
 				BFDFC3D2C7F42382E07C8FAD /* HandTrackingService.swift in Sources */,
 				F26B71208E2C08B006762FB3 /* InMemoryRepositories.swift in Sources */,
@@ -633,6 +660,8 @@
 				2CD8857302B9E609DCFBB356 /* PersistenceBootstrap.swift in Sources */,
 				8D68767498262C9A01AA74A6 /* ScenariosView.swift in Sources */,
 				2689B063C77FD3438F4A1995 /* ScenePlacement.swift in Sources */,
+				91AFB7CC00E0D35B4427EB44 /* ScoringEngine.swift in Sources */,
+				B629B6D72F0419BF48541F7E /* ScoringModels.swift in Sources */,
 				4CBE4FB5C5E5C433C41AF551 /* SettingsView.swift in Sources */,
 				2214C2287D36076C6715BBEC /* SimulationSpaceRootView.swift in Sources */,
 				9DC84AE15CC29590B0D83D06 /* SpatialAccessibility.swift in Sources */,
