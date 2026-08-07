@@ -268,7 +268,7 @@
             { "id": "q-m2-03-d", "text": "It is useful only after twenty minutes" }
           ],
           "correctChoiceIDs": ["q-m2-03-a"],
-          "explanation": "Early CPR supports circulation during a time-critical emergency in which brain cells can begin dying within four to six minutes.",
+          "explanation": "Early CPR should begin quickly because brain cells can begin dying within four to six minutes.",
           "sourceReferences": [
             { "id": "src-q-m2-03", "document": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "1.7 The Chain of Survival", "page": "11", "reviewStatus": "source_checked", "reviewer": null, "lastClinicalReviewDate": null, "contentVersion": "1.0.0", "clinicalFactID": "fact.chain.ringDefinitions" }
           ]
@@ -498,7 +498,7 @@
             { "id": "q-m4-04-d", "text": "More than 10 cm" }
           ],
           "correctChoiceIDs": ["q-m4-04-a"],
-          "explanation": "The source states an adult depth range of 4 to 6 cm. Lifesaver Vision does not physically assess depth without a verified external sensor.",
+          "explanation": "The source states an adult depth range of at least 4 cm and not more than 6 cm.",
           "sourceReferences": [
             { "id": "src-q-m4-04", "document": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "2.2 (C) Chest Compressions", "page": "20", "reviewStatus": "source_checked", "reviewer": null, "lastClinicalReviewDate": null, "contentVersion": "1.0.0", "clinicalFactID": "fact.compression.depthAdult" }
           ]
@@ -659,7 +659,7 @@
         {
           "id": "q-m6-01",
           "type": "ordering",
-          "prompt": "Order the AED application actions while another rescuer continues compressions where possible.",
+          "prompt": "Order the AED application actions while compressions continue where possible.",
           "choices": [
             { "id": "q-m6-01-a", "text": "Continue chest compressions" },
             { "id": "q-m6-01-b", "text": "Open the AED box" },
@@ -756,7 +756,8 @@
           "explanation": "A no-shock decision is followed by immediate compressions. Keep the AED on and connected and continue to follow its prompts.",
           "sourceReferences": [
             { "id": "src-q-m6-06-a", "document": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "3.5 step 6", "page": "37", "reviewStatus": "source_checked", "reviewer": null, "lastClinicalReviewDate": null, "contentVersion": "1.0.0", "clinicalFactID": "fact.aed.noShockAdvised" },
-            { "id": "src-q-m6-06-b", "document": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "3.5 step 9", "page": "37", "reviewStatus": "source_checked", "reviewer": null, "lastClinicalReviewDate": null, "contentVersion": "1.0.0", "clinicalFactID": "fact.aed.remainConnected" }
+            { "id": "src-q-m6-06-b", "document": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "3.5 step 9", "page": "37", "reviewStatus": "source_checked", "reviewer": null, "lastClinicalReviewDate": null, "contentVersion": "1.0.0", "clinicalFactID": "fact.aed.remainConnected" },
+            { "id": "src-q-m6-06-c", "document": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "3.2 Automated External Defibrillators", "page": "32", "reviewStatus": "source_checked", "reviewer": null, "lastClinicalReviewDate": null, "contentVersion": "1.0.0", "clinicalFactID": "fact.aed.purpose" }
           ]
         }
       ]
@@ -789,15 +790,16 @@
           "type": "singleChoice",
           "prompt": "How can two or more rescuers organise the response?",
           "choices": [
-            { "id": "q-m7-02-a", "text": "Split compressions, ventilations, the 995 call and AED tasks" },
+            { "id": "q-m7-02-a", "text": "Split compressions, the 995 call and AED tasks; include ventilations only when a rescuer is trained, able and willing" },
             { "id": "q-m7-02-b", "text": "All rescuers perform compressions at the same time" },
             { "id": "q-m7-02-c", "text": "Nobody calls 995 until the AED has shocked" },
             { "id": "q-m7-02-d", "text": "One rescuer does every task while the others wait" }
           ],
           "correctChoiceIDs": ["q-m7-02-a"],
-          "explanation": "With multiple rescuers, divide the compression, ventilation, emergency-call and AED roles.",
+          "explanation": "With multiple rescuers, divide the compression, emergency-call and AED roles. Include a ventilation role only when a rescuer is trained, able and willing to ventilate.",
           "sourceReferences": [
-            { "id": "src-q-m7-02", "document": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "2.3 CPR in Special Circumstances", "page": "27", "reviewStatus": "source_checked", "reviewer": null, "lastClinicalReviewDate": null, "contentVersion": "1.0.0", "clinicalFactID": "fact.specialsettings.environments" }
+            { "id": "src-q-m7-02", "document": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "2.3 CPR in Special Circumstances", "page": "27", "reviewStatus": "source_checked", "reviewer": null, "lastClinicalReviewDate": null, "contentVersion": "1.0.0", "clinicalFactID": "fact.specialsettings.environments" },
+            { "id": "src-q-m7-02-ventilation", "document": "03-SG-BCLSAED-Guidelines-2021.pdf", "edition": "2021", "section": "CPR summary table, compression-ventilation ratio", "page": "23", "reviewStatus": "source_checked", "reviewer": null, "lastClinicalReviewDate": null, "contentVersion": "1.0.0", "clinicalFactID": "fact.ventilation.thirtyToTwoIfTrained" }
           ]
         },
         {
@@ -1178,14 +1180,13 @@
             { "id": "q-m10-06-a", "text": "Inform the facility or safety manager" },
             { "id": "q-m10-06-b", "text": "Replace used consumables such as pads and the shaver kit" },
             { "id": "q-m10-06-c", "text": "Check the battery and repair the break-glass box if needed" },
-            { "id": "q-m10-06-d", "text": "Check battery indicators annually or as the vendor advises" },
+            { "id": "q-m10-06-d", "text": "Retrieve or print the AED event record for audit" },
             { "id": "q-m10-06-e", "text": "Return the AED without replacing used pads" }
           ],
           "correctChoiceIDs": ["q-m10-06-a", "q-m10-06-b", "q-m10-06-c", "q-m10-06-d"],
-          "explanation": "Post-use duties include notifying the responsible manager, replacing consumables, checking the battery, repairing the cabinet and following the annual or vendor-advised battery cadence.",
+          "explanation": "Post-use duties include notifying the responsible manager, replacing consumables, checking the battery, repairing the cabinet and retrieving the AED event record for audit.",
           "sourceReferences": [
-            { "id": "src-q-m10-06-a", "document": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "3.6 duties of the person in charge", "page": "39", "reviewStatus": "source_checked", "reviewer": null, "lastClinicalReviewDate": null, "contentVersion": "1.0.0", "clinicalFactID": "fact.postincident.aedOwnerDuties" },
-            { "id": "src-q-m10-06-b", "document": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "3.6 (battery cadence, HDB AEDs)", "page": "40", "reviewStatus": "source_checked", "reviewer": null, "lastClinicalReviewDate": null, "contentVersion": "1.0.0", "clinicalFactID": "fact.postincident.aedOwnerDuties" }
+            { "id": "src-q-m10-06-a", "document": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "3.6 duties of the person in charge", "page": "39", "reviewStatus": "source_checked", "reviewer": null, "lastClinicalReviewDate": null, "contentVersion": "1.0.0", "clinicalFactID": "fact.postincident.aedOwnerDuties" }
           ]
         }
       ]
