@@ -42,8 +42,8 @@ targets:
       - path: Core
       - path: Features
       - path: Spatial
-      # Phase 5A links only the audio boundary. Generated Phase 6 media is intentionally
-      # registered by its own manifest/resource phase so duplicate working files never ship.
+      # Phase 5A links only the audio boundary. Phase 6 audio and caption media remain
+      # excluded until their dedicated Phase 5B/6B manifest and resource wiring lands.
       - path: Audio/AudioDirector.swift
       - path: Resources/Courses
         buildPhase: resources
