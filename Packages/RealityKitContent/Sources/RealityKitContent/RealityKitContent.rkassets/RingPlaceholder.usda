@@ -1,0 +1,64 @@
+#usda 1.0
+(
+    defaultPrim = "ring_placeholder"
+    documentation = "Original rounded-square ring assembled from RealityKit-supported capsules."
+    metersPerUnit = 1
+    upAxis = "Y"
+)
+
+def Xform "ring_placeholder"
+{
+    def Scope "Materials"
+    {
+        def Material "ChainBlue"
+        {
+            token outputs:surface.connect = </ring_placeholder/Materials/ChainBlue/PreviewSurface.outputs:surface>
+            def Shader "PreviewSurface"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.08, 0.38, 0.62)
+                color3f inputs:emissiveColor = (0.006, 0.025, 0.05)
+                float inputs:metallic = 0.14
+                float inputs:roughness = 0.42
+                token outputs:surface
+            }
+        }
+    }
+
+    def Capsule "ring_top" ( prepend apiSchemas = ["MaterialBindingAPI"] )
+    {
+        rel material:binding = </ring_placeholder/Materials/ChainBlue>
+        uniform token axis = "X"
+        double height = 0.14
+        double radius = 0.018
+        float3 xformOp:translate = (0, 0.080, 0)
+        uniform token[] xformOpOrder = ["xformOp:translate"]
+    }
+    def Capsule "ring_bottom" ( prepend apiSchemas = ["MaterialBindingAPI"] )
+    {
+        rel material:binding = </ring_placeholder/Materials/ChainBlue>
+        uniform token axis = "X"
+        double height = 0.14
+        double radius = 0.018
+        float3 xformOp:translate = (0, -0.080, 0)
+        uniform token[] xformOpOrder = ["xformOp:translate"]
+    }
+    def Capsule "ring_left" ( prepend apiSchemas = ["MaterialBindingAPI"] )
+    {
+        rel material:binding = </ring_placeholder/Materials/ChainBlue>
+        uniform token axis = "Y"
+        double height = 0.14
+        double radius = 0.018
+        float3 xformOp:translate = (-0.080, 0, 0)
+        uniform token[] xformOpOrder = ["xformOp:translate"]
+    }
+    def Capsule "ring_right" ( prepend apiSchemas = ["MaterialBindingAPI"] )
+    {
+        rel material:binding = </ring_placeholder/Materials/ChainBlue>
+        uniform token axis = "Y"
+        double height = 0.14
+        double radius = 0.018
+        float3 xformOp:translate = (0.080, 0, 0)
+        uniform token[] xformOpOrder = ["xformOp:translate"]
+    }
+}

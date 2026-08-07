@@ -230,16 +230,17 @@ def Xform "aed_trainer"
             float3 xformOp:scale = (0.05, 0.018, 0.22)
             uniform token[] xformOpOrder = ["xformOp:scale"]
         }
-        def Torus "training_scissors_handle" (
+        def Capsule "training_scissors_handle" (
             prepend apiSchemas = ["MaterialBindingAPI"]
         )
         {
             rel material:binding = </aed_trainer/Materials/CaseCrimson>
-            uniform token axis = "Y"
-            double majorRadius = 0.032
-            double minorRadius = 0.009
+            uniform token axis = "Z"
+            double height = 0.05
+            double radius = 0.025
             float3 xformOp:translate = (0, 0, 0.12)
-            uniform token[] xformOpOrder = ["xformOp:translate"]
+            float3 xformOp:scale = (1, 0.38, 1)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
         }
     }
     def Xform "training_razor"

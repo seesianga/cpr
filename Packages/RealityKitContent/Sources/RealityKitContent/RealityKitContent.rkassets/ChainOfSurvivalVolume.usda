@@ -8,82 +8,38 @@
 
 def Xform "ChainOfSurvivalVolume"
 {
-    def Scope "Materials"
+    def Xform "chain_ring_1" ( prepend references = @RingPlaceholder.usda@ )
     {
-        def Material "ChainBlue"
-        {
-            token outputs:surface.connect = </ChainOfSurvivalVolume/Materials/ChainBlue/PreviewSurface.outputs:surface>
-            def Shader "PreviewSurface"
-            {
-                uniform token info:id = "UsdPreviewSurface"
-                color3f inputs:diffuseColor = (0.08, 0.38, 0.62)
-                color3f inputs:emissiveColor = (0.006, 0.025, 0.05)
-                float inputs:metallic = 0.14
-                float inputs:roughness = 0.42
-                token outputs:surface
-            }
-        }
-    }
-    def Torus "chain_ring_1" ( prepend apiSchemas = ["MaterialBindingAPI"] )
-    {
-        rel material:binding = </ChainOfSurvivalVolume/Materials/ChainBlue>
-        uniform token axis = "Z"
-        double majorRadius = 0.095
-        double minorRadius = 0.014
         float3 xformOp:translate = (-0.30, 0.48, 0)
         uniform token[] xformOpOrder = ["xformOp:translate"]
     }
-    def Torus "chain_ring_2" ( prepend apiSchemas = ["MaterialBindingAPI"] )
+    def Xform "chain_ring_2" ( prepend references = @RingPlaceholder.usda@ )
     {
-        rel material:binding = </ChainOfSurvivalVolume/Materials/ChainBlue>
-        uniform token axis = "Z"
-        double majorRadius = 0.095
-        double minorRadius = 0.014
         float3 xformOp:translate = (0, 0.58, 0)
         uniform token[] xformOpOrder = ["xformOp:translate"]
     }
-    def Torus "chain_ring_3" ( prepend apiSchemas = ["MaterialBindingAPI"] )
+    def Xform "chain_ring_3" ( prepend references = @RingPlaceholder.usda@ )
     {
-        rel material:binding = </ChainOfSurvivalVolume/Materials/ChainBlue>
-        uniform token axis = "Z"
-        double majorRadius = 0.095
-        double minorRadius = 0.014
         float3 xformOp:translate = (0.30, 0.48, 0)
         uniform token[] xformOpOrder = ["xformOp:translate"]
     }
-    def Torus "chain_ring_4" ( prepend apiSchemas = ["MaterialBindingAPI"] )
+    def Xform "chain_ring_4" ( prepend references = @RingPlaceholder.usda@ )
     {
-        rel material:binding = </ChainOfSurvivalVolume/Materials/ChainBlue>
-        uniform token axis = "Z"
-        double majorRadius = 0.095
-        double minorRadius = 0.014
         float3 xformOp:translate = (0.40, 0.20, 0)
         uniform token[] xformOpOrder = ["xformOp:translate"]
     }
-    def Torus "chain_ring_5" ( prepend apiSchemas = ["MaterialBindingAPI"] )
+    def Xform "chain_ring_5" ( prepend references = @RingPlaceholder.usda@ )
     {
-        rel material:binding = </ChainOfSurvivalVolume/Materials/ChainBlue>
-        uniform token axis = "Z"
-        double majorRadius = 0.095
-        double minorRadius = 0.014
         float3 xformOp:translate = (0.18, -0.04, 0)
         uniform token[] xformOpOrder = ["xformOp:translate"]
     }
-    def Torus "chain_ring_6" ( prepend apiSchemas = ["MaterialBindingAPI"] )
+    def Xform "chain_ring_6" ( prepend references = @RingPlaceholder.usda@ )
     {
-        rel material:binding = </ChainOfSurvivalVolume/Materials/ChainBlue>
-        uniform token axis = "Z"
-        double majorRadius = 0.095
-        double minorRadius = 0.014
         float3 xformOp:translate = (-0.18, -0.04, 0)
         uniform token[] xformOpOrder = ["xformOp:translate"]
     }
-    def Torus "chain_ring_7" ( prepend apiSchemas = ["MaterialBindingAPI"] )
+    def Xform "chain_ring_7" ( prepend references = @RingPlaceholder.usda@ )
     {
-        rel material:binding = </ChainOfSurvivalVolume/Materials/ChainBlue>
-        uniform token axis = "Z"
-        double majorRadius = 0.095
-        double minorRadius = 0.014
         float3 xformOp:translate = (-0.40, 0.20, 0)
         uniform token[] xformOpOrder = ["xformOp:translate"]
     }

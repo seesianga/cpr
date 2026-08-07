@@ -26,15 +26,43 @@ def Xform "clear_zone"
         }
     }
 
-    def Torus "clear_zone_ring" (
-        prepend apiSchemas = ["MaterialBindingAPI"]
-    )
+    def Xform "clear_zone_ring"
     {
-        rel material:binding = </clear_zone/Materials/ClearBlue>
-        uniform token axis = "Y"
-        double majorRadius = 0.9
-        double minorRadius = 0.018
-        float3 xformOp:translate = (0, 0.022, 0)
-        uniform token[] xformOpOrder = ["xformOp:translate"]
+        def Capsule "ring_front" ( prepend apiSchemas = ["MaterialBindingAPI"] )
+        {
+            rel material:binding = </clear_zone/Materials/ClearBlue>
+            uniform token axis = "X"
+            double height = 1.64
+            double radius = 0.018
+            float3 xformOp:translate = (0, 0.022, 0.82)
+            uniform token[] xformOpOrder = ["xformOp:translate"]
+        }
+        def Capsule "ring_back" ( prepend apiSchemas = ["MaterialBindingAPI"] )
+        {
+            rel material:binding = </clear_zone/Materials/ClearBlue>
+            uniform token axis = "X"
+            double height = 1.64
+            double radius = 0.018
+            float3 xformOp:translate = (0, 0.022, -0.82)
+            uniform token[] xformOpOrder = ["xformOp:translate"]
+        }
+        def Capsule "ring_left" ( prepend apiSchemas = ["MaterialBindingAPI"] )
+        {
+            rel material:binding = </clear_zone/Materials/ClearBlue>
+            uniform token axis = "Z"
+            double height = 1.64
+            double radius = 0.018
+            float3 xformOp:translate = (-0.82, 0.022, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate"]
+        }
+        def Capsule "ring_right" ( prepend apiSchemas = ["MaterialBindingAPI"] )
+        {
+            rel material:binding = </clear_zone/Materials/ClearBlue>
+            uniform token axis = "Z"
+            double height = 1.64
+            double radius = 0.018
+            float3 xformOp:translate = (0.82, 0.022, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate"]
+        }
     }
 }
