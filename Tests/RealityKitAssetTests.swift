@@ -326,7 +326,9 @@ private extension RealityKitAssetTests {
         case .aedPreparationRoom:
             return manikinModelNames + aedTrainerModelNames
         case .aedPlacementRoom:
-            return manikinModelNames + aedTrainerModelNames + ["clear_zone"]
+            return manikinModelNames
+                + aedTrainerModelNames
+                + ["bystander_01", "bystander_02", "clear_zone"]
         case .scenarioHome,
              .scenarioShoppingCentre,
              .scenarioWorkplace,
@@ -355,6 +357,7 @@ private extension RealityKitAssetTests {
         "aed_case",
         "aed_unit",
         "aed_power_button",
+        "aed_shock_button",
         "aed_status_light",
         "aed_connector",
         "aed_left_pad",

@@ -136,6 +136,20 @@ def Xform "aed_trainer"
                 double radius = 0.027
             }
         }
+        def Xform "aed_shock_button"
+        {
+            float3 xformOp:translate = (0, 0.12, 0.055)
+            uniform token[] xformOpOrder = ["xformOp:translate"]
+            def Cylinder "aed_shock_button_surface" (
+                prepend apiSchemas = ["MaterialBindingAPI"]
+            )
+            {
+                rel material:binding = </aed_trainer/Materials/CaseCrimson>
+                uniform token axis = "Y"
+                double height = 0.025
+                double radius = 0.034
+            }
+        }
         def Xform "aed_status_light"
         {
             float3 xformOp:translate = (0.09, 0.12, -0.055)

@@ -406,6 +406,12 @@ private extension AssetRegistry {
             collisionProxy: .capsule
         ),
         .init(
+            name: "aed_shock_button",
+            label: "Simulated AED shock control",
+            description: "Training-only control. It cannot deliver an electrical shock and remains safety-gated by the interactive clear check.",
+            collisionProxy: .capsule
+        ),
+        .init(
             name: "aed_status_light",
             label: "AED status light",
             description: "Training-only status indicator.",
@@ -494,7 +500,7 @@ private extension AssetRegistry {
         case .aedPreparationRoom:
             return manikinTargets + aedControls + preparationProps
         case .aedPlacementRoom:
-            return manikinTargets + padPlacementTargets + aedControls + clearZone
+            return manikinTargets + padPlacementTargets + aedControls + scenarioPeople + clearZone
         case .scenarioHome, .scenarioShoppingCentre, .scenarioWorkplace, .scenarioCommunityFacility:
             return manikinTargets + padPlacementTargets + aedControls + scenarioPeople + clearZone
         case .achievementGallery:

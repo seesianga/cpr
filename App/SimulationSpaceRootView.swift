@@ -1,28 +1,36 @@
 import RealityKit
 import SwiftUI
 
-/// Mixed-immersion simulation with head-anchored pause and exit controls.
+/// Mixed-immersion practice host with permanently visible pause and exit controls.
 struct SimulationSpaceRootView: View {
     @Environment(\.dismissImmersiveSpace) private var dismissImmersiveSpace
     @Environment(\.scenePhase) private var scenePhase
     @Environment(AppModel.self) private var appModel
+
     @State private var isLoading = true
     @State private var loadErrorMessage: String?
     @State private var loadedScene: SpatialSceneName?
     @State private var assetRegistry = AssetRegistry()
+    @State private var cprSession = CPRPracticeSessionModel()
+    @State private var aedSession = AEDPracticeSessionModel()
+    @State private var draggedPadName: String?
+    @State private var draggedPadOffset = SIMD3<Float>.zero
 
     var body: some View {
         RealityView { content, attachments in
             let controlsAnchor = AnchorEntity(.head)
             controlsAnchor.name = "simulation_controls_anchor"
-            if let controls = attachments.entity(for: "simulation-controls") {
-                controls.position = [0, -0.18, -1.15]
+            if let controls = attachments.entity(for: "simulation-interface") {
+                controls.position = [0, -0.04, -1.35]
                 controlsAnchor.addChild(controls)
             }
             content.add(controlsAnchor)
 
             do {
                 let selectedScene = appModel.selectedSimulationScene
+                if let loadedScene, loadedScene != selectedScene {
+                    assetRegistry.releaseScene(loadedScene)
+                }
                 let scene = try await assetRegistry.loadScene(selectedScene)
                 try assetRegistry.decorateSemanticEntities(in: scene, for: selectedScene)
                 scene.isEnabled = !appModel.isSimulationPaused
@@ -30,8 +38,14 @@ struct SimulationSpaceRootView: View {
                 loadedScene = selectedScene
                 isLoading = false
                 loadErrorMessage = nil
+
+                if selectedScene == .cprPracticeRoom {
+                    let targets = try assetRegistry.handTrackingTargets(in: scene)
+                    cprSession.configureHandTracking(targets: targets)
+                    await cprSession.startHandTracking()
+                }
             } catch is CancellationError {
-                // Dismissing the immersive space cancels loading without surfacing an error.
+                // Dismissing or changing rooms cancels loading without surfacing an error.
             } catch {
                 isLoading = false
                 loadErrorMessage = error.localizedDescription
@@ -39,68 +53,273 @@ struct SimulationSpaceRootView: View {
         } update: { content, _ in
             let sceneName = appModel.selectedSimulationScene.rawValue
             content.entities.first { $0.name == sceneName }?.isEnabled = !appModel.isSimulationPaused
+
+            if appModel.selectedPracticeExperience == .cpr,
+               let scene = content.entities.first(where: { $0.name == sceneName }),
+               let sternum = assetRegistry.firstEntity(named: "sternum_target", in: scene) {
+                let pulseScale: Float = cprSession.visualMetronomePulse ? 1.08 : 1.0
+                sternum.scale = SIMD3<Float>(repeating: pulseScale)
+            }
         } attachments: {
-            Attachment(id: "simulation-controls") {
+            Attachment(id: "simulation-interface") {
                 VStack(spacing: 14) {
-                    Text("SIMULATION")
-                        .font(.caption)
-                        .fontWeight(.bold)
-                        .foregroundStyle(.red)
-                    Text("CPR + AED Practice")
-                        .font(.title2)
-                        .fontWeight(.semibold)
-                    Text(appModel.selectedSimulationScene.rawValue)
-                        .foregroundStyle(.secondary)
-
-                    if isLoading {
-                        ProgressView("Loading scene…")
-                    } else if let loadErrorMessage {
-                        Label("Scene unavailable", systemImage: "exclamationmark.triangle")
-                            .foregroundStyle(.orange)
-                        Text(loadErrorMessage)
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                            .multilineTextAlignment(.center)
-                    }
-
-                    HStack(spacing: 12) {
-                        Button(
-                            appModel.isSimulationPaused ? "Resume" : "Pause",
-                            systemImage: appModel.isSimulationPaused ? "play.fill" : "pause.fill"
-                        ) {
-                            appModel.toggleSimulationPause()
-                        }
-                        .buttonStyle(.bordered)
-                        .disabled(isLoading || loadErrorMessage != nil)
-                        .accessibilityHint("Pauses or resumes the visible practice scene")
-
-                        Button("Exit Simulation", systemImage: "xmark.circle.fill") {
-                            Task {
-                                if let loadedScene {
-                                    assetRegistry.releaseScene(loadedScene)
-                                    self.loadedScene = nil
-                                }
-                                await appModel.dismissSimulation(using: dismissImmersiveSpace)
-                            }
-                        }
-                        .buttonStyle(.borderedProminent)
-                        .accessibilityHint("Returns to the shared-space dashboard")
-                    }
+                    safetyControls
+                    practicePanel
                 }
-                .padding(24)
-                .glassBackgroundEffect()
             }
         }
         .id(appModel.selectedSimulationScene)
+        .gesture(spatialTapGesture)
+        .simultaneousGesture(padDragGesture)
+        .task(id: appModel.selectedPracticeExperience) {
+            switch appModel.selectedPracticeExperience {
+            case .cpr:
+                await cprSession.prepare()
+            case .aed:
+                aedSession.prepare()
+            case .drsabc:
+                break
+            }
+        }
+        .onChange(of: appModel.isSimulationPaused, initial: true) { _, paused in
+            aedSession.setPaused(paused)
+            Task { await cprSession.setPaused(paused) }
+        }
         .onChange(of: scenePhase, initial: true) { _, newPhase in
             appModel.handleScenePhase(newPhase)
         }
         .onDisappear {
-            if let loadedScene {
-                assetRegistry.releaseScene(loadedScene)
-                self.loadedScene = nil
-            }
+            assetRegistry.releaseAllScenes()
+            loadedScene = nil
+            aedSession.stop()
+            Task { await cprSession.stop() }
             appModel.simulationSpaceDidDisappear()
         }
+    }
+
+    private var safetyControls: some View {
+        HStack(spacing: 12) {
+            VStack(alignment: .leading, spacing: 2) {
+                Text("SIMULATION")
+                    .font(.caption.bold())
+                    .foregroundStyle(.red)
+                Text(appModel.selectedPracticeExperience.title)
+                    .font(.headline)
+            }
+            Spacer()
+
+            if isLoading {
+                ProgressView().accessibilityLabel("Loading practice room")
+            } else if loadErrorMessage != nil {
+                Image(systemName: "exclamationmark.triangle.fill")
+                    .foregroundStyle(.orange)
+                    .accessibilityLabel("Practice room unavailable")
+            }
+
+            Button(
+                appModel.isSimulationPaused ? "Resume" : "Pause",
+                systemImage: appModel.isSimulationPaused ? "play.fill" : "pause.fill"
+            ) {
+                appModel.toggleSimulationPause()
+            }
+            .buttonStyle(.bordered)
+            .accessibilityHint("Pauses or resumes the practice engine and visible room")
+
+            Button("Exit", systemImage: "xmark.circle.fill") {
+                Task { await exitSimulation() }
+            }
+            .buttonStyle(.borderedProminent)
+            .accessibilityHint("Ends hand input and returns to the shared-space dashboard")
+        }
+        .frame(width: 620)
+        .padding(18)
+        .glassBackgroundEffect()
+    }
+
+    @ViewBuilder
+    private var practicePanel: some View {
+        if let loadErrorMessage {
+            VStack(spacing: 8) {
+                Label("Scene unavailable", systemImage: "exclamationmark.triangle")
+                    .foregroundStyle(.orange)
+                Text(loadErrorMessage)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+            .frame(width: 560)
+            .padding(20)
+            .glassBackgroundEffect()
+        } else {
+            switch appModel.selectedPracticeExperience {
+            case .cpr:
+                CPRPracticeImmersivePanel(model: cprSession)
+            case .aed:
+                AEDPracticeImmersivePanel(
+                    model: aedSession,
+                    currentScene: appModel.selectedSimulationScene,
+                    onRequestPlacementRoom: {
+                        requestAEDPlacementRoom()
+                    }
+                )
+            case .drsabc:
+                Text("DRSABC guided practice is prepared in the next milestone.")
+                    .frame(width: 560)
+                    .padding(20)
+                    .glassBackgroundEffect()
+            }
+        }
+    }
+
+    private var spatialTapGesture: some Gesture {
+        TapGesture()
+            .targetedToAnyEntity()
+            .onEnded { value in
+                guard !appModel.isSimulationPaused else { return }
+                handleSpatialTap(on: value.entity)
+            }
+    }
+
+    private var padDragGesture: some Gesture {
+        DragGesture()
+            .targetedToAnyEntity()
+            .onChanged { value in
+                guard appModel.selectedPracticeExperience == .aed,
+                      appModel.selectedSimulationScene == .aedPlacementRoom,
+                      !appModel.isSimulationPaused,
+                      aedSession.state == .awaitingPads,
+                      let pad = Self.semanticAncestor(
+                        of: value.entity,
+                        matching: ["aed_left_pad", "aed_right_pad"]
+                      ),
+                      let parent = pad.parent
+                else { return }
+                let location = value.convert(
+                    value.location3D,
+                    from: .local,
+                    to: parent
+                )
+                if draggedPadName != pad.name {
+                    draggedPadName = pad.name
+                    draggedPadOffset = pad.position - location
+                }
+                pad.position = location + draggedPadOffset
+            }
+            .onEnded { value in
+                defer {
+                    draggedPadName = nil
+                    draggedPadOffset = .zero
+                }
+                guard appModel.selectedPracticeExperience == .aed,
+                      appModel.selectedSimulationScene == .aedPlacementRoom,
+                      !appModel.isSimulationPaused,
+                      aedSession.state == .awaitingPads,
+                      let pad = Self.semanticAncestor(
+                        of: value.entity,
+                        matching: ["aed_left_pad", "aed_right_pad"]
+                      )
+                else { return }
+                aedSession.placeDraggedPad(
+                    padName: pad.name,
+                    destinationZoneName: nearestPadZone(to: pad)
+                )
+            }
+    }
+
+    private func handleSpatialTap(on entity: Entity) {
+        switch appModel.selectedPracticeExperience {
+        case .cpr:
+            guard let target = Self.semanticAncestor(
+                of: entity,
+                matching: ["sternum_target", "xiphoid_avoid_zone", "control_panel"]
+            ) else { return }
+            switch (cprSession.state, target.name) {
+            case (.landmarkCheck, "sternum_target"):
+                cprSession.choosePlacement(.sternumTarget)
+            case (.landmarkCheck, "xiphoid_avoid_zone"):
+                cprSession.choosePlacement(.xiphoidAvoidZone)
+            case (.compressionCycles, "sternum_target"),
+                 (.compressionCycles, "control_panel"):
+                cprSession.recordFallbackCompression()
+            default:
+                break
+            }
+
+        case .aed:
+            guard let target = Self.semanticAncestor(
+                of: entity,
+                matching: [
+                    "training_razor", "prep_cloth", "aed_case", "aed_unit",
+                    "electrode_packet", "aed_power_button", "aed_shock_button",
+                    "clear_zone", "bystander_01", "bystander_02"
+                ]
+            ) else { return }
+            switch target.name {
+            case "training_razor":
+                aedSession.completePreparation(.hairPreventsPadContact)
+            case "prep_cloth":
+                aedSession.completePreparation(.wetChest)
+            case "bystander_01", "bystander_02":
+                aedSession.confirmBystanderClear(target.name)
+            case "clear_zone":
+                aedSession.activateClearZone()
+            case "aed_shock_button":
+                aedSession.pressSimulatedShockControl()
+            default:
+                // The remaining objects are interactive orientation affordances; the
+                // corresponding labelled controls provide the complete action path.
+                break
+            }
+
+        case .drsabc:
+            break
+        }
+    }
+
+    private func nearestPadZone(to pad: Entity) -> String? {
+        var root = pad
+        while let parent = root.parent { root = parent }
+        let padBounds = pad.visualBounds(recursive: true, relativeTo: nil)
+        guard !padBounds.isEmpty else { return nil }
+        let candidates: [AEDPadDropZone] = [
+            "aed_right_pad_zone", "aed_left_pad_zone"
+        ].compactMap { name in
+            guard let entity = assetRegistry.firstEntity(named: name, in: root) else {
+                return nil
+            }
+            let bounds = entity.visualBounds(recursive: true, relativeTo: nil)
+            guard !bounds.isEmpty else { return nil }
+            return AEDPadDropZone(name: name, center: bounds.center, extents: bounds.extents)
+        }
+        return AEDPadDropZoneClassifier.nearestOverlappingZone(
+            padCenter: padBounds.center,
+            padExtents: padBounds.extents,
+            zones: candidates
+        )
+    }
+
+    private func requestAEDPlacementRoom() {
+        isLoading = true
+        loadErrorMessage = nil
+        appModel.moveAEDPractice(to: .aedPlacementRoom)
+    }
+
+    private func exitSimulation() async {
+        await cprSession.stop()
+        aedSession.stop()
+        assetRegistry.releaseAllScenes()
+        loadedScene = nil
+        await appModel.dismissSimulation(using: dismissImmersiveSpace)
+    }
+
+    private static func semanticAncestor(
+        of entity: Entity,
+        matching names: Set<String>
+    ) -> Entity? {
+        var cursor: Entity? = entity
+        while let candidate = cursor {
+            if names.contains(candidate.name) { return candidate }
+            cursor = candidate.parent
+        }
+        return nil
     }
 }

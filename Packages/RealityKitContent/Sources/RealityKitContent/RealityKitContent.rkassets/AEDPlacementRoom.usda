@@ -27,4 +27,14 @@ def Xform "AEDPlacementRoom"
         float3 xformOp:scale = (0.72, 0.72, 0.72)
         uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
     }
+    def Xform "bystander_01" ( prepend references = @Bystander.usda@ )
+    {
+        float3 xformOp:translate = (-0.92, 0, 0.24)
+        uniform token[] xformOpOrder = ["xformOp:translate"]
+    }
+    def Xform "bystander_02" ( prepend references = @Bystander.usda@ )
+    {
+        float3 xformOp:translate = (0.92, 0, 0.24)
+        uniform token[] xformOpOrder = ["xformOp:translate"]
+    }
 }
