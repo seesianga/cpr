@@ -7,10 +7,12 @@ final class LifesaverVisionTests: XCTestCase {
     func testSeedCourseJSONDecodesAndRoundTrips() throws {
         let course = try CourseContentCodec.loadCourse(named: "course_v1")
 
-        XCTAssertEqual(course.id, "lifesaver-foundations")
-        XCTAssertEqual(course.modules.count, 1)
-        XCTAssertEqual(course.modules.first?.lessons.count, 1)
-        XCTAssertTrue(course.sourceReferences.allSatisfy { $0.reviewStatus == "requires_sme_review" })
+        XCTAssertEqual(course.id, "lifesaver-vision-cpr-aed-spatial-academy")
+        XCTAssertEqual(course.title, "Lifesaver Vision: CPR + AED Spatial Academy")
+        XCTAssertEqual(course.version.contentVersion, "1.0.0")
+        XCTAssertEqual(course.modules.map(\.id), (0...10).map { "M\($0)" })
+        XCTAssertEqual(course.modules.flatMap(\.lessons).count, 11)
+        XCTAssertTrue(course.sourceReferences.allSatisfy { !$0.reviewStatus.isEmpty })
         XCTAssertEqual(try CourseContentCodec.roundTrip(course), course)
     }
 

@@ -2982,7 +2982,7 @@
       "title": "Chain of Survival",
       "summary": "The current seven-ring learning sequence, its meanings and the documented source disagreement.",
       "order": 2,
-      "reviewStatus": "sourceChecked",
+      "reviewStatus": "clinicalReviewRequired",
       "accessRequirements": null,
       "lessons": [
         {
@@ -3042,6 +3042,18 @@
                   "lastClinicalReviewDate": null,
                   "contentVersion": "1.0.0",
                   "clinicalFactID": null
+                },
+                {
+                  "id": "M2-O1-policy-ref",
+                  "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+                  "edition": "1.0 (2026-08-07)",
+                  "section": "Phase 3B authored interaction definitions",
+                  "page": "n/a (Markdown)",
+                  "reviewStatus": "source_checked",
+                  "reviewer": null,
+                  "lastClinicalReviewDate": null,
+                  "contentVersion": "1.0.0",
+                  "clinicalFactID": null
                 }
               ]
             },
@@ -3072,6 +3084,18 @@
                   "lastClinicalReviewDate": null,
                   "contentVersion": "1.0.0",
                   "clinicalFactID": "fact.chain.earlyCprPlusDefib"
+                },
+                {
+                  "id": "M2-O2-policy-ref",
+                  "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+                  "edition": "1.0 (2026-08-07)",
+                  "section": "Phase 3B authored interaction definitions",
+                  "page": "n/a (Markdown)",
+                  "reviewStatus": "source_checked",
+                  "reviewer": null,
+                  "lastClinicalReviewDate": null,
+                  "contentVersion": "1.0.0",
+                  "clinicalFactID": null
                 }
               ]
             },
@@ -3114,6 +3138,18 @@
                   "lastClinicalReviewDate": null,
                   "contentVersion": "1.0.0",
                   "clinicalFactID": null
+                },
+                {
+                  "id": "M2-O3-policy-ref",
+                  "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+                  "edition": "1.0 (2026-08-07)",
+                  "section": "Phase 3B authored interaction definitions",
+                  "page": "n/a (Markdown)",
+                  "reviewStatus": "source_checked",
+                  "reviewer": null,
+                  "lastClinicalReviewDate": null,
+                  "contentVersion": "1.0.0",
+                  "clinicalFactID": null
                 }
               ]
             }
@@ -3123,7 +3159,7 @@
               "id": "M2-B1",
               "kind": "callout",
               "title": "Current learning sequence — seven rings",
-              "body": "The active learning sequence follows the 2022 provider manual: Prevention; Early Activation and AED Access; Early CPR; Early Defibrillation; Emergency Medical Services (Ambulance); Advanced Cardiac Life Support; Recovery. The two current supplied sources differ on the graphic and ring count, so this card is excluded from scoring until a qualified SME approves the presentation.",
+              "body": "The course's active, review-gated learning sequence provisionally follows the 2022 provider manual: Prevention; Early Activation and AED Access; Early CPR; Early Defibrillation; Emergency Medical Services (Ambulance); Advanced Cardiac Life Support; Recovery. The two current supplied sources differ on the graphic and ring count, so this card is excluded from scoring until a qualified SME approves the presentation.",
               "reviewStatus": "clinicalReviewRequired",
               "sourceReferences": [
                 {
@@ -3145,6 +3181,18 @@
                   "section": "Chain of Survival graphic",
                   "page": "5",
                   "reviewStatus": "requires_sme_review",
+                  "reviewer": null,
+                  "lastClinicalReviewDate": null,
+                  "contentVersion": "1.0.0",
+                  "clinicalFactID": null
+                },
+                {
+                  "id": "M2-B1-policy-ref",
+                  "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+                  "edition": "1.0 (2026-08-07)",
+                  "section": "Phase 3B authored interaction definitions",
+                  "page": "n/a (Markdown)",
+                  "reviewStatus": "source_checked",
                   "reviewer": null,
                   "lastClinicalReviewDate": null,
                   "contentVersion": "1.0.0",
@@ -3218,6 +3266,18 @@
                   "lastClinicalReviewDate": null,
                   "contentVersion": "1.0.0",
                   "clinicalFactID": "fact.drsabc.getAed"
+                },
+                {
+                  "id": "M2-B2-policy-ref",
+                  "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+                  "edition": "1.0 (2026-08-07)",
+                  "section": "Phase 3B authored interaction definitions",
+                  "page": "n/a (Markdown)",
+                  "reviewStatus": "source_checked",
+                  "reviewer": null,
+                  "lastClinicalReviewDate": null,
+                  "contentVersion": "1.0.0",
+                  "clinicalFactID": null
                 }
               ]
             },
@@ -3251,6 +3311,18 @@
                   "lastClinicalReviewDate": null,
                   "contentVersion": "1.0.0",
                   "clinicalFactID": "fact.chain.earlyCprPlusDefib"
+                },
+                {
+                  "id": "M2-B3-policy-ref",
+                  "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+                  "edition": "1.0 (2026-08-07)",
+                  "section": "Phase 3B authored interaction definitions",
+                  "page": "n/a (Markdown)",
+                  "reviewStatus": "source_checked",
+                  "reviewer": null,
+                  "lastClinicalReviewDate": null,
+                  "contentVersion": "1.0.0",
+                  "clinicalFactID": null
                 }
               ]
             },
@@ -3292,6 +3364,18 @@
                   "section": "Chain of Survival graphic",
                   "page": "5",
                   "reviewStatus": "requires_sme_review",
+                  "reviewer": null,
+                  "lastClinicalReviewDate": null,
+                  "contentVersion": "1.0.0",
+                  "clinicalFactID": null
+                },
+                {
+                  "id": "M2-B4-policy-ref",
+                  "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+                  "edition": "1.0 (2026-08-07)",
+                  "section": "Phase 3B authored interaction definitions",
+                  "page": "n/a (Markdown)",
+                  "reviewStatus": "source_checked",
                   "reviewer": null,
                   "lastClinicalReviewDate": null,
                   "contentVersion": "1.0.0",
@@ -3342,6 +3426,18 @@
                   "lastClinicalReviewDate": null,
                   "contentVersion": "1.0.0",
                   "clinicalFactID": "fact.chain.ringDefinitions"
+                },
+                {
+                  "id": "M2-A1-policy-ref",
+                  "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+                  "edition": "1.0 (2026-08-07)",
+                  "section": "Phase 3B authored interaction definitions",
+                  "page": "n/a (Markdown)",
+                  "reviewStatus": "source_checked",
+                  "reviewer": null,
+                  "lastClinicalReviewDate": null,
+                  "contentVersion": "1.0.0",
+                  "clinicalFactID": null
                 }
               ]
             }
@@ -3727,6 +3823,18 @@
               "clinicalFactID": null
             },
             {
+              "id": "M2-O1-policy-ref",
+              "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+              "edition": "1.0 (2026-08-07)",
+              "section": "Phase 3B authored interaction definitions",
+              "page": "n/a (Markdown)",
+              "reviewStatus": "source_checked",
+              "reviewer": null,
+              "lastClinicalReviewDate": null,
+              "contentVersion": "1.0.0",
+              "clinicalFactID": null
+            },
+            {
               "id": "M2-O2-ref-chain-earlyCprPlusDefib-1",
               "document": "CA-Manual-REV-1-2022.pdf",
               "edition": "2022",
@@ -3749,6 +3857,18 @@
               "lastClinicalReviewDate": null,
               "contentVersion": "1.0.0",
               "clinicalFactID": "fact.chain.earlyCprPlusDefib"
+            },
+            {
+              "id": "M2-O2-policy-ref",
+              "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+              "edition": "1.0 (2026-08-07)",
+              "section": "Phase 3B authored interaction definitions",
+              "page": "n/a (Markdown)",
+              "reviewStatus": "source_checked",
+              "reviewer": null,
+              "lastClinicalReviewDate": null,
+              "contentVersion": "1.0.0",
+              "clinicalFactID": null
             },
             {
               "id": "M2-O3-ref-chain-sevenRings-1",
@@ -3787,6 +3907,18 @@
               "clinicalFactID": null
             },
             {
+              "id": "M2-O3-policy-ref",
+              "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+              "edition": "1.0 (2026-08-07)",
+              "section": "Phase 3B authored interaction definitions",
+              "page": "n/a (Markdown)",
+              "reviewStatus": "source_checked",
+              "reviewer": null,
+              "lastClinicalReviewDate": null,
+              "contentVersion": "1.0.0",
+              "clinicalFactID": null
+            },
+            {
               "id": "M2-B1-ref-chain-sevenRings-1",
               "document": "CA-Manual-REV-1-2022.pdf",
               "edition": "2022",
@@ -3805,6 +3937,18 @@
               "section": "Chain of Survival graphic",
               "page": "5",
               "reviewStatus": "requires_sme_review",
+              "reviewer": null,
+              "lastClinicalReviewDate": null,
+              "contentVersion": "1.0.0",
+              "clinicalFactID": null
+            },
+            {
+              "id": "M2-B1-policy-ref",
+              "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+              "edition": "1.0 (2026-08-07)",
+              "section": "Phase 3B authored interaction definitions",
+              "page": "n/a (Markdown)",
+              "reviewStatus": "source_checked",
               "reviewer": null,
               "lastClinicalReviewDate": null,
               "contentVersion": "1.0.0",
@@ -3871,6 +4015,18 @@
               "clinicalFactID": "fact.drsabc.getAed"
             },
             {
+              "id": "M2-B2-policy-ref",
+              "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+              "edition": "1.0 (2026-08-07)",
+              "section": "Phase 3B authored interaction definitions",
+              "page": "n/a (Markdown)",
+              "reviewStatus": "source_checked",
+              "reviewer": null,
+              "lastClinicalReviewDate": null,
+              "contentVersion": "1.0.0",
+              "clinicalFactID": null
+            },
+            {
               "id": "M2-B3-ref-chain-earlyCprPlusDefib-1",
               "document": "CA-Manual-REV-1-2022.pdf",
               "edition": "2022",
@@ -3893,6 +4049,18 @@
               "lastClinicalReviewDate": null,
               "contentVersion": "1.0.0",
               "clinicalFactID": "fact.chain.earlyCprPlusDefib"
+            },
+            {
+              "id": "M2-B3-policy-ref",
+              "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+              "edition": "1.0 (2026-08-07)",
+              "section": "Phase 3B authored interaction definitions",
+              "page": "n/a (Markdown)",
+              "reviewStatus": "source_checked",
+              "reviewer": null,
+              "lastClinicalReviewDate": null,
+              "contentVersion": "1.0.0",
+              "clinicalFactID": null
             },
             {
               "id": "M2-B4-ref-chain-sevenRings-1",
@@ -3925,6 +4093,18 @@
               "section": "Chain of Survival graphic",
               "page": "5",
               "reviewStatus": "requires_sme_review",
+              "reviewer": null,
+              "lastClinicalReviewDate": null,
+              "contentVersion": "1.0.0",
+              "clinicalFactID": null
+            },
+            {
+              "id": "M2-B4-policy-ref",
+              "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+              "edition": "1.0 (2026-08-07)",
+              "section": "Phase 3B authored interaction definitions",
+              "page": "n/a (Markdown)",
+              "reviewStatus": "source_checked",
               "reviewer": null,
               "lastClinicalReviewDate": null,
               "contentVersion": "1.0.0",
@@ -3965,6 +4145,18 @@
               "lastClinicalReviewDate": null,
               "contentVersion": "1.0.0",
               "clinicalFactID": "fact.chain.ringDefinitions"
+            },
+            {
+              "id": "M2-A1-policy-ref",
+              "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+              "edition": "1.0 (2026-08-07)",
+              "section": "Phase 3B authored interaction definitions",
+              "page": "n/a (Markdown)",
+              "reviewStatus": "source_checked",
+              "reviewer": null,
+              "lastClinicalReviewDate": null,
+              "contentVersion": "1.0.0",
+              "clinicalFactID": null
             }
           ]
         }
@@ -4019,6 +4211,18 @@
           "clinicalFactID": null
         },
         {
+          "id": "M2-O1-policy-ref",
+          "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+          "edition": "1.0 (2026-08-07)",
+          "section": "Phase 3B authored interaction definitions",
+          "page": "n/a (Markdown)",
+          "reviewStatus": "source_checked",
+          "reviewer": null,
+          "lastClinicalReviewDate": null,
+          "contentVersion": "1.0.0",
+          "clinicalFactID": null
+        },
+        {
           "id": "M2-O2-ref-chain-earlyCprPlusDefib-1",
           "document": "CA-Manual-REV-1-2022.pdf",
           "edition": "2022",
@@ -4041,6 +4245,18 @@
           "lastClinicalReviewDate": null,
           "contentVersion": "1.0.0",
           "clinicalFactID": "fact.chain.earlyCprPlusDefib"
+        },
+        {
+          "id": "M2-O2-policy-ref",
+          "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+          "edition": "1.0 (2026-08-07)",
+          "section": "Phase 3B authored interaction definitions",
+          "page": "n/a (Markdown)",
+          "reviewStatus": "source_checked",
+          "reviewer": null,
+          "lastClinicalReviewDate": null,
+          "contentVersion": "1.0.0",
+          "clinicalFactID": null
         },
         {
           "id": "M2-O3-ref-chain-sevenRings-1",
@@ -4079,6 +4295,18 @@
           "clinicalFactID": null
         },
         {
+          "id": "M2-O3-policy-ref",
+          "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+          "edition": "1.0 (2026-08-07)",
+          "section": "Phase 3B authored interaction definitions",
+          "page": "n/a (Markdown)",
+          "reviewStatus": "source_checked",
+          "reviewer": null,
+          "lastClinicalReviewDate": null,
+          "contentVersion": "1.0.0",
+          "clinicalFactID": null
+        },
+        {
           "id": "M2-B1-ref-chain-sevenRings-1",
           "document": "CA-Manual-REV-1-2022.pdf",
           "edition": "2022",
@@ -4097,6 +4325,18 @@
           "section": "Chain of Survival graphic",
           "page": "5",
           "reviewStatus": "requires_sme_review",
+          "reviewer": null,
+          "lastClinicalReviewDate": null,
+          "contentVersion": "1.0.0",
+          "clinicalFactID": null
+        },
+        {
+          "id": "M2-B1-policy-ref",
+          "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+          "edition": "1.0 (2026-08-07)",
+          "section": "Phase 3B authored interaction definitions",
+          "page": "n/a (Markdown)",
+          "reviewStatus": "source_checked",
           "reviewer": null,
           "lastClinicalReviewDate": null,
           "contentVersion": "1.0.0",
@@ -4163,6 +4403,18 @@
           "clinicalFactID": "fact.drsabc.getAed"
         },
         {
+          "id": "M2-B2-policy-ref",
+          "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+          "edition": "1.0 (2026-08-07)",
+          "section": "Phase 3B authored interaction definitions",
+          "page": "n/a (Markdown)",
+          "reviewStatus": "source_checked",
+          "reviewer": null,
+          "lastClinicalReviewDate": null,
+          "contentVersion": "1.0.0",
+          "clinicalFactID": null
+        },
+        {
           "id": "M2-B3-ref-chain-earlyCprPlusDefib-1",
           "document": "CA-Manual-REV-1-2022.pdf",
           "edition": "2022",
@@ -4185,6 +4437,18 @@
           "lastClinicalReviewDate": null,
           "contentVersion": "1.0.0",
           "clinicalFactID": "fact.chain.earlyCprPlusDefib"
+        },
+        {
+          "id": "M2-B3-policy-ref",
+          "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+          "edition": "1.0 (2026-08-07)",
+          "section": "Phase 3B authored interaction definitions",
+          "page": "n/a (Markdown)",
+          "reviewStatus": "source_checked",
+          "reviewer": null,
+          "lastClinicalReviewDate": null,
+          "contentVersion": "1.0.0",
+          "clinicalFactID": null
         },
         {
           "id": "M2-B4-ref-chain-sevenRings-1",
@@ -4217,6 +4481,18 @@
           "section": "Chain of Survival graphic",
           "page": "5",
           "reviewStatus": "requires_sme_review",
+          "reviewer": null,
+          "lastClinicalReviewDate": null,
+          "contentVersion": "1.0.0",
+          "clinicalFactID": null
+        },
+        {
+          "id": "M2-B4-policy-ref",
+          "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+          "edition": "1.0 (2026-08-07)",
+          "section": "Phase 3B authored interaction definitions",
+          "page": "n/a (Markdown)",
+          "reviewStatus": "source_checked",
           "reviewer": null,
           "lastClinicalReviewDate": null,
           "contentVersion": "1.0.0",
@@ -4257,6 +4533,18 @@
           "lastClinicalReviewDate": null,
           "contentVersion": "1.0.0",
           "clinicalFactID": "fact.chain.ringDefinitions"
+        },
+        {
+          "id": "M2-A1-policy-ref",
+          "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+          "edition": "1.0 (2026-08-07)",
+          "section": "Phase 3B authored interaction definitions",
+          "page": "n/a (Markdown)",
+          "reviewStatus": "source_checked",
+          "reviewer": null,
+          "lastClinicalReviewDate": null,
+          "contentVersion": "1.0.0",
+          "clinicalFactID": null
         }
       ]
     },
@@ -4574,7 +4862,7 @@
               "id": "M3-B1",
               "kind": "text",
               "title": "DRSABC",
-              "body": "D: check Danger. R: check Responsiveness. S: Shout for help and call 995 for SCDF. A: Ask someone to get an AED. B: check for normal Breathing. C: begin continuous Chest Compressions when normal breathing is absent or uncertain. Pulse checks belong only to the clearly labelled trained-healthcare-provider path.",
+              "body": "Move through DRSABC in order: first assess Danger, then test Responsiveness; Shout for help and activate 995; Ask another person for an AED; decide whether Breathing is normal; and begin continuous Chest Compressions when normal breathing is absent or uncertain. A pulse check appears only in the clearly labelled trained-healthcare-provider path.",
               "reviewStatus": "sourceChecked",
               "sourceReferences": [
                 {
@@ -4783,6 +5071,18 @@
                   "lastClinicalReviewDate": null,
                   "contentVersion": "1.0.0",
                   "clinicalFactID": null
+                },
+                {
+                  "id": "M3-B4-policy-ref",
+                  "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+                  "edition": "1.0 (2026-08-07)",
+                  "section": "Phase 3B authored interaction definitions",
+                  "page": "n/a (Markdown)",
+                  "reviewStatus": "source_checked",
+                  "reviewer": null,
+                  "lastClinicalReviewDate": null,
+                  "contentVersion": "1.0.0",
+                  "clinicalFactID": null
                 }
               ]
             },
@@ -4937,6 +5237,18 @@
                   "edition": "2018",
                   "section": "C-1",
                   "page": "24",
+                  "reviewStatus": "source_checked",
+                  "reviewer": null,
+                  "lastClinicalReviewDate": null,
+                  "contentVersion": "1.0.0",
+                  "clinicalFactID": null
+                },
+                {
+                  "id": "M3-B7-policy-ref",
+                  "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+                  "edition": "1.0 (2026-08-07)",
+                  "section": "Phase 3B authored interaction definitions",
+                  "page": "n/a (Markdown)",
                   "reviewStatus": "source_checked",
                   "reviewer": null,
                   "lastClinicalReviewDate": null,
@@ -5218,6 +5530,18 @@
                   "lastClinicalReviewDate": null,
                   "contentVersion": "1.0.0",
                   "clinicalFactID": "fact.aed.myResponder"
+                },
+                {
+                  "id": "M3-B11-policy-ref",
+                  "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+                  "edition": "1.0 (2026-08-07)",
+                  "section": "Phase 3B authored interaction definitions",
+                  "page": "n/a (Markdown)",
+                  "reviewStatus": "source_checked",
+                  "reviewer": null,
+                  "lastClinicalReviewDate": null,
+                  "contentVersion": "1.0.0",
+                  "clinicalFactID": null
                 }
               ]
             }
@@ -5372,6 +5696,18 @@
                   "lastClinicalReviewDate": null,
                   "contentVersion": "1.0.0",
                   "clinicalFactID": "fact.drsabc.monitorIfBreathingNormally"
+                },
+                {
+                  "id": "M3-A1-policy-ref",
+                  "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+                  "edition": "1.0 (2026-08-07)",
+                  "section": "Phase 3B authored interaction definitions",
+                  "page": "n/a (Markdown)",
+                  "reviewStatus": "source_checked",
+                  "reviewer": null,
+                  "lastClinicalReviewDate": null,
+                  "contentVersion": "1.0.0",
+                  "clinicalFactID": null
                 }
               ]
             },
@@ -5423,6 +5759,18 @@
                   "edition": "2018",
                   "section": "B2 Step 3",
                   "page": "15",
+                  "reviewStatus": "source_checked",
+                  "reviewer": null,
+                  "lastClinicalReviewDate": null,
+                  "contentVersion": "1.0.0",
+                  "clinicalFactID": null
+                },
+                {
+                  "id": "M3-A2-policy-ref",
+                  "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+                  "edition": "1.0 (2026-08-07)",
+                  "section": "Phase 3B authored interaction definitions",
+                  "page": "n/a (Markdown)",
                   "reviewStatus": "source_checked",
                   "reviewer": null,
                   "lastClinicalReviewDate": null,
@@ -5642,7 +5990,7 @@
                   "correctChoiceIDs": [
                     "q-m3-05-a"
                   ],
-                  "explanation": "Ask another person to fetch an AED within about sixty seconds' walking distance. A lone rescuer must not leave the casualty to search for one.",
+                  "explanation": "The roughly one-minute retrieval window applies to another person. A sole rescuer remains beside the casualty.",
                   "sourceReferences": [
                     {
                       "id": "src-q-m3-05",
@@ -6264,6 +6612,18 @@
               "clinicalFactID": null
             },
             {
+              "id": "M3-B4-policy-ref",
+              "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+              "edition": "1.0 (2026-08-07)",
+              "section": "Phase 3B authored interaction definitions",
+              "page": "n/a (Markdown)",
+              "reviewStatus": "source_checked",
+              "reviewer": null,
+              "lastClinicalReviewDate": null,
+              "contentVersion": "1.0.0",
+              "clinicalFactID": null
+            },
+            {
               "id": "M3-B5-ref-drsabc-dispatcherCapabilities-1",
               "document": "CA-Manual-REV-1-2022.pdf",
               "edition": "2022",
@@ -6389,6 +6749,18 @@
               "edition": "2018",
               "section": "C-1",
               "page": "24",
+              "reviewStatus": "source_checked",
+              "reviewer": null,
+              "lastClinicalReviewDate": null,
+              "contentVersion": "1.0.0",
+              "clinicalFactID": null
+            },
+            {
+              "id": "M3-B7-policy-ref",
+              "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+              "edition": "1.0 (2026-08-07)",
+              "section": "Phase 3B authored interaction definitions",
+              "page": "n/a (Markdown)",
               "reviewStatus": "source_checked",
               "reviewer": null,
               "lastClinicalReviewDate": null,
@@ -6636,6 +7008,18 @@
               "clinicalFactID": "fact.aed.myResponder"
             },
             {
+              "id": "M3-B11-policy-ref",
+              "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+              "edition": "1.0 (2026-08-07)",
+              "section": "Phase 3B authored interaction definitions",
+              "page": "n/a (Markdown)",
+              "reviewStatus": "source_checked",
+              "reviewer": null,
+              "lastClinicalReviewDate": null,
+              "contentVersion": "1.0.0",
+              "clinicalFactID": null
+            },
+            {
               "id": "M3-A1-ref-drsabc-danger-1",
               "document": "CA-Manual-REV-1-2022.pdf",
               "edition": "2022",
@@ -6780,6 +7164,18 @@
               "clinicalFactID": "fact.drsabc.monitorIfBreathingNormally"
             },
             {
+              "id": "M3-A1-policy-ref",
+              "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+              "edition": "1.0 (2026-08-07)",
+              "section": "Phase 3B authored interaction definitions",
+              "page": "n/a (Markdown)",
+              "reviewStatus": "source_checked",
+              "reviewer": null,
+              "lastClinicalReviewDate": null,
+              "contentVersion": "1.0.0",
+              "clinicalFactID": null
+            },
+            {
               "id": "M3-A2-ref-drsabc-call995-1",
               "document": "CA-Manual-REV-1-2022.pdf",
               "edition": "2022",
@@ -6821,6 +7217,18 @@
               "edition": "2018",
               "section": "B2 Step 3",
               "page": "15",
+              "reviewStatus": "source_checked",
+              "reviewer": null,
+              "lastClinicalReviewDate": null,
+              "contentVersion": "1.0.0",
+              "clinicalFactID": null
+            },
+            {
+              "id": "M3-A2-policy-ref",
+              "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+              "edition": "1.0 (2026-08-07)",
+              "section": "Phase 3B authored interaction definitions",
+              "page": "n/a (Markdown)",
               "reviewStatus": "source_checked",
               "reviewer": null,
               "lastClinicalReviewDate": null,
@@ -7288,6 +7696,18 @@
           "clinicalFactID": null
         },
         {
+          "id": "M3-B4-policy-ref",
+          "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+          "edition": "1.0 (2026-08-07)",
+          "section": "Phase 3B authored interaction definitions",
+          "page": "n/a (Markdown)",
+          "reviewStatus": "source_checked",
+          "reviewer": null,
+          "lastClinicalReviewDate": null,
+          "contentVersion": "1.0.0",
+          "clinicalFactID": null
+        },
+        {
           "id": "M3-B5-ref-drsabc-dispatcherCapabilities-1",
           "document": "CA-Manual-REV-1-2022.pdf",
           "edition": "2022",
@@ -7413,6 +7833,18 @@
           "edition": "2018",
           "section": "C-1",
           "page": "24",
+          "reviewStatus": "source_checked",
+          "reviewer": null,
+          "lastClinicalReviewDate": null,
+          "contentVersion": "1.0.0",
+          "clinicalFactID": null
+        },
+        {
+          "id": "M3-B7-policy-ref",
+          "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+          "edition": "1.0 (2026-08-07)",
+          "section": "Phase 3B authored interaction definitions",
+          "page": "n/a (Markdown)",
           "reviewStatus": "source_checked",
           "reviewer": null,
           "lastClinicalReviewDate": null,
@@ -7660,6 +8092,18 @@
           "clinicalFactID": "fact.aed.myResponder"
         },
         {
+          "id": "M3-B11-policy-ref",
+          "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+          "edition": "1.0 (2026-08-07)",
+          "section": "Phase 3B authored interaction definitions",
+          "page": "n/a (Markdown)",
+          "reviewStatus": "source_checked",
+          "reviewer": null,
+          "lastClinicalReviewDate": null,
+          "contentVersion": "1.0.0",
+          "clinicalFactID": null
+        },
+        {
           "id": "M3-A1-ref-drsabc-danger-1",
           "document": "CA-Manual-REV-1-2022.pdf",
           "edition": "2022",
@@ -7804,6 +8248,18 @@
           "clinicalFactID": "fact.drsabc.monitorIfBreathingNormally"
         },
         {
+          "id": "M3-A1-policy-ref",
+          "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+          "edition": "1.0 (2026-08-07)",
+          "section": "Phase 3B authored interaction definitions",
+          "page": "n/a (Markdown)",
+          "reviewStatus": "source_checked",
+          "reviewer": null,
+          "lastClinicalReviewDate": null,
+          "contentVersion": "1.0.0",
+          "clinicalFactID": null
+        },
+        {
           "id": "M3-A2-ref-drsabc-call995-1",
           "document": "CA-Manual-REV-1-2022.pdf",
           "edition": "2022",
@@ -7845,6 +8301,18 @@
           "edition": "2018",
           "section": "B2 Step 3",
           "page": "15",
+          "reviewStatus": "source_checked",
+          "reviewer": null,
+          "lastClinicalReviewDate": null,
+          "contentVersion": "1.0.0",
+          "clinicalFactID": null
+        },
+        {
+          "id": "M3-A2-policy-ref",
+          "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+          "edition": "1.0 (2026-08-07)",
+          "section": "Phase 3B authored interaction definitions",
+          "page": "n/a (Markdown)",
           "reviewStatus": "source_checked",
           "reviewer": null,
           "lastClinicalReviewDate": null,
@@ -8158,6 +8626,18 @@
                   "lastClinicalReviewDate": null,
                   "contentVersion": "1.0.0",
                   "clinicalFactID": "fact.compression.stopCriteria"
+                },
+                {
+                  "id": "M4-O3-policy-ref",
+                  "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+                  "edition": "1.0 (2026-08-07)",
+                  "section": "Medical and sensing boundaries",
+                  "page": "n/a (Markdown)",
+                  "reviewStatus": "source_checked",
+                  "reviewer": null,
+                  "lastClinicalReviewDate": null,
+                  "contentVersion": "1.0.0",
+                  "clinicalFactID": null
                 }
               ]
             }
@@ -8200,7 +8680,7 @@
               "id": "M4-B2",
               "kind": "callout",
               "title": "Landmark and xiphoid avoidance",
-              "body": "Use the centre of the chest over the lower half of the sternum. Expose the chest adequately and do not compress on the xiphoid process at the lower tip of the breastbone.",
+              "body": "Locate the lower half of the sternum at the centre of the chest. Expose enough of the chest to place the hands accurately, keeping pressure away from the xiphoid process at the sternum's lower tip.",
               "reviewStatus": "sourceChecked",
               "sourceReferences": [
                 {
@@ -8328,6 +8808,18 @@
                   "lastClinicalReviewDate": null,
                   "contentVersion": "1.0.0",
                   "clinicalFactID": "fact.compression.rate"
+                },
+                {
+                  "id": "M4-B4-policy-ref",
+                  "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+                  "edition": "1.0 (2026-08-07)",
+                  "section": "Medical and sensing boundaries",
+                  "page": "n/a (Markdown)",
+                  "reviewStatus": "source_checked",
+                  "reviewer": null,
+                  "lastClinicalReviewDate": null,
+                  "contentVersion": "1.0.0",
+                  "clinicalFactID": null
                 }
               ]
             },
@@ -8523,6 +9015,18 @@
                   "lastClinicalReviewDate": null,
                   "contentVersion": "1.0.0",
                   "clinicalFactID": "fact.compression.depthAdult"
+                },
+                {
+                  "id": "M4-B7-policy-ref",
+                  "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+                  "edition": "1.0 (2026-08-07)",
+                  "section": "Medical and sensing boundaries",
+                  "page": "n/a (Markdown)",
+                  "reviewStatus": "source_checked",
+                  "reviewer": null,
+                  "lastClinicalReviewDate": null,
+                  "contentVersion": "1.0.0",
+                  "clinicalFactID": null
                 }
               ]
             },
@@ -8815,6 +9319,18 @@
                   "lastClinicalReviewDate": null,
                   "contentVersion": "1.0.0",
                   "clinicalFactID": "fact.compression.handMethodAdult"
+                },
+                {
+                  "id": "M4-A1-policy-ref",
+                  "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+                  "edition": "1.0 (2026-08-07)",
+                  "section": "Medical and sensing boundaries",
+                  "page": "n/a (Markdown)",
+                  "reviewStatus": "source_checked",
+                  "reviewer": null,
+                  "lastClinicalReviewDate": null,
+                  "contentVersion": "1.0.0",
+                  "clinicalFactID": null
                 }
               ]
             }
@@ -9488,6 +10004,18 @@
               "clinicalFactID": "fact.compression.stopCriteria"
             },
             {
+              "id": "M4-O3-policy-ref",
+              "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+              "edition": "1.0 (2026-08-07)",
+              "section": "Medical and sensing boundaries",
+              "page": "n/a (Markdown)",
+              "reviewStatus": "source_checked",
+              "reviewer": null,
+              "lastClinicalReviewDate": null,
+              "contentVersion": "1.0.0",
+              "clinicalFactID": null
+            },
+            {
               "id": "M4-B1-ref-drsabc-positionCasualty-1",
               "document": "CA-Manual-REV-1-2022.pdf",
               "edition": "2022",
@@ -9618,6 +10146,18 @@
               "lastClinicalReviewDate": null,
               "contentVersion": "1.0.0",
               "clinicalFactID": "fact.compression.rate"
+            },
+            {
+              "id": "M4-B4-policy-ref",
+              "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+              "edition": "1.0 (2026-08-07)",
+              "section": "Medical and sensing boundaries",
+              "page": "n/a (Markdown)",
+              "reviewStatus": "source_checked",
+              "reviewer": null,
+              "lastClinicalReviewDate": null,
+              "contentVersion": "1.0.0",
+              "clinicalFactID": null
             },
             {
               "id": "M4-B5-ref-compression-recoil-1",
@@ -9786,6 +10326,18 @@
               "lastClinicalReviewDate": null,
               "contentVersion": "1.0.0",
               "clinicalFactID": "fact.compression.depthAdult"
+            },
+            {
+              "id": "M4-B7-policy-ref",
+              "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+              "edition": "1.0 (2026-08-07)",
+              "section": "Medical and sensing boundaries",
+              "page": "n/a (Markdown)",
+              "reviewStatus": "source_checked",
+              "reviewer": null,
+              "lastClinicalReviewDate": null,
+              "contentVersion": "1.0.0",
+              "clinicalFactID": null
             },
             {
               "id": "M4-B8-ref-compression-stopCriteria-1",
@@ -10050,6 +10602,18 @@
               "lastClinicalReviewDate": null,
               "contentVersion": "1.0.0",
               "clinicalFactID": "fact.compression.handMethodAdult"
+            },
+            {
+              "id": "M4-A1-policy-ref",
+              "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+              "edition": "1.0 (2026-08-07)",
+              "section": "Medical and sensing boundaries",
+              "page": "n/a (Markdown)",
+              "reviewStatus": "source_checked",
+              "reviewer": null,
+              "lastClinicalReviewDate": null,
+              "contentVersion": "1.0.0",
+              "clinicalFactID": null
             }
           ]
         }
@@ -10332,6 +10896,18 @@
           "clinicalFactID": "fact.compression.stopCriteria"
         },
         {
+          "id": "M4-O3-policy-ref",
+          "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+          "edition": "1.0 (2026-08-07)",
+          "section": "Medical and sensing boundaries",
+          "page": "n/a (Markdown)",
+          "reviewStatus": "source_checked",
+          "reviewer": null,
+          "lastClinicalReviewDate": null,
+          "contentVersion": "1.0.0",
+          "clinicalFactID": null
+        },
+        {
           "id": "M4-B1-ref-drsabc-positionCasualty-1",
           "document": "CA-Manual-REV-1-2022.pdf",
           "edition": "2022",
@@ -10462,6 +11038,18 @@
           "lastClinicalReviewDate": null,
           "contentVersion": "1.0.0",
           "clinicalFactID": "fact.compression.rate"
+        },
+        {
+          "id": "M4-B4-policy-ref",
+          "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+          "edition": "1.0 (2026-08-07)",
+          "section": "Medical and sensing boundaries",
+          "page": "n/a (Markdown)",
+          "reviewStatus": "source_checked",
+          "reviewer": null,
+          "lastClinicalReviewDate": null,
+          "contentVersion": "1.0.0",
+          "clinicalFactID": null
         },
         {
           "id": "M4-B5-ref-compression-recoil-1",
@@ -10630,6 +11218,18 @@
           "lastClinicalReviewDate": null,
           "contentVersion": "1.0.0",
           "clinicalFactID": "fact.compression.depthAdult"
+        },
+        {
+          "id": "M4-B7-policy-ref",
+          "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+          "edition": "1.0 (2026-08-07)",
+          "section": "Medical and sensing boundaries",
+          "page": "n/a (Markdown)",
+          "reviewStatus": "source_checked",
+          "reviewer": null,
+          "lastClinicalReviewDate": null,
+          "contentVersion": "1.0.0",
+          "clinicalFactID": null
         },
         {
           "id": "M4-B8-ref-compression-stopCriteria-1",
@@ -10894,6 +11494,18 @@
           "lastClinicalReviewDate": null,
           "contentVersion": "1.0.0",
           "clinicalFactID": "fact.compression.handMethodAdult"
+        },
+        {
+          "id": "M4-A1-policy-ref",
+          "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+          "edition": "1.0 (2026-08-07)",
+          "section": "Medical and sensing boundaries",
+          "page": "n/a (Markdown)",
+          "reviewStatus": "source_checked",
+          "reviewer": null,
+          "lastClinicalReviewDate": null,
+          "contentVersion": "1.0.0",
+          "clinicalFactID": null
         }
       ]
     },
@@ -11568,7 +12180,7 @@
               "id": "M5-B10",
               "kind": "text",
               "title": "Wet or sweaty chest",
-              "body": "Wipe a wet or sweaty chest dry quickly so the pads adhere, then apply them with minimal interruption to compressions.",
+              "body": "If the chest skin is wet or sweaty, dry it promptly to obtain secure pad contact, then apply the pads while keeping the compression pause as short as possible.",
               "reviewStatus": "sourceChecked",
               "sourceReferences": [
                 {
@@ -13949,6 +14561,18 @@
                   "lastClinicalReviewDate": null,
                   "contentVersion": "1.0.0",
                   "clinicalFactID": "fact.aed.padPlacementAdult"
+                },
+                {
+                  "id": "M6-O1-policy-ref",
+                  "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+                  "edition": "1.0 (2026-08-07)",
+                  "section": "Phase 3B authored interaction definitions",
+                  "page": "n/a (Markdown)",
+                  "reviewStatus": "source_checked",
+                  "reviewer": null,
+                  "lastClinicalReviewDate": null,
+                  "contentVersion": "1.0.0",
+                  "clinicalFactID": null
                 }
               ]
             },
@@ -14248,6 +14872,18 @@
                   "lastClinicalReviewDate": null,
                   "contentVersion": "1.0.0",
                   "clinicalFactID": "fact.aed.hazards"
+                },
+                {
+                  "id": "M6-B1-policy-ref",
+                  "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+                  "edition": "1.0 (2026-08-07)",
+                  "section": "Phase 3B authored interaction definitions",
+                  "page": "n/a (Markdown)",
+                  "reviewStatus": "source_checked",
+                  "reviewer": null,
+                  "lastClinicalReviewDate": null,
+                  "contentVersion": "1.0.0",
+                  "clinicalFactID": null
                 }
               ]
             },
@@ -14425,6 +15061,18 @@
                   "lastClinicalReviewDate": null,
                   "contentVersion": "1.0.0",
                   "clinicalFactID": "fact.aed.resumeAfterShock"
+                },
+                {
+                  "id": "M6-B2-policy-ref",
+                  "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+                  "edition": "1.0 (2026-08-07)",
+                  "section": "Phase 3B authored interaction definitions",
+                  "page": "n/a (Markdown)",
+                  "reviewStatus": "source_checked",
+                  "reviewer": null,
+                  "lastClinicalReviewDate": null,
+                  "contentVersion": "1.0.0",
+                  "clinicalFactID": null
                 }
               ]
             },
@@ -14432,7 +15080,7 @@
               "id": "M6-B3",
               "kind": "text",
               "title": "Adult pad placement",
-              "body": "Place the right pad on the right chest just below the collarbone and the left pad below and to the left of the left nipple. Follow the pictures printed on the pads and connect the lead when the model requires it.",
+              "body": "Match the diagrams on the pads: position one high on the right chest beneath the collarbone and the other lower and farther out on the left chest, below the left nipple. Attach the lead if the AED model requires it.",
               "reviewStatus": "sourceChecked",
               "sourceReferences": [
                 {
@@ -14699,7 +15347,7 @@
               "id": "M6-B10",
               "kind": "callout",
               "title": "Never shock while anyone is touching",
-              "body": "Contact during analysis, charging or shock is a critical safety error. Before choosing the simulated shock action, state the clear command, spread both arms and visually confirm that nobody is touching the casualty. The interaction implementation must fail closed unless that clear check is satisfied.",
+              "body": "Nobody may touch the casualty during analysis, charging or shock. Before choosing the simulated shock action, state the clear command, spread both arms and visually confirm that nobody is touching. The project classifies contact here as a critical error, and the interaction implementation must fail closed unless the clear check is satisfied.",
               "reviewStatus": "sourceChecked",
               "sourceReferences": [
                 {
@@ -14749,6 +15397,18 @@
                   "lastClinicalReviewDate": null,
                   "contentVersion": "1.0.0",
                   "clinicalFactID": "fact.aed.shockDelivery"
+                },
+                {
+                  "id": "M6-B10-policy-ref",
+                  "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+                  "edition": "1.0 (2026-08-07)",
+                  "section": "Phase 3B authored interaction definitions",
+                  "page": "n/a (Markdown)",
+                  "reviewStatus": "source_checked",
+                  "reviewer": null,
+                  "lastClinicalReviewDate": null,
+                  "contentVersion": "1.0.0",
+                  "clinicalFactID": null
                 }
               ]
             }
@@ -14986,7 +15646,7 @@
                     },
                     {
                       "id": "q-m6-02-b",
-                      "text": "Place the left pad below and to the left of the left nipple"
+                      "text": "Position the left pad lower and farther out on the left chest, below the left nipple"
                     },
                     {
                       "id": "q-m6-02-c",
@@ -15006,7 +15666,7 @@
                     "q-m6-02-b",
                     "q-m6-02-c"
                   ],
-                  "explanation": "The adult pads go below the right collarbone and below-left of the left nipple, following the diagrams on the pads.",
+                  "explanation": "Use the pad diagrams: one pad sits high on the right chest beneath the collarbone and the other lower on the outer left chest, below the left nipple.",
                   "sourceReferences": [
                     {
                       "id": "src-q-m6-02",
@@ -15379,6 +16039,18 @@
               "clinicalFactID": "fact.aed.padPlacementAdult"
             },
             {
+              "id": "M6-O1-policy-ref",
+              "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+              "edition": "1.0 (2026-08-07)",
+              "section": "Phase 3B authored interaction definitions",
+              "page": "n/a (Markdown)",
+              "reviewStatus": "source_checked",
+              "reviewer": null,
+              "lastClinicalReviewDate": null,
+              "contentVersion": "1.0.0",
+              "clinicalFactID": null
+            },
+            {
               "id": "M6-O2-ref-aed-analysisNoTouch-1",
               "document": "CA-Manual-REV-1-2022.pdf",
               "edition": "2022",
@@ -15655,6 +16327,18 @@
               "clinicalFactID": "fact.aed.hazards"
             },
             {
+              "id": "M6-B1-policy-ref",
+              "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+              "edition": "1.0 (2026-08-07)",
+              "section": "Phase 3B authored interaction definitions",
+              "page": "n/a (Markdown)",
+              "reviewStatus": "source_checked",
+              "reviewer": null,
+              "lastClinicalReviewDate": null,
+              "contentVersion": "1.0.0",
+              "clinicalFactID": null
+            },
+            {
               "id": "M6-B2-ref-aed-applyDuringCpr-1",
               "document": "SRFAC-CPRHOAED-Manual-2018-2.pdf",
               "edition": "2018",
@@ -15821,6 +16505,18 @@
               "lastClinicalReviewDate": null,
               "contentVersion": "1.0.0",
               "clinicalFactID": "fact.aed.resumeAfterShock"
+            },
+            {
+              "id": "M6-B2-policy-ref",
+              "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+              "edition": "1.0 (2026-08-07)",
+              "section": "Phase 3B authored interaction definitions",
+              "page": "n/a (Markdown)",
+              "reviewStatus": "source_checked",
+              "reviewer": null,
+              "lastClinicalReviewDate": null,
+              "contentVersion": "1.0.0",
+              "clinicalFactID": null
             },
             {
               "id": "M6-B3-ref-aed-padPlacementAdult-1",
@@ -16075,6 +16771,18 @@
               "clinicalFactID": "fact.aed.shockDelivery"
             },
             {
+              "id": "M6-B10-policy-ref",
+              "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+              "edition": "1.0 (2026-08-07)",
+              "section": "Phase 3B authored interaction definitions",
+              "page": "n/a (Markdown)",
+              "reviewStatus": "source_checked",
+              "reviewer": null,
+              "lastClinicalReviewDate": null,
+              "contentVersion": "1.0.0",
+              "clinicalFactID": null
+            },
+            {
               "id": "M6-A1-ref-aed-padPlacementAdult-1",
               "document": "CA-Manual-REV-1-2022.pdf",
               "edition": "2022",
@@ -16269,6 +16977,18 @@
           "lastClinicalReviewDate": null,
           "contentVersion": "1.0.0",
           "clinicalFactID": "fact.aed.padPlacementAdult"
+        },
+        {
+          "id": "M6-O1-policy-ref",
+          "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+          "edition": "1.0 (2026-08-07)",
+          "section": "Phase 3B authored interaction definitions",
+          "page": "n/a (Markdown)",
+          "reviewStatus": "source_checked",
+          "reviewer": null,
+          "lastClinicalReviewDate": null,
+          "contentVersion": "1.0.0",
+          "clinicalFactID": null
         },
         {
           "id": "M6-O2-ref-aed-analysisNoTouch-1",
@@ -16547,6 +17267,18 @@
           "clinicalFactID": "fact.aed.hazards"
         },
         {
+          "id": "M6-B1-policy-ref",
+          "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+          "edition": "1.0 (2026-08-07)",
+          "section": "Phase 3B authored interaction definitions",
+          "page": "n/a (Markdown)",
+          "reviewStatus": "source_checked",
+          "reviewer": null,
+          "lastClinicalReviewDate": null,
+          "contentVersion": "1.0.0",
+          "clinicalFactID": null
+        },
+        {
           "id": "M6-B2-ref-aed-applyDuringCpr-1",
           "document": "SRFAC-CPRHOAED-Manual-2018-2.pdf",
           "edition": "2018",
@@ -16713,6 +17445,18 @@
           "lastClinicalReviewDate": null,
           "contentVersion": "1.0.0",
           "clinicalFactID": "fact.aed.resumeAfterShock"
+        },
+        {
+          "id": "M6-B2-policy-ref",
+          "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+          "edition": "1.0 (2026-08-07)",
+          "section": "Phase 3B authored interaction definitions",
+          "page": "n/a (Markdown)",
+          "reviewStatus": "source_checked",
+          "reviewer": null,
+          "lastClinicalReviewDate": null,
+          "contentVersion": "1.0.0",
+          "clinicalFactID": null
         },
         {
           "id": "M6-B3-ref-aed-padPlacementAdult-1",
@@ -16967,6 +17711,18 @@
           "clinicalFactID": "fact.aed.shockDelivery"
         },
         {
+          "id": "M6-B10-policy-ref",
+          "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+          "edition": "1.0 (2026-08-07)",
+          "section": "Phase 3B authored interaction definitions",
+          "page": "n/a (Markdown)",
+          "reviewStatus": "source_checked",
+          "reviewer": null,
+          "lastClinicalReviewDate": null,
+          "contentVersion": "1.0.0",
+          "clinicalFactID": null
+        },
+        {
           "id": "M6-A1-ref-aed-padPlacementAdult-1",
           "document": "CA-Manual-REV-1-2022.pdf",
           "edition": "2022",
@@ -17213,6 +17969,18 @@
                   "lastClinicalReviewDate": null,
                   "contentVersion": "1.0.0",
                   "clinicalFactID": "fact.specialsettings.environments"
+                },
+                {
+                  "id": "M7-O1-policy-ref",
+                  "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+                  "edition": "1.0 (2026-08-07)",
+                  "section": "Phase 3B authored interaction definitions",
+                  "page": "n/a (Markdown)",
+                  "reviewStatus": "source_checked",
+                  "reviewer": null,
+                  "lastClinicalReviewDate": null,
+                  "contentVersion": "1.0.0",
+                  "clinicalFactID": null
                 }
               ]
             },
@@ -17326,6 +18094,18 @@
                   "lastClinicalReviewDate": null,
                   "contentVersion": "1.0.0",
                   "clinicalFactID": "fact.drsabc.danger"
+                },
+                {
+                  "id": "M7-B1-policy-ref",
+                  "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+                  "edition": "1.0 (2026-08-07)",
+                  "section": "Phase 3B authored interaction definitions",
+                  "page": "n/a (Markdown)",
+                  "reviewStatus": "source_checked",
+                  "reviewer": null,
+                  "lastClinicalReviewDate": null,
+                  "contentVersion": "1.0.0",
+                  "clinicalFactID": null
                 }
               ]
             },
@@ -17347,6 +18127,18 @@
                   "lastClinicalReviewDate": null,
                   "contentVersion": "1.0.0",
                   "clinicalFactID": "fact.drsabc.remoteAreaException"
+                },
+                {
+                  "id": "M7-B2-policy-ref",
+                  "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+                  "edition": "1.0 (2026-08-07)",
+                  "section": "Phase 3B authored interaction definitions",
+                  "page": "n/a (Markdown)",
+                  "reviewStatus": "source_checked",
+                  "reviewer": null,
+                  "lastClinicalReviewDate": null,
+                  "contentVersion": "1.0.0",
+                  "clinicalFactID": null
                 }
               ]
             },
@@ -17392,6 +18184,18 @@
                   "lastClinicalReviewDate": null,
                   "contentVersion": "1.0.0",
                   "clinicalFactID": "fact.aed.hazards"
+                },
+                {
+                  "id": "M7-B3-policy-ref",
+                  "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+                  "edition": "1.0 (2026-08-07)",
+                  "section": "Phase 3B authored interaction definitions",
+                  "page": "n/a (Markdown)",
+                  "reviewStatus": "source_checked",
+                  "reviewer": null,
+                  "lastClinicalReviewDate": null,
+                  "contentVersion": "1.0.0",
+                  "clinicalFactID": null
                 }
               ]
             },
@@ -17461,6 +18265,18 @@
                   "lastClinicalReviewDate": null,
                   "contentVersion": "1.0.0",
                   "clinicalFactID": "fact.aed.chestPrepWet"
+                },
+                {
+                  "id": "M7-B4-policy-ref",
+                  "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+                  "edition": "1.0 (2026-08-07)",
+                  "section": "Phase 3B authored interaction definitions",
+                  "page": "n/a (Markdown)",
+                  "reviewStatus": "source_checked",
+                  "reviewer": null,
+                  "lastClinicalReviewDate": null,
+                  "contentVersion": "1.0.0",
+                  "clinicalFactID": null
                 }
               ]
             },
@@ -17468,7 +18284,7 @@
               "id": "M7-B5",
               "kind": "callout",
               "title": "Drill 5 — flammable gas or oxygen source",
-              "body": "Move the casualty away from flammable gases or oxygen sources before applying the AED.",
+              "body": "Before AED use, create safe distance between the casualty and any flammable gas or oxygen source.",
               "reviewStatus": "sourceChecked",
               "sourceReferences": [
                 {
@@ -17506,6 +18322,18 @@
                   "lastClinicalReviewDate": null,
                   "contentVersion": "1.0.0",
                   "clinicalFactID": "fact.aed.hazards"
+                },
+                {
+                  "id": "M7-B5-policy-ref",
+                  "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+                  "edition": "1.0 (2026-08-07)",
+                  "section": "Phase 3B authored interaction definitions",
+                  "page": "n/a (Markdown)",
+                  "reviewStatus": "source_checked",
+                  "reviewer": null,
+                  "lastClinicalReviewDate": null,
+                  "contentVersion": "1.0.0",
+                  "clinicalFactID": null
                 }
               ]
             },
@@ -17539,6 +18367,18 @@
                   "lastClinicalReviewDate": null,
                   "contentVersion": "1.0.0",
                   "clinicalFactID": "fact.aed.chestPrepHairyChest"
+                },
+                {
+                  "id": "M7-B6-policy-ref",
+                  "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+                  "edition": "1.0 (2026-08-07)",
+                  "section": "Phase 3B authored interaction definitions",
+                  "page": "n/a (Markdown)",
+                  "reviewStatus": "source_checked",
+                  "reviewer": null,
+                  "lastClinicalReviewDate": null,
+                  "contentVersion": "1.0.0",
+                  "clinicalFactID": null
                 }
               ]
             },
@@ -17620,6 +18460,18 @@
                   "lastClinicalReviewDate": null,
                   "contentVersion": "1.0.0",
                   "clinicalFactID": "fact.aed.chestPrepImplantedDevices"
+                },
+                {
+                  "id": "M7-B7-policy-ref",
+                  "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+                  "edition": "1.0 (2026-08-07)",
+                  "section": "Phase 3B authored interaction definitions",
+                  "page": "n/a (Markdown)",
+                  "reviewStatus": "source_checked",
+                  "reviewer": null,
+                  "lastClinicalReviewDate": null,
+                  "contentVersion": "1.0.0",
+                  "clinicalFactID": null
                 }
               ]
             },
@@ -17653,6 +18505,18 @@
                   "lastClinicalReviewDate": null,
                   "contentVersion": "1.0.0",
                   "clinicalFactID": "fact.aed.retrievalSafety"
+                },
+                {
+                  "id": "M7-B8-policy-ref",
+                  "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+                  "edition": "1.0 (2026-08-07)",
+                  "section": "Phase 3B authored interaction definitions",
+                  "page": "n/a (Markdown)",
+                  "reviewStatus": "source_checked",
+                  "reviewer": null,
+                  "lastClinicalReviewDate": null,
+                  "contentVersion": "1.0.0",
+                  "clinicalFactID": null
                 }
               ]
             },
@@ -17722,6 +18586,18 @@
                   "lastClinicalReviewDate": null,
                   "contentVersion": "1.0.0",
                   "clinicalFactID": "fact.ventilation.thirtyToTwoIfTrained"
+                },
+                {
+                  "id": "M7-B9-policy-ref",
+                  "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+                  "edition": "1.0 (2026-08-07)",
+                  "section": "Phase 3B authored interaction definitions",
+                  "page": "n/a (Markdown)",
+                  "reviewStatus": "source_checked",
+                  "reviewer": null,
+                  "lastClinicalReviewDate": null,
+                  "contentVersion": "1.0.0",
+                  "clinicalFactID": null
                 }
               ]
             },
@@ -17755,6 +18631,18 @@
                   "lastClinicalReviewDate": null,
                   "contentVersion": "1.0.0",
                   "clinicalFactID": "fact.specialsettings.environments"
+                },
+                {
+                  "id": "M7-B10-policy-ref",
+                  "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+                  "edition": "1.0 (2026-08-07)",
+                  "section": "Phase 3B authored interaction definitions",
+                  "page": "n/a (Markdown)",
+                  "reviewStatus": "source_checked",
+                  "reviewer": null,
+                  "lastClinicalReviewDate": null,
+                  "contentVersion": "1.0.0",
+                  "clinicalFactID": null
                 }
               ]
             }
@@ -17801,6 +18689,18 @@
                   "lastClinicalReviewDate": null,
                   "contentVersion": "1.0.0",
                   "clinicalFactID": "fact.drsabc.danger"
+                },
+                {
+                  "id": "M7-A1-policy-ref",
+                  "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+                  "edition": "1.0 (2026-08-07)",
+                  "section": "Phase 3B authored interaction definitions",
+                  "page": "n/a (Markdown)",
+                  "reviewStatus": "source_checked",
+                  "reviewer": null,
+                  "lastClinicalReviewDate": null,
+                  "contentVersion": "1.0.0",
+                  "clinicalFactID": null
                 }
               ]
             },
@@ -17821,6 +18721,18 @@
                   "lastClinicalReviewDate": null,
                   "contentVersion": "1.0.0",
                   "clinicalFactID": "fact.drsabc.remoteAreaException"
+                },
+                {
+                  "id": "M7-A2-policy-ref",
+                  "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+                  "edition": "1.0 (2026-08-07)",
+                  "section": "Phase 3B authored interaction definitions",
+                  "page": "n/a (Markdown)",
+                  "reviewStatus": "source_checked",
+                  "reviewer": null,
+                  "lastClinicalReviewDate": null,
+                  "contentVersion": "1.0.0",
+                  "clinicalFactID": null
                 }
               ]
             },
@@ -17865,6 +18777,18 @@
                   "lastClinicalReviewDate": null,
                   "contentVersion": "1.0.0",
                   "clinicalFactID": "fact.aed.hazards"
+                },
+                {
+                  "id": "M7-A3-policy-ref",
+                  "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+                  "edition": "1.0 (2026-08-07)",
+                  "section": "Phase 3B authored interaction definitions",
+                  "page": "n/a (Markdown)",
+                  "reviewStatus": "source_checked",
+                  "reviewer": null,
+                  "lastClinicalReviewDate": null,
+                  "contentVersion": "1.0.0",
+                  "clinicalFactID": null
                 }
               ]
             },
@@ -17933,6 +18857,18 @@
                   "lastClinicalReviewDate": null,
                   "contentVersion": "1.0.0",
                   "clinicalFactID": "fact.aed.chestPrepWet"
+                },
+                {
+                  "id": "M7-A4-policy-ref",
+                  "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+                  "edition": "1.0 (2026-08-07)",
+                  "section": "Phase 3B authored interaction definitions",
+                  "page": "n/a (Markdown)",
+                  "reviewStatus": "source_checked",
+                  "reviewer": null,
+                  "lastClinicalReviewDate": null,
+                  "contentVersion": "1.0.0",
+                  "clinicalFactID": null
                 }
               ]
             },
@@ -17940,7 +18876,7 @@
               "id": "M7-A5",
               "title": "Drill 5 — flammable gas or oxygen source",
               "activityType": "specialCircumstanceDrill",
-              "instructions": "Move the casualty away from flammable gases or oxygen sources before applying the AED.",
+              "instructions": "Before AED use, create safe distance between the casualty and any flammable gas or oxygen source.",
               "sourceReferences": [
                 {
                   "id": "M7-A5-ref-aed-hazards-1",
@@ -17977,6 +18913,18 @@
                   "lastClinicalReviewDate": null,
                   "contentVersion": "1.0.0",
                   "clinicalFactID": "fact.aed.hazards"
+                },
+                {
+                  "id": "M7-A5-policy-ref",
+                  "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+                  "edition": "1.0 (2026-08-07)",
+                  "section": "Phase 3B authored interaction definitions",
+                  "page": "n/a (Markdown)",
+                  "reviewStatus": "source_checked",
+                  "reviewer": null,
+                  "lastClinicalReviewDate": null,
+                  "contentVersion": "1.0.0",
+                  "clinicalFactID": null
                 }
               ]
             },
@@ -18009,6 +18957,18 @@
                   "lastClinicalReviewDate": null,
                   "contentVersion": "1.0.0",
                   "clinicalFactID": "fact.aed.chestPrepHairyChest"
+                },
+                {
+                  "id": "M7-A6-policy-ref",
+                  "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+                  "edition": "1.0 (2026-08-07)",
+                  "section": "Phase 3B authored interaction definitions",
+                  "page": "n/a (Markdown)",
+                  "reviewStatus": "source_checked",
+                  "reviewer": null,
+                  "lastClinicalReviewDate": null,
+                  "contentVersion": "1.0.0",
+                  "clinicalFactID": null
                 }
               ]
             },
@@ -18089,6 +19049,18 @@
                   "lastClinicalReviewDate": null,
                   "contentVersion": "1.0.0",
                   "clinicalFactID": "fact.aed.chestPrepImplantedDevices"
+                },
+                {
+                  "id": "M7-A7-policy-ref",
+                  "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+                  "edition": "1.0 (2026-08-07)",
+                  "section": "Phase 3B authored interaction definitions",
+                  "page": "n/a (Markdown)",
+                  "reviewStatus": "source_checked",
+                  "reviewer": null,
+                  "lastClinicalReviewDate": null,
+                  "contentVersion": "1.0.0",
+                  "clinicalFactID": null
                 }
               ]
             },
@@ -18121,6 +19093,18 @@
                   "lastClinicalReviewDate": null,
                   "contentVersion": "1.0.0",
                   "clinicalFactID": "fact.aed.retrievalSafety"
+                },
+                {
+                  "id": "M7-A8-policy-ref",
+                  "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+                  "edition": "1.0 (2026-08-07)",
+                  "section": "Phase 3B authored interaction definitions",
+                  "page": "n/a (Markdown)",
+                  "reviewStatus": "source_checked",
+                  "reviewer": null,
+                  "lastClinicalReviewDate": null,
+                  "contentVersion": "1.0.0",
+                  "clinicalFactID": null
                 }
               ]
             },
@@ -18189,6 +19173,18 @@
                   "lastClinicalReviewDate": null,
                   "contentVersion": "1.0.0",
                   "clinicalFactID": "fact.ventilation.thirtyToTwoIfTrained"
+                },
+                {
+                  "id": "M7-A9-policy-ref",
+                  "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+                  "edition": "1.0 (2026-08-07)",
+                  "section": "Phase 3B authored interaction definitions",
+                  "page": "n/a (Markdown)",
+                  "reviewStatus": "source_checked",
+                  "reviewer": null,
+                  "lastClinicalReviewDate": null,
+                  "contentVersion": "1.0.0",
+                  "clinicalFactID": null
                 }
               ]
             },
@@ -18221,6 +19217,18 @@
                   "lastClinicalReviewDate": null,
                   "contentVersion": "1.0.0",
                   "clinicalFactID": "fact.specialsettings.environments"
+                },
+                {
+                  "id": "M7-A10-policy-ref",
+                  "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+                  "edition": "1.0 (2026-08-07)",
+                  "section": "Phase 3B authored interaction definitions",
+                  "page": "n/a (Markdown)",
+                  "reviewStatus": "source_checked",
+                  "reviewer": null,
+                  "lastClinicalReviewDate": null,
+                  "contentVersion": "1.0.0",
+                  "clinicalFactID": null
                 }
               ]
             }
@@ -18375,7 +19383,7 @@
                   "choices": [
                     {
                       "id": "q-m7-04-a",
-                      "text": "Kneel in the leg space beside the seat"
+                      "text": "Use the floor area beside the casualty's seat where the legs normally rest"
                     },
                     {
                       "id": "q-m7-04-b",
@@ -18393,7 +19401,7 @@
                   "correctChoiceIDs": [
                     "q-m7-04-a"
                   ],
-                  "explanation": "The aircraft technique places the rescuer in the leg space beside the seat unless the casualty can be moved quickly to the galley.",
+                  "explanation": "If a quick move to the galley is not possible, the sourced aircraft option uses the floor space beside the casualty's seat.",
                   "sourceReferences": [
                     {
                       "id": "src-q-m7-04",
@@ -18684,6 +19692,18 @@
               "clinicalFactID": "fact.specialsettings.environments"
             },
             {
+              "id": "M7-O1-policy-ref",
+              "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+              "edition": "1.0 (2026-08-07)",
+              "section": "Phase 3B authored interaction definitions",
+              "page": "n/a (Markdown)",
+              "reviewStatus": "source_checked",
+              "reviewer": null,
+              "lastClinicalReviewDate": null,
+              "contentVersion": "1.0.0",
+              "clinicalFactID": null
+            },
+            {
               "id": "M7-O2-ref-compression-minimiseInterruptions-1",
               "document": "SRFAC-CPRHOAED-Manual-2018-2.pdf",
               "edition": "2018",
@@ -18780,6 +19800,18 @@
               "clinicalFactID": "fact.drsabc.danger"
             },
             {
+              "id": "M7-B1-policy-ref",
+              "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+              "edition": "1.0 (2026-08-07)",
+              "section": "Phase 3B authored interaction definitions",
+              "page": "n/a (Markdown)",
+              "reviewStatus": "source_checked",
+              "reviewer": null,
+              "lastClinicalReviewDate": null,
+              "contentVersion": "1.0.0",
+              "clinicalFactID": null
+            },
+            {
               "id": "M7-B2-ref-drsabc-remoteAreaException-1",
               "document": "CA-Manual-REV-1-2022.pdf",
               "edition": "2022",
@@ -18790,6 +19822,18 @@
               "lastClinicalReviewDate": null,
               "contentVersion": "1.0.0",
               "clinicalFactID": "fact.drsabc.remoteAreaException"
+            },
+            {
+              "id": "M7-B2-policy-ref",
+              "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+              "edition": "1.0 (2026-08-07)",
+              "section": "Phase 3B authored interaction definitions",
+              "page": "n/a (Markdown)",
+              "reviewStatus": "source_checked",
+              "reviewer": null,
+              "lastClinicalReviewDate": null,
+              "contentVersion": "1.0.0",
+              "clinicalFactID": null
             },
             {
               "id": "M7-B3-ref-aed-hazards-1",
@@ -18826,6 +19870,18 @@
               "lastClinicalReviewDate": null,
               "contentVersion": "1.0.0",
               "clinicalFactID": "fact.aed.hazards"
+            },
+            {
+              "id": "M7-B3-policy-ref",
+              "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+              "edition": "1.0 (2026-08-07)",
+              "section": "Phase 3B authored interaction definitions",
+              "page": "n/a (Markdown)",
+              "reviewStatus": "source_checked",
+              "reviewer": null,
+              "lastClinicalReviewDate": null,
+              "contentVersion": "1.0.0",
+              "clinicalFactID": null
             },
             {
               "id": "M7-B4-ref-aed-hazards-1",
@@ -18888,6 +19944,18 @@
               "clinicalFactID": "fact.aed.chestPrepWet"
             },
             {
+              "id": "M7-B4-policy-ref",
+              "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+              "edition": "1.0 (2026-08-07)",
+              "section": "Phase 3B authored interaction definitions",
+              "page": "n/a (Markdown)",
+              "reviewStatus": "source_checked",
+              "reviewer": null,
+              "lastClinicalReviewDate": null,
+              "contentVersion": "1.0.0",
+              "clinicalFactID": null
+            },
+            {
               "id": "M7-B5-ref-aed-hazards-1",
               "document": "CA-Manual-REV-1-2022.pdf",
               "edition": "2022",
@@ -18924,6 +19992,18 @@
               "clinicalFactID": "fact.aed.hazards"
             },
             {
+              "id": "M7-B5-policy-ref",
+              "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+              "edition": "1.0 (2026-08-07)",
+              "section": "Phase 3B authored interaction definitions",
+              "page": "n/a (Markdown)",
+              "reviewStatus": "source_checked",
+              "reviewer": null,
+              "lastClinicalReviewDate": null,
+              "contentVersion": "1.0.0",
+              "clinicalFactID": null
+            },
+            {
               "id": "M7-B6-ref-aed-chestPrepHairyChest-1",
               "document": "CA-Manual-REV-1-2022.pdf",
               "edition": "2022",
@@ -18946,6 +20026,18 @@
               "lastClinicalReviewDate": null,
               "contentVersion": "1.0.0",
               "clinicalFactID": "fact.aed.chestPrepHairyChest"
+            },
+            {
+              "id": "M7-B6-policy-ref",
+              "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+              "edition": "1.0 (2026-08-07)",
+              "section": "Phase 3B authored interaction definitions",
+              "page": "n/a (Markdown)",
+              "reviewStatus": "source_checked",
+              "reviewer": null,
+              "lastClinicalReviewDate": null,
+              "contentVersion": "1.0.0",
+              "clinicalFactID": null
             },
             {
               "id": "M7-B7-ref-aed-chestPrepJewellery-1",
@@ -19020,6 +20112,18 @@
               "clinicalFactID": "fact.aed.chestPrepImplantedDevices"
             },
             {
+              "id": "M7-B7-policy-ref",
+              "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+              "edition": "1.0 (2026-08-07)",
+              "section": "Phase 3B authored interaction definitions",
+              "page": "n/a (Markdown)",
+              "reviewStatus": "source_checked",
+              "reviewer": null,
+              "lastClinicalReviewDate": null,
+              "contentVersion": "1.0.0",
+              "clinicalFactID": null
+            },
+            {
               "id": "M7-B8-ref-aed-retrievalSafety-1",
               "document": "CA-Manual-REV-1-2022.pdf",
               "edition": "2022",
@@ -19042,6 +20146,18 @@
               "lastClinicalReviewDate": null,
               "contentVersion": "1.0.0",
               "clinicalFactID": "fact.aed.retrievalSafety"
+            },
+            {
+              "id": "M7-B8-policy-ref",
+              "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+              "edition": "1.0 (2026-08-07)",
+              "section": "Phase 3B authored interaction definitions",
+              "page": "n/a (Markdown)",
+              "reviewStatus": "source_checked",
+              "reviewer": null,
+              "lastClinicalReviewDate": null,
+              "contentVersion": "1.0.0",
+              "clinicalFactID": null
             },
             {
               "id": "M7-B9-ref-specialsettings-environments-1",
@@ -19104,6 +20220,18 @@
               "clinicalFactID": "fact.ventilation.thirtyToTwoIfTrained"
             },
             {
+              "id": "M7-B9-policy-ref",
+              "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+              "edition": "1.0 (2026-08-07)",
+              "section": "Phase 3B authored interaction definitions",
+              "page": "n/a (Markdown)",
+              "reviewStatus": "source_checked",
+              "reviewer": null,
+              "lastClinicalReviewDate": null,
+              "contentVersion": "1.0.0",
+              "clinicalFactID": null
+            },
+            {
               "id": "M7-B10-ref-specialsettings-environments-1",
               "document": "CA-Manual-REV-1-2022.pdf",
               "edition": "2022",
@@ -19126,6 +20254,18 @@
               "lastClinicalReviewDate": null,
               "contentVersion": "1.0.0",
               "clinicalFactID": "fact.specialsettings.environments"
+            },
+            {
+              "id": "M7-B10-policy-ref",
+              "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+              "edition": "1.0 (2026-08-07)",
+              "section": "Phase 3B authored interaction definitions",
+              "page": "n/a (Markdown)",
+              "reviewStatus": "source_checked",
+              "reviewer": null,
+              "lastClinicalReviewDate": null,
+              "contentVersion": "1.0.0",
+              "clinicalFactID": null
             },
             {
               "id": "M7-A1-ref-drsabc-danger-1",
@@ -19164,6 +20304,18 @@
               "clinicalFactID": "fact.drsabc.danger"
             },
             {
+              "id": "M7-A1-policy-ref",
+              "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+              "edition": "1.0 (2026-08-07)",
+              "section": "Phase 3B authored interaction definitions",
+              "page": "n/a (Markdown)",
+              "reviewStatus": "source_checked",
+              "reviewer": null,
+              "lastClinicalReviewDate": null,
+              "contentVersion": "1.0.0",
+              "clinicalFactID": null
+            },
+            {
               "id": "M7-A2-ref-drsabc-remoteAreaException-1",
               "document": "CA-Manual-REV-1-2022.pdf",
               "edition": "2022",
@@ -19174,6 +20326,18 @@
               "lastClinicalReviewDate": null,
               "contentVersion": "1.0.0",
               "clinicalFactID": "fact.drsabc.remoteAreaException"
+            },
+            {
+              "id": "M7-A2-policy-ref",
+              "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+              "edition": "1.0 (2026-08-07)",
+              "section": "Phase 3B authored interaction definitions",
+              "page": "n/a (Markdown)",
+              "reviewStatus": "source_checked",
+              "reviewer": null,
+              "lastClinicalReviewDate": null,
+              "contentVersion": "1.0.0",
+              "clinicalFactID": null
             },
             {
               "id": "M7-A3-ref-aed-hazards-1",
@@ -19210,6 +20374,18 @@
               "lastClinicalReviewDate": null,
               "contentVersion": "1.0.0",
               "clinicalFactID": "fact.aed.hazards"
+            },
+            {
+              "id": "M7-A3-policy-ref",
+              "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+              "edition": "1.0 (2026-08-07)",
+              "section": "Phase 3B authored interaction definitions",
+              "page": "n/a (Markdown)",
+              "reviewStatus": "source_checked",
+              "reviewer": null,
+              "lastClinicalReviewDate": null,
+              "contentVersion": "1.0.0",
+              "clinicalFactID": null
             },
             {
               "id": "M7-A4-ref-aed-hazards-1",
@@ -19272,6 +20448,18 @@
               "clinicalFactID": "fact.aed.chestPrepWet"
             },
             {
+              "id": "M7-A4-policy-ref",
+              "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+              "edition": "1.0 (2026-08-07)",
+              "section": "Phase 3B authored interaction definitions",
+              "page": "n/a (Markdown)",
+              "reviewStatus": "source_checked",
+              "reviewer": null,
+              "lastClinicalReviewDate": null,
+              "contentVersion": "1.0.0",
+              "clinicalFactID": null
+            },
+            {
               "id": "M7-A5-ref-aed-hazards-1",
               "document": "CA-Manual-REV-1-2022.pdf",
               "edition": "2022",
@@ -19308,6 +20496,18 @@
               "clinicalFactID": "fact.aed.hazards"
             },
             {
+              "id": "M7-A5-policy-ref",
+              "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+              "edition": "1.0 (2026-08-07)",
+              "section": "Phase 3B authored interaction definitions",
+              "page": "n/a (Markdown)",
+              "reviewStatus": "source_checked",
+              "reviewer": null,
+              "lastClinicalReviewDate": null,
+              "contentVersion": "1.0.0",
+              "clinicalFactID": null
+            },
+            {
               "id": "M7-A6-ref-aed-chestPrepHairyChest-1",
               "document": "CA-Manual-REV-1-2022.pdf",
               "edition": "2022",
@@ -19330,6 +20530,18 @@
               "lastClinicalReviewDate": null,
               "contentVersion": "1.0.0",
               "clinicalFactID": "fact.aed.chestPrepHairyChest"
+            },
+            {
+              "id": "M7-A6-policy-ref",
+              "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+              "edition": "1.0 (2026-08-07)",
+              "section": "Phase 3B authored interaction definitions",
+              "page": "n/a (Markdown)",
+              "reviewStatus": "source_checked",
+              "reviewer": null,
+              "lastClinicalReviewDate": null,
+              "contentVersion": "1.0.0",
+              "clinicalFactID": null
             },
             {
               "id": "M7-A7-ref-aed-chestPrepJewellery-1",
@@ -19404,6 +20616,18 @@
               "clinicalFactID": "fact.aed.chestPrepImplantedDevices"
             },
             {
+              "id": "M7-A7-policy-ref",
+              "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+              "edition": "1.0 (2026-08-07)",
+              "section": "Phase 3B authored interaction definitions",
+              "page": "n/a (Markdown)",
+              "reviewStatus": "source_checked",
+              "reviewer": null,
+              "lastClinicalReviewDate": null,
+              "contentVersion": "1.0.0",
+              "clinicalFactID": null
+            },
+            {
               "id": "M7-A8-ref-aed-retrievalSafety-1",
               "document": "CA-Manual-REV-1-2022.pdf",
               "edition": "2022",
@@ -19426,6 +20650,18 @@
               "lastClinicalReviewDate": null,
               "contentVersion": "1.0.0",
               "clinicalFactID": "fact.aed.retrievalSafety"
+            },
+            {
+              "id": "M7-A8-policy-ref",
+              "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+              "edition": "1.0 (2026-08-07)",
+              "section": "Phase 3B authored interaction definitions",
+              "page": "n/a (Markdown)",
+              "reviewStatus": "source_checked",
+              "reviewer": null,
+              "lastClinicalReviewDate": null,
+              "contentVersion": "1.0.0",
+              "clinicalFactID": null
             },
             {
               "id": "M7-A9-ref-specialsettings-environments-1",
@@ -19488,6 +20724,18 @@
               "clinicalFactID": "fact.ventilation.thirtyToTwoIfTrained"
             },
             {
+              "id": "M7-A9-policy-ref",
+              "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+              "edition": "1.0 (2026-08-07)",
+              "section": "Phase 3B authored interaction definitions",
+              "page": "n/a (Markdown)",
+              "reviewStatus": "source_checked",
+              "reviewer": null,
+              "lastClinicalReviewDate": null,
+              "contentVersion": "1.0.0",
+              "clinicalFactID": null
+            },
+            {
               "id": "M7-A10-ref-specialsettings-environments-1",
               "document": "CA-Manual-REV-1-2022.pdf",
               "edition": "2022",
@@ -19510,6 +20758,18 @@
               "lastClinicalReviewDate": null,
               "contentVersion": "1.0.0",
               "clinicalFactID": "fact.specialsettings.environments"
+            },
+            {
+              "id": "M7-A10-policy-ref",
+              "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+              "edition": "1.0 (2026-08-07)",
+              "section": "Phase 3B authored interaction definitions",
+              "page": "n/a (Markdown)",
+              "reviewStatus": "source_checked",
+              "reviewer": null,
+              "lastClinicalReviewDate": null,
+              "contentVersion": "1.0.0",
+              "clinicalFactID": null
             }
           ]
         }
@@ -19612,6 +20872,18 @@
           "clinicalFactID": "fact.specialsettings.environments"
         },
         {
+          "id": "M7-O1-policy-ref",
+          "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+          "edition": "1.0 (2026-08-07)",
+          "section": "Phase 3B authored interaction definitions",
+          "page": "n/a (Markdown)",
+          "reviewStatus": "source_checked",
+          "reviewer": null,
+          "lastClinicalReviewDate": null,
+          "contentVersion": "1.0.0",
+          "clinicalFactID": null
+        },
+        {
           "id": "M7-O2-ref-compression-minimiseInterruptions-1",
           "document": "SRFAC-CPRHOAED-Manual-2018-2.pdf",
           "edition": "2018",
@@ -19708,6 +20980,18 @@
           "clinicalFactID": "fact.drsabc.danger"
         },
         {
+          "id": "M7-B1-policy-ref",
+          "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+          "edition": "1.0 (2026-08-07)",
+          "section": "Phase 3B authored interaction definitions",
+          "page": "n/a (Markdown)",
+          "reviewStatus": "source_checked",
+          "reviewer": null,
+          "lastClinicalReviewDate": null,
+          "contentVersion": "1.0.0",
+          "clinicalFactID": null
+        },
+        {
           "id": "M7-B2-ref-drsabc-remoteAreaException-1",
           "document": "CA-Manual-REV-1-2022.pdf",
           "edition": "2022",
@@ -19718,6 +21002,18 @@
           "lastClinicalReviewDate": null,
           "contentVersion": "1.0.0",
           "clinicalFactID": "fact.drsabc.remoteAreaException"
+        },
+        {
+          "id": "M7-B2-policy-ref",
+          "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+          "edition": "1.0 (2026-08-07)",
+          "section": "Phase 3B authored interaction definitions",
+          "page": "n/a (Markdown)",
+          "reviewStatus": "source_checked",
+          "reviewer": null,
+          "lastClinicalReviewDate": null,
+          "contentVersion": "1.0.0",
+          "clinicalFactID": null
         },
         {
           "id": "M7-B3-ref-aed-hazards-1",
@@ -19754,6 +21050,18 @@
           "lastClinicalReviewDate": null,
           "contentVersion": "1.0.0",
           "clinicalFactID": "fact.aed.hazards"
+        },
+        {
+          "id": "M7-B3-policy-ref",
+          "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+          "edition": "1.0 (2026-08-07)",
+          "section": "Phase 3B authored interaction definitions",
+          "page": "n/a (Markdown)",
+          "reviewStatus": "source_checked",
+          "reviewer": null,
+          "lastClinicalReviewDate": null,
+          "contentVersion": "1.0.0",
+          "clinicalFactID": null
         },
         {
           "id": "M7-B4-ref-aed-hazards-1",
@@ -19816,6 +21124,18 @@
           "clinicalFactID": "fact.aed.chestPrepWet"
         },
         {
+          "id": "M7-B4-policy-ref",
+          "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+          "edition": "1.0 (2026-08-07)",
+          "section": "Phase 3B authored interaction definitions",
+          "page": "n/a (Markdown)",
+          "reviewStatus": "source_checked",
+          "reviewer": null,
+          "lastClinicalReviewDate": null,
+          "contentVersion": "1.0.0",
+          "clinicalFactID": null
+        },
+        {
           "id": "M7-B5-ref-aed-hazards-1",
           "document": "CA-Manual-REV-1-2022.pdf",
           "edition": "2022",
@@ -19852,6 +21172,18 @@
           "clinicalFactID": "fact.aed.hazards"
         },
         {
+          "id": "M7-B5-policy-ref",
+          "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+          "edition": "1.0 (2026-08-07)",
+          "section": "Phase 3B authored interaction definitions",
+          "page": "n/a (Markdown)",
+          "reviewStatus": "source_checked",
+          "reviewer": null,
+          "lastClinicalReviewDate": null,
+          "contentVersion": "1.0.0",
+          "clinicalFactID": null
+        },
+        {
           "id": "M7-B6-ref-aed-chestPrepHairyChest-1",
           "document": "CA-Manual-REV-1-2022.pdf",
           "edition": "2022",
@@ -19874,6 +21206,18 @@
           "lastClinicalReviewDate": null,
           "contentVersion": "1.0.0",
           "clinicalFactID": "fact.aed.chestPrepHairyChest"
+        },
+        {
+          "id": "M7-B6-policy-ref",
+          "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+          "edition": "1.0 (2026-08-07)",
+          "section": "Phase 3B authored interaction definitions",
+          "page": "n/a (Markdown)",
+          "reviewStatus": "source_checked",
+          "reviewer": null,
+          "lastClinicalReviewDate": null,
+          "contentVersion": "1.0.0",
+          "clinicalFactID": null
         },
         {
           "id": "M7-B7-ref-aed-chestPrepJewellery-1",
@@ -19948,6 +21292,18 @@
           "clinicalFactID": "fact.aed.chestPrepImplantedDevices"
         },
         {
+          "id": "M7-B7-policy-ref",
+          "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+          "edition": "1.0 (2026-08-07)",
+          "section": "Phase 3B authored interaction definitions",
+          "page": "n/a (Markdown)",
+          "reviewStatus": "source_checked",
+          "reviewer": null,
+          "lastClinicalReviewDate": null,
+          "contentVersion": "1.0.0",
+          "clinicalFactID": null
+        },
+        {
           "id": "M7-B8-ref-aed-retrievalSafety-1",
           "document": "CA-Manual-REV-1-2022.pdf",
           "edition": "2022",
@@ -19970,6 +21326,18 @@
           "lastClinicalReviewDate": null,
           "contentVersion": "1.0.0",
           "clinicalFactID": "fact.aed.retrievalSafety"
+        },
+        {
+          "id": "M7-B8-policy-ref",
+          "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+          "edition": "1.0 (2026-08-07)",
+          "section": "Phase 3B authored interaction definitions",
+          "page": "n/a (Markdown)",
+          "reviewStatus": "source_checked",
+          "reviewer": null,
+          "lastClinicalReviewDate": null,
+          "contentVersion": "1.0.0",
+          "clinicalFactID": null
         },
         {
           "id": "M7-B9-ref-specialsettings-environments-1",
@@ -20032,6 +21400,18 @@
           "clinicalFactID": "fact.ventilation.thirtyToTwoIfTrained"
         },
         {
+          "id": "M7-B9-policy-ref",
+          "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+          "edition": "1.0 (2026-08-07)",
+          "section": "Phase 3B authored interaction definitions",
+          "page": "n/a (Markdown)",
+          "reviewStatus": "source_checked",
+          "reviewer": null,
+          "lastClinicalReviewDate": null,
+          "contentVersion": "1.0.0",
+          "clinicalFactID": null
+        },
+        {
           "id": "M7-B10-ref-specialsettings-environments-1",
           "document": "CA-Manual-REV-1-2022.pdf",
           "edition": "2022",
@@ -20054,6 +21434,18 @@
           "lastClinicalReviewDate": null,
           "contentVersion": "1.0.0",
           "clinicalFactID": "fact.specialsettings.environments"
+        },
+        {
+          "id": "M7-B10-policy-ref",
+          "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+          "edition": "1.0 (2026-08-07)",
+          "section": "Phase 3B authored interaction definitions",
+          "page": "n/a (Markdown)",
+          "reviewStatus": "source_checked",
+          "reviewer": null,
+          "lastClinicalReviewDate": null,
+          "contentVersion": "1.0.0",
+          "clinicalFactID": null
         },
         {
           "id": "M7-A1-ref-drsabc-danger-1",
@@ -20092,6 +21484,18 @@
           "clinicalFactID": "fact.drsabc.danger"
         },
         {
+          "id": "M7-A1-policy-ref",
+          "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+          "edition": "1.0 (2026-08-07)",
+          "section": "Phase 3B authored interaction definitions",
+          "page": "n/a (Markdown)",
+          "reviewStatus": "source_checked",
+          "reviewer": null,
+          "lastClinicalReviewDate": null,
+          "contentVersion": "1.0.0",
+          "clinicalFactID": null
+        },
+        {
           "id": "M7-A2-ref-drsabc-remoteAreaException-1",
           "document": "CA-Manual-REV-1-2022.pdf",
           "edition": "2022",
@@ -20102,6 +21506,18 @@
           "lastClinicalReviewDate": null,
           "contentVersion": "1.0.0",
           "clinicalFactID": "fact.drsabc.remoteAreaException"
+        },
+        {
+          "id": "M7-A2-policy-ref",
+          "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+          "edition": "1.0 (2026-08-07)",
+          "section": "Phase 3B authored interaction definitions",
+          "page": "n/a (Markdown)",
+          "reviewStatus": "source_checked",
+          "reviewer": null,
+          "lastClinicalReviewDate": null,
+          "contentVersion": "1.0.0",
+          "clinicalFactID": null
         },
         {
           "id": "M7-A3-ref-aed-hazards-1",
@@ -20138,6 +21554,18 @@
           "lastClinicalReviewDate": null,
           "contentVersion": "1.0.0",
           "clinicalFactID": "fact.aed.hazards"
+        },
+        {
+          "id": "M7-A3-policy-ref",
+          "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+          "edition": "1.0 (2026-08-07)",
+          "section": "Phase 3B authored interaction definitions",
+          "page": "n/a (Markdown)",
+          "reviewStatus": "source_checked",
+          "reviewer": null,
+          "lastClinicalReviewDate": null,
+          "contentVersion": "1.0.0",
+          "clinicalFactID": null
         },
         {
           "id": "M7-A4-ref-aed-hazards-1",
@@ -20200,6 +21628,18 @@
           "clinicalFactID": "fact.aed.chestPrepWet"
         },
         {
+          "id": "M7-A4-policy-ref",
+          "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+          "edition": "1.0 (2026-08-07)",
+          "section": "Phase 3B authored interaction definitions",
+          "page": "n/a (Markdown)",
+          "reviewStatus": "source_checked",
+          "reviewer": null,
+          "lastClinicalReviewDate": null,
+          "contentVersion": "1.0.0",
+          "clinicalFactID": null
+        },
+        {
           "id": "M7-A5-ref-aed-hazards-1",
           "document": "CA-Manual-REV-1-2022.pdf",
           "edition": "2022",
@@ -20236,6 +21676,18 @@
           "clinicalFactID": "fact.aed.hazards"
         },
         {
+          "id": "M7-A5-policy-ref",
+          "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+          "edition": "1.0 (2026-08-07)",
+          "section": "Phase 3B authored interaction definitions",
+          "page": "n/a (Markdown)",
+          "reviewStatus": "source_checked",
+          "reviewer": null,
+          "lastClinicalReviewDate": null,
+          "contentVersion": "1.0.0",
+          "clinicalFactID": null
+        },
+        {
           "id": "M7-A6-ref-aed-chestPrepHairyChest-1",
           "document": "CA-Manual-REV-1-2022.pdf",
           "edition": "2022",
@@ -20258,6 +21710,18 @@
           "lastClinicalReviewDate": null,
           "contentVersion": "1.0.0",
           "clinicalFactID": "fact.aed.chestPrepHairyChest"
+        },
+        {
+          "id": "M7-A6-policy-ref",
+          "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+          "edition": "1.0 (2026-08-07)",
+          "section": "Phase 3B authored interaction definitions",
+          "page": "n/a (Markdown)",
+          "reviewStatus": "source_checked",
+          "reviewer": null,
+          "lastClinicalReviewDate": null,
+          "contentVersion": "1.0.0",
+          "clinicalFactID": null
         },
         {
           "id": "M7-A7-ref-aed-chestPrepJewellery-1",
@@ -20332,6 +21796,18 @@
           "clinicalFactID": "fact.aed.chestPrepImplantedDevices"
         },
         {
+          "id": "M7-A7-policy-ref",
+          "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+          "edition": "1.0 (2026-08-07)",
+          "section": "Phase 3B authored interaction definitions",
+          "page": "n/a (Markdown)",
+          "reviewStatus": "source_checked",
+          "reviewer": null,
+          "lastClinicalReviewDate": null,
+          "contentVersion": "1.0.0",
+          "clinicalFactID": null
+        },
+        {
           "id": "M7-A8-ref-aed-retrievalSafety-1",
           "document": "CA-Manual-REV-1-2022.pdf",
           "edition": "2022",
@@ -20354,6 +21830,18 @@
           "lastClinicalReviewDate": null,
           "contentVersion": "1.0.0",
           "clinicalFactID": "fact.aed.retrievalSafety"
+        },
+        {
+          "id": "M7-A8-policy-ref",
+          "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+          "edition": "1.0 (2026-08-07)",
+          "section": "Phase 3B authored interaction definitions",
+          "page": "n/a (Markdown)",
+          "reviewStatus": "source_checked",
+          "reviewer": null,
+          "lastClinicalReviewDate": null,
+          "contentVersion": "1.0.0",
+          "clinicalFactID": null
         },
         {
           "id": "M7-A9-ref-specialsettings-environments-1",
@@ -20416,6 +21904,18 @@
           "clinicalFactID": "fact.ventilation.thirtyToTwoIfTrained"
         },
         {
+          "id": "M7-A9-policy-ref",
+          "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+          "edition": "1.0 (2026-08-07)",
+          "section": "Phase 3B authored interaction definitions",
+          "page": "n/a (Markdown)",
+          "reviewStatus": "source_checked",
+          "reviewer": null,
+          "lastClinicalReviewDate": null,
+          "contentVersion": "1.0.0",
+          "clinicalFactID": null
+        },
+        {
           "id": "M7-A10-ref-specialsettings-environments-1",
           "document": "CA-Manual-REV-1-2022.pdf",
           "edition": "2022",
@@ -20438,6 +21938,18 @@
           "lastClinicalReviewDate": null,
           "contentVersion": "1.0.0",
           "clinicalFactID": "fact.specialsettings.environments"
+        },
+        {
+          "id": "M7-A10-policy-ref",
+          "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+          "edition": "1.0 (2026-08-07)",
+          "section": "Phase 3B authored interaction definitions",
+          "page": "n/a (Markdown)",
+          "reviewStatus": "source_checked",
+          "reviewer": null,
+          "lastClinicalReviewDate": null,
+          "contentVersion": "1.0.0",
+          "clinicalFactID": null
         }
       ]
     },
@@ -20590,6 +22102,18 @@
                   "lastClinicalReviewDate": null,
                   "contentVersion": "1.0.0",
                   "clinicalFactID": "fact.aed.applyDuringCpr"
+                },
+                {
+                  "id": "M8-O1-policy-ref",
+                  "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+                  "edition": "1.0 (2026-08-07)",
+                  "section": "Phase 3B authored interaction definitions",
+                  "page": "n/a (Markdown)",
+                  "reviewStatus": "source_checked",
+                  "reviewer": null,
+                  "lastClinicalReviewDate": null,
+                  "contentVersion": "1.0.0",
+                  "clinicalFactID": null
                 }
               ]
             },
@@ -20680,6 +22204,18 @@
                   "lastClinicalReviewDate": null,
                   "contentVersion": "1.0.0",
                   "clinicalFactID": "fact.aed.noShockAdvised"
+                },
+                {
+                  "id": "M8-O2-policy-ref",
+                  "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+                  "edition": "1.0 (2026-08-07)",
+                  "section": "Phase 3B authored interaction definitions",
+                  "page": "n/a (Markdown)",
+                  "reviewStatus": "source_checked",
+                  "reviewer": null,
+                  "lastClinicalReviewDate": null,
+                  "contentVersion": "1.0.0",
+                  "clinicalFactID": null
                 }
               ]
             },
@@ -20770,6 +22306,18 @@
                   "lastClinicalReviewDate": null,
                   "contentVersion": "1.0.0",
                   "clinicalFactID": "fact.aed.shockDelivery"
+                },
+                {
+                  "id": "M8-O3-policy-ref",
+                  "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+                  "edition": "1.0 (2026-08-07)",
+                  "section": "Phase 3B authored interaction definitions",
+                  "page": "n/a (Markdown)",
+                  "reviewStatus": "source_checked",
+                  "reviewer": null,
+                  "lastClinicalReviewDate": null,
+                  "contentVersion": "1.0.0",
+                  "clinicalFactID": null
                 }
               ]
             }
@@ -20889,6 +22437,18 @@
                   "lastClinicalReviewDate": null,
                   "contentVersion": "1.0.0",
                   "clinicalFactID": "fact.aed.shockDelivery"
+                },
+                {
+                  "id": "M8-B1-policy-ref",
+                  "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+                  "edition": "1.0 (2026-08-07)",
+                  "section": "Phase 3B authored interaction definitions",
+                  "page": "n/a (Markdown)",
+                  "reviewStatus": "source_checked",
+                  "reviewer": null,
+                  "lastClinicalReviewDate": null,
+                  "contentVersion": "1.0.0",
+                  "clinicalFactID": null
                 }
               ]
             },
@@ -20922,6 +22482,18 @@
                   "lastClinicalReviewDate": null,
                   "contentVersion": "1.0.0",
                   "clinicalFactID": "fact.aed.practiceScenarios"
+                },
+                {
+                  "id": "M8-B2-policy-ref",
+                  "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+                  "edition": "1.0 (2026-08-07)",
+                  "section": "Phase 3B authored interaction definitions",
+                  "page": "n/a (Markdown)",
+                  "reviewStatus": "source_checked",
+                  "reviewer": null,
+                  "lastClinicalReviewDate": null,
+                  "contentVersion": "1.0.0",
+                  "clinicalFactID": null
                 }
               ]
             },
@@ -21171,6 +22743,18 @@
                   "lastClinicalReviewDate": null,
                   "contentVersion": "1.0.0",
                   "clinicalFactID": "fact.aed.noShockAdvised"
+                },
+                {
+                  "id": "M8-B3-policy-ref",
+                  "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+                  "edition": "1.0 (2026-08-07)",
+                  "section": "Phase 3B authored interaction definitions",
+                  "page": "n/a (Markdown)",
+                  "reviewStatus": "source_checked",
+                  "reviewer": null,
+                  "lastClinicalReviewDate": null,
+                  "contentVersion": "1.0.0",
+                  "clinicalFactID": null
                 }
               ]
             },
@@ -21252,6 +22836,18 @@
                   "lastClinicalReviewDate": null,
                   "contentVersion": "1.0.0",
                   "clinicalFactID": "fact.drsabc.breathingCheck"
+                },
+                {
+                  "id": "M8-B4-policy-ref",
+                  "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+                  "edition": "1.0 (2026-08-07)",
+                  "section": "Phase 3B authored interaction definitions",
+                  "page": "n/a (Markdown)",
+                  "reviewStatus": "source_checked",
+                  "reviewer": null,
+                  "lastClinicalReviewDate": null,
+                  "contentVersion": "1.0.0",
+                  "clinicalFactID": null
                 }
               ]
             },
@@ -21381,6 +22977,18 @@
                   "lastClinicalReviewDate": null,
                   "contentVersion": "1.0.0",
                   "clinicalFactID": "fact.aed.analysisNoTouch"
+                },
+                {
+                  "id": "M8-B5-policy-ref",
+                  "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+                  "edition": "1.0 (2026-08-07)",
+                  "section": "Phase 3B authored interaction definitions",
+                  "page": "n/a (Markdown)",
+                  "reviewStatus": "source_checked",
+                  "reviewer": null,
+                  "lastClinicalReviewDate": null,
+                  "contentVersion": "1.0.0",
+                  "clinicalFactID": null
                 }
               ]
             },
@@ -21486,6 +23094,18 @@
                   "lastClinicalReviewDate": null,
                   "contentVersion": "1.0.0",
                   "clinicalFactID": "fact.drsabc.mnemonic"
+                },
+                {
+                  "id": "M8-B6-policy-ref",
+                  "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+                  "edition": "1.0 (2026-08-07)",
+                  "section": "Phase 3B authored interaction definitions",
+                  "page": "n/a (Markdown)",
+                  "reviewStatus": "source_checked",
+                  "reviewer": null,
+                  "lastClinicalReviewDate": null,
+                  "contentVersion": "1.0.0",
+                  "clinicalFactID": null
                 }
               ]
             },
@@ -21639,6 +23259,18 @@
                   "lastClinicalReviewDate": null,
                   "contentVersion": "1.0.0",
                   "clinicalFactID": "fact.aed.noShockAdvised"
+                },
+                {
+                  "id": "M8-B7-policy-ref",
+                  "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+                  "edition": "1.0 (2026-08-07)",
+                  "section": "Phase 3B authored interaction definitions",
+                  "page": "n/a (Markdown)",
+                  "reviewStatus": "source_checked",
+                  "reviewer": null,
+                  "lastClinicalReviewDate": null,
+                  "contentVersion": "1.0.0",
+                  "clinicalFactID": null
                 }
               ]
             },
@@ -21684,6 +23316,18 @@
                   "lastClinicalReviewDate": null,
                   "contentVersion": "1.0.0",
                   "clinicalFactID": "fact.compression.depthAdult"
+                },
+                {
+                  "id": "M8-B8-policy-ref",
+                  "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+                  "edition": "1.0 (2026-08-07)",
+                  "section": "Phase 3B authored interaction definitions",
+                  "page": "n/a (Markdown)",
+                  "reviewStatus": "source_checked",
+                  "reviewer": null,
+                  "lastClinicalReviewDate": null,
+                  "contentVersion": "1.0.0",
+                  "clinicalFactID": null
                 }
               ]
             }
@@ -21754,6 +23398,18 @@
                   "lastClinicalReviewDate": null,
                   "contentVersion": "1.0.0",
                   "clinicalFactID": "fact.drsabc.mnemonic"
+                },
+                {
+                  "id": "M8-A1-policy-ref",
+                  "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+                  "edition": "1.0 (2026-08-07)",
+                  "section": "Phase 3B authored interaction definitions",
+                  "page": "n/a (Markdown)",
+                  "reviewStatus": "source_checked",
+                  "reviewer": null,
+                  "lastClinicalReviewDate": null,
+                  "contentVersion": "1.0.0",
+                  "clinicalFactID": null
                 }
               ]
             },
@@ -21822,6 +23478,18 @@
                   "lastClinicalReviewDate": null,
                   "contentVersion": "1.0.0",
                   "clinicalFactID": "fact.drsabc.mnemonic"
+                },
+                {
+                  "id": "M8-A2-policy-ref",
+                  "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+                  "edition": "1.0 (2026-08-07)",
+                  "section": "Phase 3B authored interaction definitions",
+                  "page": "n/a (Markdown)",
+                  "reviewStatus": "source_checked",
+                  "reviewer": null,
+                  "lastClinicalReviewDate": null,
+                  "contentVersion": "1.0.0",
+                  "clinicalFactID": null
                 }
               ]
             },
@@ -21890,6 +23558,18 @@
                   "lastClinicalReviewDate": null,
                   "contentVersion": "1.0.0",
                   "clinicalFactID": "fact.drsabc.mnemonic"
+                },
+                {
+                  "id": "M8-A3-policy-ref",
+                  "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+                  "edition": "1.0 (2026-08-07)",
+                  "section": "Phase 3B authored interaction definitions",
+                  "page": "n/a (Markdown)",
+                  "reviewStatus": "source_checked",
+                  "reviewer": null,
+                  "lastClinicalReviewDate": null,
+                  "contentVersion": "1.0.0",
+                  "clinicalFactID": null
                 }
               ]
             },
@@ -21958,6 +23638,18 @@
                   "lastClinicalReviewDate": null,
                   "contentVersion": "1.0.0",
                   "clinicalFactID": "fact.drsabc.mnemonic"
+                },
+                {
+                  "id": "M8-A4-policy-ref",
+                  "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+                  "edition": "1.0 (2026-08-07)",
+                  "section": "Phase 3B authored interaction definitions",
+                  "page": "n/a (Markdown)",
+                  "reviewStatus": "source_checked",
+                  "reviewer": null,
+                  "lastClinicalReviewDate": null,
+                  "contentVersion": "1.0.0",
+                  "clinicalFactID": null
                 }
               ]
             }
@@ -28598,6 +30290,18 @@
               "clinicalFactID": "fact.aed.applyDuringCpr"
             },
             {
+              "id": "M8-O1-policy-ref",
+              "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+              "edition": "1.0 (2026-08-07)",
+              "section": "Phase 3B authored interaction definitions",
+              "page": "n/a (Markdown)",
+              "reviewStatus": "source_checked",
+              "reviewer": null,
+              "lastClinicalReviewDate": null,
+              "contentVersion": "1.0.0",
+              "clinicalFactID": null
+            },
+            {
               "id": "M8-O2-ref-aed-practiceScenarios-1",
               "document": "CA-Manual-REV-1-2022.pdf",
               "edition": "2022",
@@ -28682,6 +30386,18 @@
               "clinicalFactID": "fact.aed.noShockAdvised"
             },
             {
+              "id": "M8-O2-policy-ref",
+              "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+              "edition": "1.0 (2026-08-07)",
+              "section": "Phase 3B authored interaction definitions",
+              "page": "n/a (Markdown)",
+              "reviewStatus": "source_checked",
+              "reviewer": null,
+              "lastClinicalReviewDate": null,
+              "contentVersion": "1.0.0",
+              "clinicalFactID": null
+            },
+            {
               "id": "M8-O3-ref-drsabc-getAed-1",
               "document": "CA-Manual-REV-1-2022.pdf",
               "edition": "2022",
@@ -28764,6 +30480,18 @@
               "lastClinicalReviewDate": null,
               "contentVersion": "1.0.0",
               "clinicalFactID": "fact.aed.shockDelivery"
+            },
+            {
+              "id": "M8-O3-policy-ref",
+              "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+              "edition": "1.0 (2026-08-07)",
+              "section": "Phase 3B authored interaction definitions",
+              "page": "n/a (Markdown)",
+              "reviewStatus": "source_checked",
+              "reviewer": null,
+              "lastClinicalReviewDate": null,
+              "contentVersion": "1.0.0",
+              "clinicalFactID": null
             },
             {
               "id": "M8-B1-ref-drsabc-mnemonic-1",
@@ -28874,6 +30602,18 @@
               "clinicalFactID": "fact.aed.shockDelivery"
             },
             {
+              "id": "M8-B1-policy-ref",
+              "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+              "edition": "1.0 (2026-08-07)",
+              "section": "Phase 3B authored interaction definitions",
+              "page": "n/a (Markdown)",
+              "reviewStatus": "source_checked",
+              "reviewer": null,
+              "lastClinicalReviewDate": null,
+              "contentVersion": "1.0.0",
+              "clinicalFactID": null
+            },
+            {
               "id": "M8-B2-ref-aed-practiceScenarios-1",
               "document": "CA-Manual-REV-1-2022.pdf",
               "edition": "2022",
@@ -28896,6 +30636,18 @@
               "lastClinicalReviewDate": null,
               "contentVersion": "1.0.0",
               "clinicalFactID": "fact.aed.practiceScenarios"
+            },
+            {
+              "id": "M8-B2-policy-ref",
+              "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+              "edition": "1.0 (2026-08-07)",
+              "section": "Phase 3B authored interaction definitions",
+              "page": "n/a (Markdown)",
+              "reviewStatus": "source_checked",
+              "reviewer": null,
+              "lastClinicalReviewDate": null,
+              "contentVersion": "1.0.0",
+              "clinicalFactID": null
             },
             {
               "id": "M8-B3-ref-drsabc-danger-1",
@@ -29138,6 +30890,18 @@
               "clinicalFactID": "fact.aed.noShockAdvised"
             },
             {
+              "id": "M8-B3-policy-ref",
+              "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+              "edition": "1.0 (2026-08-07)",
+              "section": "Phase 3B authored interaction definitions",
+              "page": "n/a (Markdown)",
+              "reviewStatus": "source_checked",
+              "reviewer": null,
+              "lastClinicalReviewDate": null,
+              "contentVersion": "1.0.0",
+              "clinicalFactID": null
+            },
+            {
               "id": "M8-B4-ref-drsabc-getAed-1",
               "document": "CA-Manual-REV-1-2022.pdf",
               "edition": "2022",
@@ -29208,6 +30972,18 @@
               "lastClinicalReviewDate": null,
               "contentVersion": "1.0.0",
               "clinicalFactID": "fact.drsabc.breathingCheck"
+            },
+            {
+              "id": "M8-B4-policy-ref",
+              "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+              "edition": "1.0 (2026-08-07)",
+              "section": "Phase 3B authored interaction definitions",
+              "page": "n/a (Markdown)",
+              "reviewStatus": "source_checked",
+              "reviewer": null,
+              "lastClinicalReviewDate": null,
+              "contentVersion": "1.0.0",
+              "clinicalFactID": null
             },
             {
               "id": "M8-B5-ref-drsabc-call995-1",
@@ -29330,6 +31106,18 @@
               "clinicalFactID": "fact.aed.analysisNoTouch"
             },
             {
+              "id": "M8-B5-policy-ref",
+              "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+              "edition": "1.0 (2026-08-07)",
+              "section": "Phase 3B authored interaction definitions",
+              "page": "n/a (Markdown)",
+              "reviewStatus": "source_checked",
+              "reviewer": null,
+              "lastClinicalReviewDate": null,
+              "contentVersion": "1.0.0",
+              "clinicalFactID": null
+            },
+            {
               "id": "M8-B6-ref-drsabc-call995-1",
               "document": "CA-Manual-REV-1-2022.pdf",
               "edition": "2022",
@@ -29424,6 +31212,18 @@
               "lastClinicalReviewDate": null,
               "contentVersion": "1.0.0",
               "clinicalFactID": "fact.drsabc.mnemonic"
+            },
+            {
+              "id": "M8-B6-policy-ref",
+              "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+              "edition": "1.0 (2026-08-07)",
+              "section": "Phase 3B authored interaction definitions",
+              "page": "n/a (Markdown)",
+              "reviewStatus": "source_checked",
+              "reviewer": null,
+              "lastClinicalReviewDate": null,
+              "contentVersion": "1.0.0",
+              "clinicalFactID": null
             },
             {
               "id": "M8-B7-ref-drsabc-danger-1",
@@ -29570,6 +31370,18 @@
               "clinicalFactID": "fact.aed.noShockAdvised"
             },
             {
+              "id": "M8-B7-policy-ref",
+              "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+              "edition": "1.0 (2026-08-07)",
+              "section": "Phase 3B authored interaction definitions",
+              "page": "n/a (Markdown)",
+              "reviewStatus": "source_checked",
+              "reviewer": null,
+              "lastClinicalReviewDate": null,
+              "contentVersion": "1.0.0",
+              "clinicalFactID": null
+            },
+            {
               "id": "M8-B8-ref-compression-depthAdult-1",
               "document": "CA-Manual-REV-1-2022.pdf",
               "edition": "2022",
@@ -29604,6 +31416,18 @@
               "lastClinicalReviewDate": null,
               "contentVersion": "1.0.0",
               "clinicalFactID": "fact.compression.depthAdult"
+            },
+            {
+              "id": "M8-B8-policy-ref",
+              "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+              "edition": "1.0 (2026-08-07)",
+              "section": "Phase 3B authored interaction definitions",
+              "page": "n/a (Markdown)",
+              "reviewStatus": "source_checked",
+              "reviewer": null,
+              "lastClinicalReviewDate": null,
+              "contentVersion": "1.0.0",
+              "clinicalFactID": null
             },
             {
               "id": "M8-A1-ref-aed-practiceScenarios-1",
@@ -29666,6 +31490,18 @@
               "clinicalFactID": "fact.drsabc.mnemonic"
             },
             {
+              "id": "M8-A1-policy-ref",
+              "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+              "edition": "1.0 (2026-08-07)",
+              "section": "Phase 3B authored interaction definitions",
+              "page": "n/a (Markdown)",
+              "reviewStatus": "source_checked",
+              "reviewer": null,
+              "lastClinicalReviewDate": null,
+              "contentVersion": "1.0.0",
+              "clinicalFactID": null
+            },
+            {
               "id": "M8-A2-ref-aed-practiceScenarios-1",
               "document": "CA-Manual-REV-1-2022.pdf",
               "edition": "2022",
@@ -29724,6 +31560,18 @@
               "lastClinicalReviewDate": null,
               "contentVersion": "1.0.0",
               "clinicalFactID": "fact.drsabc.mnemonic"
+            },
+            {
+              "id": "M8-A2-policy-ref",
+              "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+              "edition": "1.0 (2026-08-07)",
+              "section": "Phase 3B authored interaction definitions",
+              "page": "n/a (Markdown)",
+              "reviewStatus": "source_checked",
+              "reviewer": null,
+              "lastClinicalReviewDate": null,
+              "contentVersion": "1.0.0",
+              "clinicalFactID": null
             },
             {
               "id": "M8-A3-ref-aed-practiceScenarios-1",
@@ -29786,6 +31634,18 @@
               "clinicalFactID": "fact.drsabc.mnemonic"
             },
             {
+              "id": "M8-A3-policy-ref",
+              "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+              "edition": "1.0 (2026-08-07)",
+              "section": "Phase 3B authored interaction definitions",
+              "page": "n/a (Markdown)",
+              "reviewStatus": "source_checked",
+              "reviewer": null,
+              "lastClinicalReviewDate": null,
+              "contentVersion": "1.0.0",
+              "clinicalFactID": null
+            },
+            {
               "id": "M8-A4-ref-aed-practiceScenarios-1",
               "document": "CA-Manual-REV-1-2022.pdf",
               "edition": "2022",
@@ -29844,6 +31704,18 @@
               "lastClinicalReviewDate": null,
               "contentVersion": "1.0.0",
               "clinicalFactID": "fact.drsabc.mnemonic"
+            },
+            {
+              "id": "M8-A4-policy-ref",
+              "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+              "edition": "1.0 (2026-08-07)",
+              "section": "Phase 3B authored interaction definitions",
+              "page": "n/a (Markdown)",
+              "reviewStatus": "source_checked",
+              "reviewer": null,
+              "lastClinicalReviewDate": null,
+              "contentVersion": "1.0.0",
+              "clinicalFactID": null
             }
           ]
         }
@@ -29982,6 +31854,18 @@
           "clinicalFactID": "fact.aed.applyDuringCpr"
         },
         {
+          "id": "M8-O1-policy-ref",
+          "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+          "edition": "1.0 (2026-08-07)",
+          "section": "Phase 3B authored interaction definitions",
+          "page": "n/a (Markdown)",
+          "reviewStatus": "source_checked",
+          "reviewer": null,
+          "lastClinicalReviewDate": null,
+          "contentVersion": "1.0.0",
+          "clinicalFactID": null
+        },
+        {
           "id": "M8-O2-ref-aed-practiceScenarios-1",
           "document": "CA-Manual-REV-1-2022.pdf",
           "edition": "2022",
@@ -30066,6 +31950,18 @@
           "clinicalFactID": "fact.aed.noShockAdvised"
         },
         {
+          "id": "M8-O2-policy-ref",
+          "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+          "edition": "1.0 (2026-08-07)",
+          "section": "Phase 3B authored interaction definitions",
+          "page": "n/a (Markdown)",
+          "reviewStatus": "source_checked",
+          "reviewer": null,
+          "lastClinicalReviewDate": null,
+          "contentVersion": "1.0.0",
+          "clinicalFactID": null
+        },
+        {
           "id": "M8-O3-ref-drsabc-getAed-1",
           "document": "CA-Manual-REV-1-2022.pdf",
           "edition": "2022",
@@ -30148,6 +32044,18 @@
           "lastClinicalReviewDate": null,
           "contentVersion": "1.0.0",
           "clinicalFactID": "fact.aed.shockDelivery"
+        },
+        {
+          "id": "M8-O3-policy-ref",
+          "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+          "edition": "1.0 (2026-08-07)",
+          "section": "Phase 3B authored interaction definitions",
+          "page": "n/a (Markdown)",
+          "reviewStatus": "source_checked",
+          "reviewer": null,
+          "lastClinicalReviewDate": null,
+          "contentVersion": "1.0.0",
+          "clinicalFactID": null
         },
         {
           "id": "M8-B1-ref-drsabc-mnemonic-1",
@@ -30258,6 +32166,18 @@
           "clinicalFactID": "fact.aed.shockDelivery"
         },
         {
+          "id": "M8-B1-policy-ref",
+          "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+          "edition": "1.0 (2026-08-07)",
+          "section": "Phase 3B authored interaction definitions",
+          "page": "n/a (Markdown)",
+          "reviewStatus": "source_checked",
+          "reviewer": null,
+          "lastClinicalReviewDate": null,
+          "contentVersion": "1.0.0",
+          "clinicalFactID": null
+        },
+        {
           "id": "M8-B2-ref-aed-practiceScenarios-1",
           "document": "CA-Manual-REV-1-2022.pdf",
           "edition": "2022",
@@ -30280,6 +32200,18 @@
           "lastClinicalReviewDate": null,
           "contentVersion": "1.0.0",
           "clinicalFactID": "fact.aed.practiceScenarios"
+        },
+        {
+          "id": "M8-B2-policy-ref",
+          "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+          "edition": "1.0 (2026-08-07)",
+          "section": "Phase 3B authored interaction definitions",
+          "page": "n/a (Markdown)",
+          "reviewStatus": "source_checked",
+          "reviewer": null,
+          "lastClinicalReviewDate": null,
+          "contentVersion": "1.0.0",
+          "clinicalFactID": null
         },
         {
           "id": "M8-B3-ref-drsabc-danger-1",
@@ -30522,6 +32454,18 @@
           "clinicalFactID": "fact.aed.noShockAdvised"
         },
         {
+          "id": "M8-B3-policy-ref",
+          "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+          "edition": "1.0 (2026-08-07)",
+          "section": "Phase 3B authored interaction definitions",
+          "page": "n/a (Markdown)",
+          "reviewStatus": "source_checked",
+          "reviewer": null,
+          "lastClinicalReviewDate": null,
+          "contentVersion": "1.0.0",
+          "clinicalFactID": null
+        },
+        {
           "id": "M8-B4-ref-drsabc-getAed-1",
           "document": "CA-Manual-REV-1-2022.pdf",
           "edition": "2022",
@@ -30592,6 +32536,18 @@
           "lastClinicalReviewDate": null,
           "contentVersion": "1.0.0",
           "clinicalFactID": "fact.drsabc.breathingCheck"
+        },
+        {
+          "id": "M8-B4-policy-ref",
+          "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+          "edition": "1.0 (2026-08-07)",
+          "section": "Phase 3B authored interaction definitions",
+          "page": "n/a (Markdown)",
+          "reviewStatus": "source_checked",
+          "reviewer": null,
+          "lastClinicalReviewDate": null,
+          "contentVersion": "1.0.0",
+          "clinicalFactID": null
         },
         {
           "id": "M8-B5-ref-drsabc-call995-1",
@@ -30714,6 +32670,18 @@
           "clinicalFactID": "fact.aed.analysisNoTouch"
         },
         {
+          "id": "M8-B5-policy-ref",
+          "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+          "edition": "1.0 (2026-08-07)",
+          "section": "Phase 3B authored interaction definitions",
+          "page": "n/a (Markdown)",
+          "reviewStatus": "source_checked",
+          "reviewer": null,
+          "lastClinicalReviewDate": null,
+          "contentVersion": "1.0.0",
+          "clinicalFactID": null
+        },
+        {
           "id": "M8-B6-ref-drsabc-call995-1",
           "document": "CA-Manual-REV-1-2022.pdf",
           "edition": "2022",
@@ -30808,6 +32776,18 @@
           "lastClinicalReviewDate": null,
           "contentVersion": "1.0.0",
           "clinicalFactID": "fact.drsabc.mnemonic"
+        },
+        {
+          "id": "M8-B6-policy-ref",
+          "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+          "edition": "1.0 (2026-08-07)",
+          "section": "Phase 3B authored interaction definitions",
+          "page": "n/a (Markdown)",
+          "reviewStatus": "source_checked",
+          "reviewer": null,
+          "lastClinicalReviewDate": null,
+          "contentVersion": "1.0.0",
+          "clinicalFactID": null
         },
         {
           "id": "M8-B7-ref-drsabc-danger-1",
@@ -30954,6 +32934,18 @@
           "clinicalFactID": "fact.aed.noShockAdvised"
         },
         {
+          "id": "M8-B7-policy-ref",
+          "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+          "edition": "1.0 (2026-08-07)",
+          "section": "Phase 3B authored interaction definitions",
+          "page": "n/a (Markdown)",
+          "reviewStatus": "source_checked",
+          "reviewer": null,
+          "lastClinicalReviewDate": null,
+          "contentVersion": "1.0.0",
+          "clinicalFactID": null
+        },
+        {
           "id": "M8-B8-ref-compression-depthAdult-1",
           "document": "CA-Manual-REV-1-2022.pdf",
           "edition": "2022",
@@ -30988,6 +32980,18 @@
           "lastClinicalReviewDate": null,
           "contentVersion": "1.0.0",
           "clinicalFactID": "fact.compression.depthAdult"
+        },
+        {
+          "id": "M8-B8-policy-ref",
+          "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+          "edition": "1.0 (2026-08-07)",
+          "section": "Phase 3B authored interaction definitions",
+          "page": "n/a (Markdown)",
+          "reviewStatus": "source_checked",
+          "reviewer": null,
+          "lastClinicalReviewDate": null,
+          "contentVersion": "1.0.0",
+          "clinicalFactID": null
         },
         {
           "id": "M8-A1-ref-aed-practiceScenarios-1",
@@ -31050,6 +33054,18 @@
           "clinicalFactID": "fact.drsabc.mnemonic"
         },
         {
+          "id": "M8-A1-policy-ref",
+          "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+          "edition": "1.0 (2026-08-07)",
+          "section": "Phase 3B authored interaction definitions",
+          "page": "n/a (Markdown)",
+          "reviewStatus": "source_checked",
+          "reviewer": null,
+          "lastClinicalReviewDate": null,
+          "contentVersion": "1.0.0",
+          "clinicalFactID": null
+        },
+        {
           "id": "M8-A2-ref-aed-practiceScenarios-1",
           "document": "CA-Manual-REV-1-2022.pdf",
           "edition": "2022",
@@ -31108,6 +33124,18 @@
           "lastClinicalReviewDate": null,
           "contentVersion": "1.0.0",
           "clinicalFactID": "fact.drsabc.mnemonic"
+        },
+        {
+          "id": "M8-A2-policy-ref",
+          "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+          "edition": "1.0 (2026-08-07)",
+          "section": "Phase 3B authored interaction definitions",
+          "page": "n/a (Markdown)",
+          "reviewStatus": "source_checked",
+          "reviewer": null,
+          "lastClinicalReviewDate": null,
+          "contentVersion": "1.0.0",
+          "clinicalFactID": null
         },
         {
           "id": "M8-A3-ref-aed-practiceScenarios-1",
@@ -31170,6 +33198,18 @@
           "clinicalFactID": "fact.drsabc.mnemonic"
         },
         {
+          "id": "M8-A3-policy-ref",
+          "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+          "edition": "1.0 (2026-08-07)",
+          "section": "Phase 3B authored interaction definitions",
+          "page": "n/a (Markdown)",
+          "reviewStatus": "source_checked",
+          "reviewer": null,
+          "lastClinicalReviewDate": null,
+          "contentVersion": "1.0.0",
+          "clinicalFactID": null
+        },
+        {
           "id": "M8-A4-ref-aed-practiceScenarios-1",
           "document": "CA-Manual-REV-1-2022.pdf",
           "edition": "2022",
@@ -31228,6 +33268,18 @@
           "lastClinicalReviewDate": null,
           "contentVersion": "1.0.0",
           "clinicalFactID": "fact.drsabc.mnemonic"
+        },
+        {
+          "id": "M8-A4-policy-ref",
+          "document": "Docs/PHASE3B_CONTENT_POLICY.md",
+          "edition": "1.0 (2026-08-07)",
+          "section": "Phase 3B authored interaction definitions",
+          "page": "n/a (Markdown)",
+          "reviewStatus": "source_checked",
+          "reviewer": null,
+          "lastClinicalReviewDate": null,
+          "contentVersion": "1.0.0",
+          "clinicalFactID": null
         }
       ]
     },
@@ -31571,7 +33623,7 @@
               "id": "M9-B5",
               "kind": "callout",
               "title": "Infant defibrillation — SME decision required",
-              "body": "The 2021 summary prefers a manual defibrillator for an infant and child pads when that is unavailable. The supplied sources do not clearly authorise adult pads on an infant, so the app gives no such instruction pending SME approval.",
+              "body": "For an infant, the 2021 summary places a manual defibrillator first and child pads next when the preferred device is unavailable. None of the supplied sources gives a clear adult-pad instruction for an infant, so the course withholds one pending SME approval.",
               "reviewStatus": "clinicalReviewRequired",
               "sourceReferences": [
                 {
@@ -32041,7 +34093,7 @@
                   "choices": [
                     {
                       "id": "q-m9-03-a",
-                      "text": "An AED with adult pads may be used"
+                      "text": "A standard adult-pad AED remains an option for a child"
                     },
                     {
                       "id": "q-m9-03-b",
@@ -32065,7 +34117,7 @@
                     "q-m9-03-b",
                     "q-m9-03-c"
                   ],
-                  "explanation": "For a child, a standard AED with adult pads may be used when there is no paediatric option; use front-and-back placement and never let pads touch or overlap.",
+                  "explanation": "When a paediatric option is unavailable for a child, the source permits a standard adult-pad AED. Position the pads front and back and keep them from touching or overlapping.",
                   "sourceReferences": [
                     {
                       "id": "src-q-m9-03",
@@ -33469,7 +35521,7 @@
       "title": "Post-incident Handover & Reflection",
       "summary": "Handover, current post-ROSC care, AED continuity and carefully bounded reflection.",
       "order": 10,
-      "reviewStatus": "sourceChecked",
+      "reviewStatus": "clinicalReviewRequired",
       "accessRequirements": null,
       "lessons": [
         {
@@ -33622,7 +35674,7 @@
               "id": "M10-B1",
               "kind": "text",
               "title": "Handover essentials",
-              "body": "Tell paramedics the best-estimate collapse time, whether an AED was used, how many shocks were delivered, any known medical history and medication, and whether a written event record is available.",
+              "body": "Share the estimated collapse time, whether the AED was applied and the recorded shock count. Add any known medical history, medicines and written event notes.",
               "reviewStatus": "sourceChecked",
               "sourceReferences": [
                 {
@@ -34134,11 +36186,11 @@
                 {
                   "id": "q-m10-02",
                   "type": "singleChoice",
-                  "prompt": "How long should the rescuer continue assisting the paramedics?",
+                  "prompt": "When may the rescuer stop helping the paramedics with the transfer?",
                   "choices": [
                     {
                       "id": "q-m10-02-a",
-                      "text": "Until the casualty is loaded into the ambulance"
+                      "text": "After the casualty has been placed in the ambulance"
                     },
                     {
                       "id": "q-m10-02-b",
@@ -34156,7 +36208,7 @@
                   "correctChoiceIDs": [
                     "q-m10-02-a"
                   ],
-                  "explanation": "Assist the paramedics until the casualty is loaded into the ambulance.",
+                  "explanation": "Continue helping the paramedics through the point when the casualty is placed in the ambulance.",
                   "sourceReferences": [
                     {
                       "id": "src-q-m10-02",

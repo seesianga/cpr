@@ -407,7 +407,7 @@
             { "id": "q-m3-05-d", "text": "Wait for the ambulance before starting any action" }
           ],
           "correctChoiceIDs": ["q-m3-05-a"],
-          "explanation": "Ask another person to fetch an AED within about sixty seconds' walking distance. A lone rescuer must not leave the casualty to search for one.",
+          "explanation": "The roughly one-minute retrieval window applies to another person. A sole rescuer remains beside the casualty.",
           "sourceReferences": [
             { "id": "src-q-m3-05", "document": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "2.2 (A) Ask someone to get an AED", "page": "19", "reviewStatus": "source_checked", "reviewer": null, "lastClinicalReviewDate": null, "contentVersion": "1.0.0", "clinicalFactID": "fact.drsabc.getAed" }
           ]
@@ -682,13 +682,13 @@
           "prompt": "Which statements describe adult AED pad placement? Select all that apply.",
           "choices": [
             { "id": "q-m6-02-a", "text": "Place the right pad just below the right collarbone" },
-            { "id": "q-m6-02-b", "text": "Place the left pad below and to the left of the left nipple" },
+            { "id": "q-m6-02-b", "text": "Position the left pad lower and farther out on the left chest, below the left nipple" },
             { "id": "q-m6-02-c", "text": "Follow the placement pictures printed on the pads" },
             { "id": "q-m6-02-d", "text": "Place both pads on top of each other" },
             { "id": "q-m6-02-e", "text": "Place both pads over clothing" }
           ],
           "correctChoiceIDs": ["q-m6-02-a", "q-m6-02-b", "q-m6-02-c"],
-          "explanation": "The adult pads go below the right collarbone and below-left of the left nipple, following the diagrams on the pads.",
+          "explanation": "Use the pad diagrams: one pad sits high on the right chest beneath the collarbone and the other lower on the outer left chest, below the left nipple.",
           "sourceReferences": [
             { "id": "src-q-m6-02", "document": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "3.4 Placement of AED Electrode Pads", "page": "34", "reviewStatus": "source_checked", "reviewer": null, "lastClinicalReviewDate": null, "contentVersion": "1.0.0", "clinicalFactID": "fact.aed.padPlacementAdult" }
           ]
@@ -823,13 +823,13 @@
           "type": "singleChoice",
           "prompt": "On an aircraft, where may a rescuer position themselves if the casualty cannot quickly be moved to the galley?",
           "choices": [
-            { "id": "q-m7-04-a", "text": "Kneel in the leg space beside the seat" },
+            { "id": "q-m7-04-a", "text": "Use the floor area beside the casualty's seat where the legs normally rest" },
             { "id": "q-m7-04-b", "text": "Remain in the aisle and reach across the seat" },
             { "id": "q-m7-04-c", "text": "Move to the galley without the casualty" },
             { "id": "q-m7-04-d", "text": "Wait until the aircraft lands before acting" }
           ],
           "correctChoiceIDs": ["q-m7-04-a"],
-          "explanation": "The aircraft technique places the rescuer in the leg space beside the seat unless the casualty can be moved quickly to the galley.",
+          "explanation": "If a quick move to the galley is not possible, the sourced aircraft option uses the floor space beside the casualty's seat.",
           "sourceReferences": [
             { "id": "src-q-m7-04", "document": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "2.3 CPR in Special Circumstances", "page": "27", "reviewStatus": "source_checked", "reviewer": null, "lastClinicalReviewDate": null, "contentVersion": "1.0.0", "clinicalFactID": "fact.specialsettings.environments" }
           ]
@@ -1020,14 +1020,14 @@
           "type": "multipleChoice",
           "prompt": "If no paediatric pads or mode are available for a child, which awareness statements are supported? Select all that apply.",
           "choices": [
-            { "id": "q-m9-03-a", "text": "An AED with adult pads may be used" },
+            { "id": "q-m9-03-a", "text": "A standard adult-pad AED remains an option for a child" },
             { "id": "q-m9-03-b", "text": "Use front-and-back placement with adult pads" },
             { "id": "q-m9-03-c", "text": "The pads must never touch or overlap" },
             { "id": "q-m9-03-d", "text": "Overlap the pads to improve contact" },
             { "id": "q-m9-03-e", "text": "Place both adult pads on the same spot" }
           ],
           "correctChoiceIDs": ["q-m9-03-a", "q-m9-03-b", "q-m9-03-c"],
-          "explanation": "For a child, a standard AED with adult pads may be used when there is no paediatric option; use front-and-back placement and never let pads touch or overlap.",
+          "explanation": "When a paediatric option is unavailable for a child, the source permits a standard adult-pad AED. Position the pads front and back and keep them from touching or overlapping.",
           "sourceReferences": [
             { "id": "src-q-m9-03", "document": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "3.9 Use of AED for Child/Infant", "page": "45", "reviewStatus": "source_checked", "reviewer": null, "lastClinicalReviewDate": null, "contentVersion": "1.0.0", "clinicalFactID": "fact.child.adultPadsOnChild" }
           ]
@@ -1111,15 +1111,15 @@
         {
           "id": "q-m10-02",
           "type": "singleChoice",
-          "prompt": "How long should the rescuer continue assisting the paramedics?",
+          "prompt": "When may the rescuer stop helping the paramedics with the transfer?",
           "choices": [
-            { "id": "q-m10-02-a", "text": "Until the casualty is loaded into the ambulance" },
+            { "id": "q-m10-02-a", "text": "After the casualty has been placed in the ambulance" },
             { "id": "q-m10-02-b", "text": "Only until the ambulance becomes visible" },
             { "id": "q-m10-02-c", "text": "Stop as soon as a siren is heard" },
             { "id": "q-m10-02-d", "text": "Leave before giving any handover" }
           ],
           "correctChoiceIDs": ["q-m10-02-a"],
-          "explanation": "Assist the paramedics until the casualty is loaded into the ambulance.",
+          "explanation": "Continue helping the paramedics through the point when the casualty is placed in the ambulance.",
           "sourceReferences": [
             { "id": "src-q-m10-02", "document": "CA-Manual-REV-1-2022.pdf", "edition": "2022", "section": "3.6", "page": "39", "reviewStatus": "source_checked", "reviewer": null, "lastClinicalReviewDate": null, "contentVersion": "1.0.0", "clinicalFactID": "fact.postincident.assistUntilLoaded" }
           ]

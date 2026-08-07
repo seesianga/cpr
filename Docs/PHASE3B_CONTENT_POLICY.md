@@ -58,6 +58,16 @@ instructor approval is recorded and the externally supplied content lifecycle is
 `clinicalReviewRequired` until the paediatric review items are resolved in a new
 content version.
 
+## Phase 3B authored interaction definitions
+
+The ten numbered AED application steps, the eleven AED learning-state labels, the ten
+special-circumstance drill groupings, the four A–D setting names, scoring classifications and every new critical-error code are
+Phase 3B content organisation rather than quotations from a clinical manual. Scenario
+randomisation may select only a listed three-analysis outcome pool and narrative
+conditions; it cannot change a clinical rule. Because no local product-brief section
+6.4 or authoritative eleven-state taxonomy is available, the scenario document must
+label that provenance honestly and retain `project_authored.` on new error codes.
+
 ## Post-incident authoring boundaries
 
 Structured reflection may ask what the learner noticed, which actions were taken,

@@ -129,6 +129,8 @@ def objective(
     references = fact_references(identifier, *fact_ids) if fact_ids else [
         policy_reference(identifier, policy_section or "Phase 3B learning objective")
     ]
+    if fact_ids and policy_section:
+        references.append(policy_reference(identifier, policy_section))
     references.extend(additional_references)
     return {"id": identifier, "statement": statement, "sourceReferences": references}
 
@@ -150,6 +152,8 @@ def block(
         references = fact_references(identifier, *fact_ids)
     else:
         references = [policy_reference(identifier, policy_section or "Phase 3B course content")]
+    if fact_ids and policy_section:
+        references.append(policy_reference(identifier, policy_section))
     references.extend(additional_references)
     if review_status is None:
         review_status = (
@@ -179,6 +183,8 @@ def activity(
     references = fact_references(identifier, *fact_ids) if fact_ids else [
         policy_reference(identifier, policy_section or "Phase 3B interaction design")
     ]
+    if fact_ids and policy_section:
+        references.append(policy_reference(identifier, policy_section))
     references.extend(additional_references)
     return {
         "id": identifier,
@@ -201,6 +207,16 @@ def unique_references(items: Iterable[dict[str, Any]]) -> list[dict[str, Any]]:
     return result
 
 
+def add_policy_references(
+    items: Iterable[dict[str, Any]],
+    section: str,
+) -> None:
+    for item in items:
+        reference = policy_reference(item["id"], section)
+        if not any(existing["id"] == reference["id"] for existing in item["sourceReferences"]):
+            item["sourceReferences"].append(reference)
+
+
 def module(
     identifier: str,
     title: str,
@@ -216,6 +232,11 @@ def module(
     lesson_id = f"{identifier}-L1"
     lesson_items = objectives + blocks + activities
     lesson_refs = unique_references(lesson_items)
+    if review_status == "sourceChecked" and (
+        any(item.get("reviewStatus") == "clinicalReviewRequired" for item in blocks)
+        or any(reference["reviewStatus"] == "requires_sme_review" for reference in lesson_refs)
+    ):
+        review_status = "clinicalReviewRequired"
     lesson = {
         "id": lesson_id,
         "title": title,
@@ -337,7 +358,7 @@ def build_m2() -> dict[str, Any]:
         block(
             "M2-B1",
             "Current learning sequence — seven rings",
-            "The active learning sequence follows the 2022 provider manual: Prevention; Early Activation and AED Access; Early CPR; Early Defibrillation; Emergency Medical Services (Ambulance); Advanced Cardiac Life Support; Recovery. The two current supplied sources differ on the graphic and ring count, so this card is excluded from scoring until a qualified SME approves the presentation.",
+            "The course's active, review-gated learning sequence provisionally follows the 2022 provider manual: Prevention; Early Activation and AED Access; Early CPR; Early Defibrillation; Emergency Medical Services (Ambulance); Advanced Cardiac Life Support; Recovery. The two current supplied sources differ on the graphic and ring count, so this card is excluded from scoring until a qualified SME approves the presentation.",
             "fact.chain.sevenRings",
             kind="callout",
             additional_references=[
@@ -367,6 +388,10 @@ def build_m2() -> dict[str, Any]:
     activities = [
         activity("M2-A1", "Chain learning gallery", "spatialSequenceGallery", "Explore each ring meaning. The seven-ring visual remains labelled clinical review required and contributes no score.", "fact.chain.sevenRings", "fact.chain.ringDefinitions"),
     ]
+    add_policy_references(
+        objectives + blocks + activities,
+        "Phase 3B authored interaction definitions",
+    )
     return module("M2", "Chain of Survival", "The current seven-ring learning sequence, its meanings and the documented source disagreement.", 2, objectives, blocks, activities)
 
 
@@ -377,7 +402,7 @@ def build_m3() -> dict[str, Any]:
         objective("M3-O3", "Choose correct AED retrieval behaviour when a bystander is present or the rescuer is alone.", "fact.drsabc.getAed"),
     ]
     blocks = [
-        block("M3-B1", "DRSABC", "D: check Danger. R: check Responsiveness. S: Shout for help and call 995 for SCDF. A: Ask someone to get an AED. B: check for normal Breathing. C: begin continuous Chest Compressions when normal breathing is absent or uncertain. Pulse checks belong only to the clearly labelled trained-healthcare-provider path.", "fact.drsabc.mnemonic"),
+        block("M3-B1", "DRSABC", "Move through DRSABC in order: first assess Danger, then test Responsiveness; Shout for help and activate 995; Ask another person for an AED; decide whether Breathing is normal; and begin continuous Chest Compressions when normal breathing is absent or uncertain. A pulse check appears only in the clearly labelled trained-healthcare-provider path.", "fact.drsabc.mnemonic"),
         block("M3-B2", "Danger comes first", "Work only in a safe environment. Begin where the casualty is found unless traffic, fire, a wet floor, falling objects or another condition makes that place unsafe or unsuitable; then move the casualty to a safe, flat and open space as soon as possible.", "fact.drsabc.danger"),
         block("M3-B3", "Responsiveness and position", "Tap the shoulders firmly and ask loudly whether the casualty is okay. Do not shake violently or move the neck unnecessarily. Effective CPR needs the casualty on their back on a firm, flat surface; if turning is required, support and turn the head, neck and body together.", "fact.drsabc.responsiveness", "fact.drsabc.positionCasualty"),
         block(
@@ -429,6 +454,10 @@ def build_m3() -> dict[str, Any]:
             ],
         ),
     ]
+    add_policy_references(
+        [blocks[3], blocks[6], blocks[10], *activities],
+        "Phase 3B authored interaction definitions",
+    )
     return module("M3", "DRSABC", "A source-backed recognition and activation state sequence with explicit branches.", 3, objectives, blocks, activities)
 
 
@@ -436,21 +465,21 @@ def build_m4() -> dict[str, Any]:
     objectives = [
         objective("M4-O1", "Set up the casualty and adult hand position on the supported compression landmark.", "fact.drsabc.positionCasualty", "fact.compression.site", "fact.compression.handMethodAdult"),
         objective("M4-O2", "Practise a 100–120-per-minute rhythm with full recoil and minimal interruption.", "fact.compression.rate", "fact.compression.recoil", "fact.compression.minimiseInterruptions"),
-        objective("M4-O3", "State the stop conditions and the app's depth-assessment limitation.", "fact.compression.depthAdult", "fact.compression.stopCriteria"),
+        objective("M4-O3", "State the stop conditions and the app's depth-assessment limitation.", "fact.compression.depthAdult", "fact.compression.stopCriteria", policy_section="Medical and sensing boundaries"),
     ]
     blocks = [
         block("M4-B1", "Firm, flat surface", "Place the casualty on their back on a firm, flat surface before compressions. If the casualty must be rolled, support and turn the head, neck and body together.", "fact.drsabc.positionCasualty"),
-        block("M4-B2", "Landmark and xiphoid avoidance", "Use the centre of the chest over the lower half of the sternum. Expose the chest adequately and do not compress on the xiphoid process at the lower tip of the breastbone.", "fact.compression.site", kind="callout"),
+        block("M4-B2", "Landmark and xiphoid avoidance", "Locate the lower half of the sternum at the centre of the chest. Expose enough of the chest to place the hands accurately, keeping pressure away from the xiphoid process at the sternum's lower tip.", "fact.compression.site", kind="callout"),
         block("M4-B3", "Adult hand position and posture", "Kneel beside the casualty. Put one hand heel on the lower half of the sternum and the other on top, interlace and lift the fingers away from the chest wall, lock both elbows, bring the shoulders above the chest and use body weight.", "fact.compression.handMethodAdult"),
-        block("M4-B4", "Rate and the 110 practice tempo", "The sourced adult compression rate is 100–120 per minute. The authored rhythm exercise uses 110 beats per minute as a practice tempo inside that approved band; 110 is not a separate guideline target. A live metronome remains dependent on the practice-view implementation.", "fact.compression.rate"),
+        block("M4-B4", "Rate and the 110 practice tempo", "The sourced adult compression rate is 100–120 per minute. The authored rhythm exercise uses 110 beats per minute as a practice tempo inside that approved band; 110 is not a separate guideline target. A live metronome remains dependent on the practice-view implementation.", "fact.compression.rate", policy_section="Medical and sensing boundaries"),
         block("M4-B5", "Full recoil", "Let the chest recoil completely after each compression while keeping the heels of the hands in contact with the chest.", "fact.compression.recoil"),
         block("M4-B6", "Count and control interruptions", "Count aloud in cycles of five up to 100 to support rhythm and tracking. Keep compressions continuous. If a lone rescuer becomes tired, any rest should be no longer than 10 seconds and preferably only after about 100 compressions, followed by an immediate restart.", "fact.compression.counting", "fact.compression.restRule", "fact.compression.minimiseInterruptions"),
-        block("M4-B7", "Depth — Not physically assessed", "The supplied sources teach an adult depth of 4–6 cm. Lifesaver Vision hand tracking cannot measure real depth or force, so the course labels depth and force ‘Not physically assessed’. No score may use a fabricated depth value; only supported placement, rhythm, interruption and posture signals are eligible.", "fact.compression.depthAdult", kind="callout"),
+        block("M4-B7", "Depth — Not physically assessed", "The supplied sources teach an adult depth of 4–6 cm. Lifesaver Vision hand tracking cannot measure real depth or force, so the course labels depth and force ‘Not physically assessed’. No score may use a fabricated depth value; only supported placement, rhythm, interruption and posture signals are eligible.", "fact.compression.depthAdult", kind="callout", policy_section="Medical and sensing boundaries"),
         block("M4-B8", "When to stop compressions", "Continue until paramedics or an in-facility emergency team take over, the AED says it is analysing, charging or about to shock, or the casualty wakes or resumes normal breathing. The lay path does not add a pulse check.", "fact.compression.stopCriteria"),
         block("M4-B9", "Hands-only default", "A rescuer who is untrained, unable or unwilling to give ventilations should provide continuous high-quality chest compressions. A trained, able and willing rescuer may use 30 compressions to 2 breaths, with each breath over one second while watching for chest rise.", "fact.ventilation.handsOnlyDefault", "fact.ventilation.thirtyToTwoIfTrained"),
     ]
     activities = [
-        activity("M4-A1", "110 BPM rhythm practice", "cprRhythmPractice", "Use a 110 BPM reference tempo to practise inside the approved 100–120 range. Review only supported rhythm, hand-placement, interruption and posture signals; depth and force remain Not physically assessed.", "fact.compression.rate", "fact.compression.site", "fact.compression.minimiseInterruptions", "fact.compression.handMethodAdult"),
+        activity("M4-A1", "110 BPM rhythm practice", "cprRhythmPractice", "Use a 110 BPM reference tempo to practise inside the approved 100–120 range. Review only supported rhythm, hand-placement, interruption and posture signals; depth and force remain Not physically assessed.", "fact.compression.rate", "fact.compression.site", "fact.compression.minimiseInterruptions", "fact.compression.handMethodAdult", policy_section="Medical and sensing boundaries"),
     ]
     return module("M4", "Hands-only CPR", "Adult positioning, hand placement, rhythm, recoil, interruptions and honest sensing limits.", 4, objectives, blocks, activities)
 
@@ -471,7 +500,7 @@ def build_m5() -> dict[str, Any]:
         block("M5-B7", "Jewellery", "Move metallic necklaces and chains clear of the pad sites because nearby metal can spark and burn during a shock.", "fact.aed.chestPrepJewellery"),
         block("M5-B8", "Pacemaker or implanted defibrillator", "If a pacemaker or implanted defibrillator is visible as a lump or scar, place the AED pads at least four fingers' breadth away from it.", "fact.aed.chestPrepImplantedDevices"),
         block("M5-B9", "Medication patches and electrodes", "Remove medication patches and monitoring electrodes from the chest wall because they can obstruct correct pad placement.", "fact.aed.chestPrepPatches"),
-        block("M5-B10", "Wet or sweaty chest", "Wipe a wet or sweaty chest dry quickly so the pads adhere, then apply them with minimal interruption to compressions.", "fact.aed.chestPrepWet"),
+        block("M5-B10", "Wet or sweaty chest", "If the chest skin is wet or sweaty, dry it promptly to obtain secure pad contact, then apply the pads while keeping the compression pause as short as possible.", "fact.aed.chestPrepWet"),
         block("M5-B11", "Retrieve a public-access AED safely", "Do not strike break-glass panels with bare hands or elbows. Use an object such as a phone, shoe or keys, then clear fragments from the edge before reaching for the key.", "fact.aed.retrievalSafety"),
         block("M5-B12", "myResponder context", "The SCDF myResponder app can alert voluntary Community First Responders within 400 metres and show nearby AEDs, supporting help before the ambulance arrives.", "fact.aed.myResponder"),
     ]
@@ -483,21 +512,21 @@ def build_m5() -> dict[str, Any]:
 
 def build_m6() -> dict[str, Any]:
     objectives = [
-        objective("M6-O1", "Complete the ten-step adult AED application sequence with correct pad placement.", "fact.aed.applyDuringCpr", "fact.aed.padPlacementAdult"),
+        objective("M6-O1", "Complete the ten-step adult AED application sequence with correct pad placement.", "fact.aed.applyDuringCpr", "fact.aed.padPlacementAdult", policy_section="Phase 3B authored interaction definitions"),
         objective("M6-O2", "Apply the no-touch and visual clear-check rules during analysis, charging and shock.", "fact.aed.analysisNoTouch", "fact.aed.shockDelivery"),
         objective("M6-O3", "Resume compressions after shock or no-shock advice and keep the AED connected.", "fact.aed.resumeAfterShock", "fact.aed.noShockAdvised", "fact.aed.remainConnected"),
     ]
     blocks = [
-        block("M6-B1", "Adult AED application — steps 1–10", "1. Keep compressions going as the AED arrives. 2. Open the case. 3. Switch on the AED. 4. Expose the chest. 5. Make the chest and surroundings ready for safe pad contact. 6. Open the pads and follow their pictures. 7. Place the right pad below the right collarbone. 8. Place the left pad below and left of the left nipple. 9. Plug in the connector if it is not pre-connected. 10. Stop contact only when the AED announces analysis, spread your arms and state ‘Stay Clear’.", "fact.aed.applyDuringCpr", "fact.aed.padPlacementAdult", "fact.aed.analysisNoTouch", "fact.aed.chestPrepJewellery", "fact.aed.hazards"),
-        block("M6-B2", "Eleven AED learning states", "The academy uses eleven project-authored states to rehearse the sourced flow: Awaiting AED; Power On; Prepare Chest; Apply Right Pad; Apply Left Pad; Connect Pads; Analyse — Clear; Charge — Clear; Clear Check and Shock; No Shock Advised; Resume CPR. These labels organise interaction and do not alter the AED's own prompts.", "fact.aed.applyDuringCpr", "fact.aed.padPlacementAdult", "fact.aed.analysisNoTouch", "fact.aed.shockDelivery", "fact.aed.noShockAdvised", "fact.aed.resumeAfterShock", kind="callout"),
-        block("M6-B3", "Adult pad placement", "Place the right pad on the right chest just below the collarbone and the left pad below and to the left of the left nipple. Follow the pictures printed on the pads and connect the lead when the model requires it.", "fact.aed.padPlacementAdult"),
+        block("M6-B1", "Adult AED application — steps 1–10", "1. Keep compressions going as the AED arrives. 2. Open the case. 3. Switch on the AED. 4. Expose the chest. 5. Make the chest and surroundings ready for safe pad contact. 6. Open the pads and follow their pictures. 7. Place the right pad below the right collarbone. 8. Place the left pad below and left of the left nipple. 9. Plug in the connector if it is not pre-connected. 10. Stop contact only when the AED announces analysis, spread your arms and state ‘Stay Clear’.", "fact.aed.applyDuringCpr", "fact.aed.padPlacementAdult", "fact.aed.analysisNoTouch", "fact.aed.chestPrepJewellery", "fact.aed.hazards", policy_section="Phase 3B authored interaction definitions"),
+        block("M6-B2", "Eleven AED learning states", "The academy uses eleven project-authored states to rehearse the sourced flow: Awaiting AED; Power On; Prepare Chest; Apply Right Pad; Apply Left Pad; Connect Pads; Analyse — Clear; Charge — Clear; Clear Check and Shock; No Shock Advised; Resume CPR. These labels organise interaction and do not alter the AED's own prompts.", "fact.aed.applyDuringCpr", "fact.aed.padPlacementAdult", "fact.aed.analysisNoTouch", "fact.aed.shockDelivery", "fact.aed.noShockAdvised", "fact.aed.resumeAfterShock", kind="callout", policy_section="Phase 3B authored interaction definitions"),
+        block("M6-B3", "Adult pad placement", "Match the diagrams on the pads: position one high on the right chest beneath the collarbone and the other lower and farther out on the left chest, below the left nipple. Attach the lead if the AED model requires it.", "fact.aed.padPlacementAdult"),
         block("M6-B4", "Analysis means nobody touches", "When the AED announces analysis, stop compressions. Nobody touches the casualty. Spread both arms and clearly state ‘Stay Clear’.", "fact.aed.analysisNoTouch", kind="callout"),
         block("M6-B5", "Charge, clear-check and shock", "For a shockable rhythm the AED charges itself. Keep everyone clear. When the AED prompts for a shock, say ‘Stay Clear’, visually confirm that nobody is touching the casualty, then press the shock button firmly.", "fact.aed.shockDelivery", kind="callout"),
         block("M6-B6", "Resume after a shock", "Restart chest compressions immediately after the shock and continue until the AED announces its next analysis. Current guidance states that re-analysis repeats every two minutes.", "fact.aed.resumeAfterShock"),
         block("M6-B7", "Resume after no-shock advice", "If the AED advises no shock, restart continuous compressions immediately. Continue until the emergency team takes over, the AED directs that nobody touch the casualty, or the casualty resumes normal breathing.", "fact.aed.noShockAdvised"),
         block("M6-B8", "Keep the AED connected", "Leave the AED switched on and connected throughout, including after normal breathing returns and during transport.", "fact.aed.remainConnected"),
         block("M6-B9", "Guideline update: two-minute re-analysis", "The 2018 flow showed repeat analysis without naming the interval. Current supplied guidance makes the two-minute re-analysis cycle explicit.", "fact.aed.resumeAfterShock", kind="callout"),
-        block("M6-B10", "Never shock while anyone is touching", "Contact during analysis, charging or shock is a critical safety error. Before choosing the simulated shock action, state the clear command, spread both arms and visually confirm that nobody is touching the casualty. The interaction implementation must fail closed unless that clear check is satisfied.", "fact.aed.analysisNoTouch", "fact.aed.shockDelivery", kind="callout"),
+        block("M6-B10", "Never shock while anyone is touching", "Nobody may touch the casualty during analysis, charging or shock. Before choosing the simulated shock action, state the clear command, spread both arms and visually confirm that nobody is touching. The project classifies contact here as a critical error, and the interaction implementation must fail closed unless the clear check is satisfied.", "fact.aed.analysisNoTouch", "fact.aed.shockDelivery", kind="callout", policy_section="Phase 3B authored interaction definitions"),
     ]
     activities = [
         activity("M6-A1", "Pad-placement laboratory", "aedPadPlacement", "Apply right then left adult pads to the labelled training model, connect if prompted and keep compressions interrupted only when the AED begins analysis.", "fact.aed.padPlacementAdult", "fact.aed.applyDuringCpr", "fact.aed.analysisNoTouch"),
@@ -508,7 +537,7 @@ def build_m6() -> dict[str, Any]:
 
 def build_m7() -> dict[str, Any]:
     objectives = [
-        objective("M7-O1", "Resolve ten short environmental and equipment variations without changing the core clinical rules.", "fact.drsabc.danger", "fact.aed.hazards", "fact.specialsettings.environments"),
+        objective("M7-O1", "Resolve ten short environmental and equipment variations without changing the core clinical rules.", "fact.drsabc.danger", "fact.aed.hazards", "fact.specialsettings.environments", policy_section="Phase 3B authored interaction definitions"),
         objective("M7-O2", "Protect compression continuity while adapting AED preparation and retrieval.", "fact.compression.minimiseInterruptions", "fact.aed.retrievalSafety"),
     ]
     drill_specs = [
@@ -516,14 +545,24 @@ def build_m7() -> dict[str, Any]:
         ("M7-B2", "Drill 2 — remote area without phone access", "Use the documented remote exception: assess responsiveness and breathing, start compressions when normal breathing is absent, continue for at least two minutes, then leave to seek help.", ("fact.drsabc.remoteAreaException",)),
         ("M7-B3", "Drill 3 — metal surface", "Move the casualty away from metal contact before AED use because the surface can conduct current towards the rescuer.", ("fact.aed.hazards",)),
         ("M7-B4", "Drill 4 — wet chest or surface", "Move away from the wet surface and wipe the chest dry quickly so the pads can adhere.", ("fact.aed.hazards", "fact.aed.chestPrepWet")),
-        ("M7-B5", "Drill 5 — flammable gas or oxygen source", "Move the casualty away from flammable gases or oxygen sources before applying the AED.", ("fact.aed.hazards",)),
+        ("M7-B5", "Drill 5 — flammable gas or oxygen source", "Before AED use, create safe distance between the casualty and any flammable gas or oxygen source.", ("fact.aed.hazards",)),
         ("M7-B6", "Drill 6 — hair prevents contact", "Shave only the pad sites promptly when chest hair prevents secure adhesion.", ("fact.aed.chestPrepHairyChest",)),
         ("M7-B7", "Drill 7 — jewellery, patches and implanted device", "Move metallic chains away, remove medication patches or monitoring electrodes, and keep the pads at least four fingers' breadth from a visible implanted device.", ("fact.aed.chestPrepJewellery", "fact.aed.chestPrepPatches", "fact.aed.chestPrepImplantedDevices")),
         ("M7-B8", "Drill 8 — break-glass AED cabinet", "Use a phone, shoe, keys or another object rather than bare hands or elbows, and clear glass from the edge before reaching for the key.", ("fact.aed.retrievalSafety",)),
         ("M7-B9", "Drill 9 — trolley bed and team", "Use a step stool on a trolley bed so elbows can remain straight. With two or more rescuers, divide compressions, 995 activation and AED tasks; allocate ventilations only within the trained, able and willing pathway.", ("fact.specialsettings.environments", "fact.ventilation.thirtyToTwoIfTrained")),
         ("M7-B10", "Drill 10 — narrow space or aircraft", "In a narrow space, the sourced alternative is compressing from above the casualty's head. On an aircraft, kneel in the seat leg space unless the casualty can be moved quickly to the galley.", ("fact.specialsettings.environments",)),
     ]
-    blocks = [block(identifier, title, body, *facts, kind="callout") for identifier, title, body, facts in drill_specs]
+    blocks = [
+        block(
+            identifier,
+            title,
+            body,
+            *facts,
+            kind="callout",
+            policy_section="Phase 3B authored interaction definitions",
+        )
+        for identifier, title, body, facts in drill_specs
+    ]
     activities = [
         activity(
             f"M7-A{index}",
@@ -531,6 +570,7 @@ def build_m7() -> dict[str, Any]:
             "specialCircumstanceDrill",
             body,
             *facts,
+            policy_section="Phase 3B authored interaction definitions",
         )
         for index, (_, title, body, facts) in enumerate(drill_specs, start=1)
     ]
@@ -559,6 +599,10 @@ def build_m8() -> dict[str, Any]:
         activity("M8-A3", "Scenario C — Workplace", "integratedScenario", "Complete the Workplace definition from scenarios_v1.json.", "fact.aed.practiceScenarios", "fact.drsabc.mnemonic"),
         activity("M8-A4", "Scenario D — Community facility", "integratedScenario", "Complete the Community facility definition from scenarios_v1.json.", "fact.aed.practiceScenarios", "fact.drsabc.mnemonic"),
     ]
+    add_policy_references(
+        objectives + blocks + activities,
+        "Phase 3B authored interaction definitions",
+    )
     return module("M8", "Integrated Scenarios A–D", "Four settings, fixed clinical rules and source-backed shock/no-shock pools.", 8, objectives, blocks, activities)
 
 
@@ -588,7 +632,7 @@ def build_m9() -> dict[str, Any]:
         block(
             "M9-B5",
             "Infant defibrillation — SME decision required",
-            "The 2021 summary prefers a manual defibrillator for an infant and child pads when that is unavailable. The supplied sources do not clearly authorise adult pads on an infant, so the app gives no such instruction pending SME approval.",
+            "For an infant, the 2021 summary places a manual defibrillator first and child pads next when the preferred device is unavailable. None of the supplied sources gives a clear adult-pad instruction for an infant, so the course withholds one pending SME approval.",
             "fact.child.infantDefibrillation",
             kind="callout",
             additional_references=[
@@ -660,7 +704,7 @@ def build_m10() -> dict[str, Any]:
         objective("M10-O3", "Complete a structured after-action reflection and request appropriate instructor follow-up.", policy_section="Post-incident authoring boundaries"),
     ]
     blocks = [
-        block("M10-B1", "Handover essentials", "Tell paramedics the best-estimate collapse time, whether an AED was used, how many shocks were delivered, any known medical history and medication, and whether a written event record is available.", "fact.postincident.handoverSummary"),
+        block("M10-B1", "Handover essentials", "Share the estimated collapse time, whether the AED was applied and the recorded shock count. Add any known medical history, medicines and written event notes.", "fact.postincident.handoverSummary"),
         block("M10-B2", "Assist and leave the AED connected", "Continue assisting until the casualty is loaded into the ambulance. Keep the AED switched on, with pads and cable attached, during transport.", "fact.postincident.assistUntilLoaded", "fact.aed.remainConnected"),
         block("M10-B3", "After normal breathing returns", "Keep the casualty lying on their back and monitor continuously until help arrives. Leave the AED pads connected.", "fact.recovery.supineMonitor"),
         block(

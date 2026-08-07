@@ -206,14 +206,62 @@ def collect_course_rows(
 
     for module in course["modules"]:
         module_id = module["id"]
+        descendant_items = [
+            item
+            for lesson in module["lessons"]
+            for collection in ("learningObjectives", "contentBlocks", "interactiveActivities")
+            for item in lesson[collection]
+        ]
+        has_review_descendant = any(
+            item.get("reviewStatus") == "clinicalReviewRequired"
+            or any(
+                reference["reviewStatus"] == "requires_sme_review"
+                for reference in item["sourceReferences"]
+            )
+            for item in descendant_items
+        )
+        require(
+            module.get("reviewStatus")
+            == ("clinicalReviewRequired" if has_review_descendant else "sourceChecked"),
+            f"{module_id}: aggregate reviewStatus does not match its descendants",
+        )
+        if module_id == "M9":
+            require(
+                module.get("accessRequirements")
+                == {
+                    "requiredCompletedModuleIDs": [f"M{index}" for index in range(9)],
+                    "requiresInstructorApproval": True,
+                    "requiresClinicallyApprovedContent": True,
+                },
+                "M9: access requirements do not enforce adult core, instructor and clinical approval",
+            )
         if module.get("reviewStatus") == "clinicalReviewRequired":
+            access = module.get("accessRequirements") or {}
+            is_access_locked = bool(
+                access.get("requiresInstructorApproval")
+                or access.get("requiresClinicallyApprovedContent")
+                or access.get("requiredCompletedModuleIDs")
+            )
+            blocked_references = [
+                reference
+                for reference in module["sourceReferences"]
+                if reference["reviewStatus"] == "requires_sme_review"
+            ]
             review_items.append(
                 {
                     "id": module_id,
                     "title": module["title"],
-                    "why": "The module contains unresolved clinical facts and remains locked.",
-                    "approval": "Approve every cited SME item, then release a new clinically approved content version.",
-                    "sources": source_summary(module["sourceReferences"]),
+                    "why": (
+                        "The module contains unresolved clinical facts and remains access-locked."
+                        if is_access_locked
+                        else review_reason_for_references(module["sourceReferences"], facts)
+                    ),
+                    "approval": (
+                        "Approve every cited SME item, then release a new clinically approved content version before unlocking."
+                        if is_access_locked
+                        else "Approve, revise or remove each review-required descendant before clinical release. Module access is separate from this aggregate lifecycle."
+                    ),
+                    "sources": source_summary(blocked_references or module["sourceReferences"]),
                 }
             )
         for lesson in module["lessons"]:
