@@ -97,23 +97,23 @@ actor InMemoryAssessmentRepository: AssessmentRepository {
 
 /// In-memory cohort repository.
 actor InMemoryCohortRepository: CohortRepository {
-    private var cohortsByID: [String: Cohort] = [:]
+    private var cohortsByID: [String: CohortSummary] = [:]
 
-    init(cohorts: [Cohort] = []) {
+    init(cohorts: [CohortSummary] = []) {
         for cohort in cohorts {
             cohortsByID[cohort.id] = cohort
         }
     }
 
-    func allCohorts() -> [Cohort] {
+    func allCohorts() -> [CohortSummary] {
         cohortsByID.values.sorted { $0.id < $1.id }
     }
 
-    func cohort(id: String) -> Cohort? {
+    func cohort(id: String) -> CohortSummary? {
         cohortsByID[id]
     }
 
-    func save(_ cohort: Cohort) {
+    func save(_ cohort: CohortSummary) {
         cohortsByID[cohort.id] = cohort
     }
 }

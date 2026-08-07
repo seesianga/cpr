@@ -33,7 +33,7 @@ struct AssessmentAttemptSummary: Codable, Identifiable, Sendable, Equatable {
 }
 
 /// A named learner cohort used by instructor tooling.
-struct Cohort: Codable, Identifiable, Sendable, Equatable {
+struct CohortSummary: Codable, Identifiable, Sendable, Equatable {
     let id: String
     let name: String
     let learnerIDs: [String]
@@ -99,9 +99,9 @@ protocol AssessmentRepository: Sendable {
 
 /// Manages learner membership for instructor cohorts.
 protocol CohortRepository: Sendable {
-    func allCohorts() async throws -> [Cohort]
-    func cohort(id: String) async throws -> Cohort?
-    func save(_ cohort: Cohort) async throws
+    func allCohorts() async throws -> [CohortSummary]
+    func cohort(id: String) async throws -> CohortSummary?
+    func save(_ cohort: CohortSummary) async throws
 }
 
 /// Stores internal learner achievements without representing external certification.
