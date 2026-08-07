@@ -6,6 +6,7 @@ enum PersistenceRepositoryError: Error, Sendable, Equatable {
     case invalidUTF8
     case contentVersionNotFound(courseID: String)
     case duplicateEventID(String)
+    case invalidLifecycle(String)
 }
 
 /// Actor-isolated SwiftData implementations for all LMS repositories.
@@ -20,6 +21,7 @@ actor SwiftDataRepositoryStore:
     CohortRepository,
     AchievementRepository,
     ClinicalContentRepository,
+    ContentVersionRepository,
     AuditLogService
 {
     // MARK: CourseRepository
@@ -89,6 +91,87 @@ actor SwiftDataRepositoryStore:
                 )
             )
         }
+        try modelContext.save()
+    }
+
+    // MARK: ContentVersionRepository
+
+    func versionState(
+        courseID: String,
+        contentVersion: String
+    ) throws -> ContentVersionState? {
+        let recordID = Self.contentRecordID(
+            courseID: courseID,
+            contentVersion: contentVersion
+        )
+        var descriptor = FetchDescriptor<ContentVersionRecord>(
+            predicate: #Predicate { $0.id == recordID }
+        )
+        descriptor.fetchLimit = 1
+        return try modelContext.fetch(descriptor).first.map(Self.contentVersionState)
+    }
+
+    func versionStates(courseID: String) throws -> [ContentVersionState] {
+        let descriptor = FetchDescriptor<ContentVersionRecord>(
+            predicate: #Predicate { $0.courseID == courseID },
+            sortBy: [SortDescriptor(\.contentVersion)]
+        )
+        return try modelContext.fetch(descriptor).map(Self.contentVersionState)
+    }
+
+    func setLifecycle(
+        _ lifecycle: ContentLifecycle,
+        courseID: String,
+        contentVersion: String
+    ) throws {
+        let recordID = Self.contentRecordID(
+            courseID: courseID,
+            contentVersion: contentVersion
+        )
+        var descriptor = FetchDescriptor<ContentVersionRecord>(
+            predicate: #Predicate { $0.id == recordID }
+        )
+        descriptor.fetchLimit = 1
+        guard let record = try modelContext.fetch(descriptor).first else {
+            throw ClinicalContentError.lifecycleNotFound(
+                courseID: courseID,
+                contentVersion: contentVersion
+            )
+        }
+        record.lifecycleRawValue = lifecycle.rawValue
+        record.updatedAt = .now
+        if lifecycle == .retired {
+            record.retiredAt = .now
+        } else {
+            record.retiredAt = nil
+        }
+        try modelContext.save()
+    }
+
+    func publishVersion(courseID: String, contentVersion: String) throws {
+        let targetID = Self.contentRecordID(
+            courseID: courseID,
+            contentVersion: contentVersion
+        )
+        let descriptor = FetchDescriptor<ContentVersionRecord>(
+            predicate: #Predicate { $0.courseID == courseID }
+        )
+        let records = try modelContext.fetch(descriptor)
+        guard let target = records.first(where: { $0.id == targetID }) else {
+            throw ClinicalContentError.lifecycleNotFound(
+                courseID: courseID,
+                contentVersion: contentVersion
+            )
+        }
+        let now = Date.now
+        for record in records where record.id != targetID && record.lifecycleRawValue == ContentLifecycle.published.rawValue {
+            record.lifecycleRawValue = ContentLifecycle.superseded.rawValue
+            record.updatedAt = now
+        }
+        target.lifecycleRawValue = ContentLifecycle.published.rawValue
+        target.publishedAt = now
+        target.retiredAt = nil
+        target.updatedAt = now
         try modelContext.save()
     }
 
@@ -418,6 +501,20 @@ actor SwiftDataRepositoryStore:
             throw PersistenceRepositoryError.invalidUTF8
         }
         return try CourseContentCodec.decode(data)
+    }
+
+    private static func contentVersionState(
+        _ record: ContentVersionRecord
+    ) throws -> ContentVersionState {
+        guard let lifecycle = ContentLifecycle(rawValue: record.lifecycleRawValue) else {
+            throw PersistenceRepositoryError.invalidLifecycle(record.lifecycleRawValue)
+        }
+        return ContentVersionState(
+            courseID: record.courseID,
+            contentVersion: record.contentVersion,
+            lifecycle: lifecycle,
+            updatedAt: record.updatedAt
+        )
     }
 
     private static func encodeSourceReferences(_ references: [SourceReference]) throws -> String {

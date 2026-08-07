@@ -260,6 +260,21 @@ protocol CourseRepository: Sendable {
     func save(_ course: Course) async throws
 }
 
+/// Persists lifecycle metadata separately from immutable course and attempt payloads.
+protocol ContentVersionRepository: Sendable {
+    func versionState(
+        courseID: String,
+        contentVersion: String
+    ) async throws -> ContentVersionState?
+    func versionStates(courseID: String) async throws -> [ContentVersionState]
+    func setLifecycle(
+        _ lifecycle: ContentLifecycle,
+        courseID: String,
+        contentVersion: String
+    ) async throws
+    func publishVersion(courseID: String, contentVersion: String) async throws
+}
+
 /// Stores learner course progress independently of the UI and persistence engine.
 protocol ProgressRepository: Sendable {
     func progress(learnerID: String, courseID: String) async throws -> LearnerProgress?

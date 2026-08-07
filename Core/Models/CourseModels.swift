@@ -127,6 +127,35 @@ struct SourceReference: Codable, Identifiable, Sendable, Equatable {
     let reviewer: String?
     let lastClinicalReviewDate: Date?
     let contentVersion: String
+    let clinicalFactID: String?
+
+    init(
+        id: String,
+        document: String,
+        edition: String,
+        section: String,
+        page: String,
+        reviewStatus: String,
+        reviewer: String?,
+        lastClinicalReviewDate: Date?,
+        contentVersion: String,
+        clinicalFactID: String? = nil
+    ) {
+        self.id = id
+        self.document = document
+        self.edition = edition
+        self.section = section
+        self.page = page
+        self.reviewStatus = reviewStatus
+        self.reviewer = reviewer
+        self.lastClinicalReviewDate = lastClinicalReviewDate
+        self.contentVersion = contentVersion
+        self.clinicalFactID = clinicalFactID
+    }
+
+    var typedReviewStatus: ClinicalReviewStatus {
+        ClinicalReviewStatus(rawValue: reviewStatus)
+    }
 }
 
 /// Declares whether practical competency needs an instructor's recorded sign-off.

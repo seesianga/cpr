@@ -44,17 +44,25 @@ actor InMemoryAuthenticationService: AuthenticationService {
 }
 
 /// In-memory course repository for previews and deterministic unit tests.
-actor InMemoryCourseRepository: CourseRepository {
+actor InMemoryCourseRepository: CourseRepository, ContentVersionRepository {
     private struct Key: Hashable, Sendable {
         let courseID: String
         let contentVersion: String
     }
 
     private var coursesByKey: [Key: Course] = [:]
+    private var lifecycleByKey: [Key: ContentVersionState] = [:]
 
     init(courses: [Course] = []) {
         for course in courses {
-            coursesByKey[Key(courseID: course.id, contentVersion: course.version.contentVersion)] = course
+            let key = Key(courseID: course.id, contentVersion: course.version.contentVersion)
+            coursesByKey[key] = course
+            lifecycleByKey[key] = ContentVersionState(
+                courseID: course.id,
+                contentVersion: course.version.contentVersion,
+                lifecycle: .draft,
+                updatedAt: .now
+            )
         }
     }
 
@@ -82,7 +90,71 @@ actor InMemoryCourseRepository: CourseRepository {
     }
 
     func save(_ course: Course) {
-        coursesByKey[Key(courseID: course.id, contentVersion: course.version.contentVersion)] = course
+        let key = Key(courseID: course.id, contentVersion: course.version.contentVersion)
+        coursesByKey[key] = course
+        if lifecycleByKey[key] == nil {
+            lifecycleByKey[key] = ContentVersionState(
+                courseID: course.id,
+                contentVersion: course.version.contentVersion,
+                lifecycle: .draft,
+                updatedAt: .now
+            )
+        }
+    }
+
+    func versionState(courseID: String, contentVersion: String) -> ContentVersionState? {
+        lifecycleByKey[Key(courseID: courseID, contentVersion: contentVersion)]
+    }
+
+    func versionStates(courseID: String) -> [ContentVersionState] {
+        lifecycleByKey.values
+            .filter { $0.courseID == courseID }
+            .sorted { $0.contentVersion < $1.contentVersion }
+    }
+
+    func setLifecycle(
+        _ lifecycle: ContentLifecycle,
+        courseID: String,
+        contentVersion: String
+    ) throws {
+        let key = Key(courseID: courseID, contentVersion: contentVersion)
+        guard lifecycleByKey[key] != nil else {
+            throw ClinicalContentError.lifecycleNotFound(
+                courseID: courseID,
+                contentVersion: contentVersion
+            )
+        }
+        lifecycleByKey[key] = ContentVersionState(
+            courseID: courseID,
+            contentVersion: contentVersion,
+            lifecycle: lifecycle,
+            updatedAt: .now
+        )
+    }
+
+    func publishVersion(courseID: String, contentVersion: String) throws {
+        let targetKey = Key(courseID: courseID, contentVersion: contentVersion)
+        guard lifecycleByKey[targetKey] != nil else {
+            throw ClinicalContentError.lifecycleNotFound(
+                courseID: courseID,
+                contentVersion: contentVersion
+            )
+        }
+        for (key, state) in lifecycleByKey
+        where key.courseID == courseID && key != targetKey && state.lifecycle == .published {
+            lifecycleByKey[key] = ContentVersionState(
+                courseID: key.courseID,
+                contentVersion: key.contentVersion,
+                lifecycle: .superseded,
+                updatedAt: .now
+            )
+        }
+        lifecycleByKey[targetKey] = ContentVersionState(
+            courseID: courseID,
+            contentVersion: contentVersion,
+            lifecycle: .published,
+            updatedAt: .now
+        )
     }
 }
 
