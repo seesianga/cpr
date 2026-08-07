@@ -116,6 +116,54 @@ final class DRSABCPracticeSessionModelTests: XCTestCase {
         XCTAssertEqual(normal.state, .step(.complete))
     }
 
+    func testEveryUnsafeDecisionCorrectionExposesDocumentLevelCitations() {
+        let missedHelp = preparedModel()
+        missedHelp.inspectDanger(sceneUnsafe: false, enteredUnsafeScene: false)
+        missedHelp.checkResponse(isUnresponsive: true)
+        missedHelp.shoutForHelp(helpActivated: false)
+
+        let loneDeparture = modelAtAEDDelegation()
+        loneDeparture.delegateAED(
+            bystanderAvailable: false,
+            aedNear: false,
+            learnerLeavesCasualty: true
+        )
+
+        let gaspingMistake = modelAtBreathingCheck()
+        gaspingMistake.assessBreathing(
+            durationSeconds: 8,
+            casualtyGasping: true,
+            breathingNormal: true,
+            treatedGaspingAsNormal: true
+        )
+
+        let prolongedCheck = modelAtBreathingCheck()
+        prolongedCheck.assessBreathing(
+            durationSeconds: 10.01,
+            casualtyGasping: false,
+            breathingNormal: false,
+            treatedGaspingAsNormal: false
+        )
+
+        let fixtures: [(String, DRSABCPracticeSessionModel)] = [
+            ("help not activated", missedHelp),
+            ("lone rescuer departed", loneDeparture),
+            ("gasping mistaken", gaspingMistake),
+            ("breathing check too long", prolongedCheck)
+        ]
+        for (name, model) in fixtures {
+            XCTAssertNotNil(model.activeCorrection, name)
+            XCTAssertFalse(model.activeCorrectionSourceCitations.isEmpty, name)
+            XCTAssertTrue(
+                model.activeCorrectionSourceCitations.allSatisfy {
+                    !$0.document.isEmpty && !$0.edition.isEmpty &&
+                        !$0.section.isEmpty && $0.page > 0
+                },
+                name
+            )
+        }
+    }
+
     private func preparedModel() -> DRSABCPracticeSessionModel {
         let model = DRSABCPracticeSessionModel()
         model.prepare()

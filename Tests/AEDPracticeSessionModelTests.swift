@@ -134,6 +134,80 @@ final class AEDPracticeSessionModelTests: XCTestCase {
         model.stop()
     }
 
+    func testShockResumeCoachingTimerFlagsDelayAndStillAllowsRecovery() async throws {
+        let model = modelAtPadsCorrect(resumeCoachingDelay: .milliseconds(20))
+        confirmAllBystanders(in: model)
+        model.activateClearZone()
+        model.receiveAnalysisOutcome(.shock)
+        model.beginCharging()
+        model.finishCharging()
+        confirmAllBystanders(in: model)
+        model.activateClearZone()
+        model.pressSimulatedShockControl()
+        XCTAssertEqual(model.state, .simulatedShock)
+
+        try await Task.sleep(for: .milliseconds(60))
+
+        XCTAssertEqual(model.criticalFailures, [.cprNotResumed])
+        model.resumeCompressions()
+        model.finish()
+        XCTAssertEqual(model.state, .complete)
+        model.stop()
+    }
+
+    func testBystanderTouchStateBlocksAnalysisOutcomeAndShockUntilFreshSweep() {
+        let model = modelAtPadsCorrect()
+        confirmAllBystanders(in: model)
+        model.activateClearZone()
+        XCTAssertEqual(model.state, .analysing)
+
+        model.markBystanderTouching("bystander_01")
+        model.receiveAnalysisOutcome(.shock)
+        XCTAssertEqual(model.state, .analysing)
+        XCTAssertTrue(model.criticalFailures.contains(.contactDuringAnalysis))
+
+        model.confirmBystanderClear("bystander_01")
+        model.receiveAnalysisOutcome(.shock)
+        model.beginCharging()
+        model.finishCharging()
+        XCTAssertEqual(model.state, .clearConfirmation)
+        confirmAllBystanders(in: model)
+        model.activateClearZone()
+
+        model.markBystanderTouching("bystander_01")
+        model.pressSimulatedShockControl()
+        XCTAssertEqual(model.state, .clearConfirmation)
+        XCTAssertTrue(model.criticalFailures.contains(.contactDuringShock))
+
+        model.confirmBystanderClear("bystander_01")
+        model.activateClearZone()
+        model.pressSimulatedShockControl()
+        XCTAssertEqual(model.state, .simulatedShock)
+        model.stop()
+    }
+
+    func testPauseCancelsAndResumeRestartsAEDResumeCoachingTimer() async throws {
+        let model = AEDPracticeSessionModel(resumeCoachingDelay: .milliseconds(30))
+        model.prepare()
+        completePreparation(in: model)
+        placeCorrectPads(in: model)
+        confirmAllBystanders(in: model)
+        model.activateClearZone()
+        model.receiveAnalysisOutcome(.noShock)
+
+        model.setPaused(true)
+        try await Task.sleep(for: .milliseconds(70))
+        XCTAssertTrue(model.criticalFailures.isEmpty)
+
+        model.setPaused(false)
+        try await Task.sleep(for: .milliseconds(70))
+        XCTAssertEqual(model.criticalFailures, [.cprNotResumed])
+        model.resumeCompressions()
+        model.finish()
+        XCTAssertEqual(model.state, .complete)
+        model.stop()
+    }
+
     func testPadDropClassifierUsesBoundsOverlapNotBroadCentreRadius() {
         let zones = [
             AEDPadDropZone(
@@ -172,8 +246,12 @@ final class AEDPracticeSessionModelTests: XCTestCase {
         return model
     }
 
-    private func modelAtPadsCorrect() -> AEDPracticeSessionModel {
-        let model = preparedModel()
+    private func modelAtPadsCorrect(
+        resumeCoachingDelay: Duration = .seconds(60)
+    ) -> AEDPracticeSessionModel {
+        let model = AEDPracticeSessionModel(resumeCoachingDelay: resumeCoachingDelay)
+        model.prepare()
+        XCTAssertEqual(model.loadState, .ready)
         completePreparation(in: model)
         placeCorrectPads(in: model)
         XCTAssertEqual(model.state, .padsCorrect)

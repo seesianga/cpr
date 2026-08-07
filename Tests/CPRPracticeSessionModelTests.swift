@@ -27,6 +27,74 @@ final class CPRPracticeSessionModelTests: XCTestCase {
         await model.stop()
     }
 
+    func testSimulatedHandInputStreamCompletesScoredSessionWithoutPhysicalMeasurements() async throws {
+        let driver = SimulatedHandInput(
+            detectorConfiguration: HandSignalDetectorConfiguration(
+                maximumHandSampleAgeSeconds: 0.20,
+                smoothingFactor: 1,
+                minimumDirectionalChangeMetres: 0.001,
+                oscillationHysteresisMetres: 0.02,
+                minimumCompressionIntervalSeconds: 0.20,
+                minimumGapReportedAsInterruptionSeconds: 1.1,
+                maximumTrackingRadiusMetres: 0.60,
+                targetLateralMarginMetres: 0,
+                maximumHeightAboveTargetMetres: 0.40,
+                maximumDistanceBelowTargetMetres: 0.05,
+                maximumStackedPalmSeparationMetres: 0.16
+            )
+        )
+        let model = CPRPracticeSessionModel(handTracking: driver)
+        try await prepare(model, driver: driver)
+        model.confirmPositioning()
+        model.choosePlacement(.sternumTarget)
+
+        let interval = 60 / CPRPracticePolicy.sourceBacked.practiceTempoPerMinute
+        _ = driver.submit(
+            SimulatedHandFrame(timestampSeconds: 0, leftPalmWorld: [0, 0.16, 0])
+        )
+        await Task.yield()
+        for index in 0..<model.minimumCompressionsForCompletion {
+            let cycleStart = Double(index) * interval
+            _ = driver.submit(
+                SimulatedHandFrame(
+                    timestampSeconds: cycleStart + 0.10,
+                    leftPalmWorld: [0, 0.10, 0]
+                )
+            )
+            _ = driver.submit(
+                SimulatedHandFrame(
+                    timestampSeconds: cycleStart + 0.20,
+                    leftPalmWorld: [0, 0.16, 0]
+                )
+            )
+            await Task.yield()
+        }
+
+        for _ in 0..<200 {
+            if model.metrics.totalCompressions == model.minimumCompressionsForCompletion {
+                break
+            }
+            try await Task.sleep(for: .milliseconds(5))
+        }
+
+        XCTAssertEqual(
+            model.metrics.totalCompressions,
+            model.minimumCompressionsForCompletion
+        )
+        XCTAssertEqual(model.metrics.completedCycles, 1)
+        await model.endSession()
+
+        let summary = try XCTUnwrap(model.summary)
+        XCTAssertEqual(model.state, .complete)
+        XCTAssertTrue(summary.scoreOutcome.passed)
+        XCTAssertTrue(summary.scoreOutcome.xpEligible)
+        XCTAssertEqual(summary.depthAssessment.status, .notPhysicallyAssessed)
+        XCTAssertNil(summary.depthAssessment.value)
+        XCTAssertEqual(summary.forceAssessment.status, .notPhysicallyAssessed)
+        XCTAssertNil(summary.forceAssessment.value)
+        await model.stop()
+    }
+
     func testZeroCompressionAttemptCannotCreateCompletionRecordOrXP() async throws {
         let driver = SimulatedHandInput(startState: .permissionDenied)
         let model = CPRPracticeSessionModel(handTracking: driver)

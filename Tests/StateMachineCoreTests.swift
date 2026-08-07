@@ -72,6 +72,72 @@ final class StateMachineCoreTests: XCTestCase {
             )
         }
 
+        let blockedDispatcherFacts = factsDocument.facts.map { fact in
+            guard fact.id == "fact.drsabc.dispatcherCapabilities" else { return fact }
+            return ClinicalFact(
+                id: fact.id,
+                statement: fact.statement,
+                values: fact.values,
+                sources: fact.sources,
+                reviewStatus: .requiresSMEReview,
+                supersedes2018: fact.supersedes2018,
+                notes: fact.notes
+            )
+        }
+        XCTAssertThrowsError(
+            try PracticeMachineContentContract.make(
+                course: course,
+                scenarios: scenarios,
+                facts: ClinicalFactCatalogue(
+                    document: ClinicalFactsDocument(
+                        version: factsDocument.version,
+                        extractedAt: factsDocument.extractedAt,
+                        citationConvention: factsDocument.citationConvention,
+                        languageNote: factsDocument.languageNote,
+                        facts: blockedDispatcherFacts
+                    )
+                )
+            )
+        ) { error in
+            XCTAssertEqual(
+                error as? PracticeMachineContentError,
+                .blockedClinicalFact("fact.drsabc.dispatcherCapabilities")
+            )
+        }
+
+        let dispatcherWithoutSources = factsDocument.facts.map { fact in
+            guard fact.id == "fact.drsabc.dispatcherCapabilities" else { return fact }
+            return ClinicalFact(
+                id: fact.id,
+                statement: fact.statement,
+                values: fact.values,
+                sources: [],
+                reviewStatus: fact.reviewStatus,
+                supersedes2018: fact.supersedes2018,
+                notes: fact.notes
+            )
+        }
+        XCTAssertThrowsError(
+            try PracticeMachineContentContract.make(
+                course: course,
+                scenarios: scenarios,
+                facts: ClinicalFactCatalogue(
+                    document: ClinicalFactsDocument(
+                        version: factsDocument.version,
+                        extractedAt: factsDocument.extractedAt,
+                        citationConvention: factsDocument.citationConvention,
+                        languageNote: factsDocument.languageNote,
+                        facts: dispatcherWithoutSources
+                    )
+                )
+            )
+        ) { error in
+            XCTAssertEqual(
+                error as? PracticeMachineContentError,
+                .missingClinicalFactSources("fact.drsabc.dispatcherCapabilities")
+            )
+        }
+
         let first = try XCTUnwrap(scenarios.scenarios.first)
         let incompleteFirst = ScenarioDefinition(
             id: first.id,
@@ -113,6 +179,115 @@ final class StateMachineCoreTests: XCTestCase {
             }
             XCTAssertTrue(missing.contains("scenario-a-home:shockOutcome"))
             XCTAssertTrue(missing.contains("scenario-a-home:noShockOutcome"))
+        }
+    }
+
+    func testPracticeContentContractRejectsUnreviewedOrUnreferencedGuidanceBlocks() throws {
+        let course = try CourseContentCodec.loadCourse(named: "course_v1")
+        let scenarios = try ScenarioDefinitionsCodec.load()
+        let facts = try ClinicalFactCatalogue.loadBundled()
+
+        let blockedBlockCourse = replacingContentBlock(
+            id: "M3-B5",
+            in: course
+        ) { block in
+            ContentBlock(
+                id: block.id,
+                kind: block.kind,
+                title: block.title,
+                body: block.body,
+                sourceReferences: block.sourceReferences,
+                reviewStatus: .clinicalReviewRequired
+            )
+        }
+        XCTAssertThrowsError(
+            try PracticeMachineContentContract.make(
+                course: blockedBlockCourse,
+                scenarios: scenarios,
+                facts: facts
+            )
+        ) { error in
+            XCTAssertEqual(
+                error as? PracticeMachineContentError,
+                .blockedCourseBlock("M3-B5")
+            )
+        }
+
+        let unreferencedCourse = replacingContentBlock(
+            id: "M3-B5",
+            in: course
+        ) { block in
+            ContentBlock(
+                id: block.id,
+                kind: block.kind,
+                title: block.title,
+                body: block.body,
+                sourceReferences: [],
+                reviewStatus: block.reviewStatus
+            )
+        }
+        XCTAssertThrowsError(
+            try PracticeMachineContentContract.make(
+                course: unreferencedCourse,
+                scenarios: scenarios,
+                facts: facts
+            )
+        ) { error in
+            XCTAssertEqual(
+                error as? PracticeMachineContentError,
+                .missingCourseBlockSourceReferences("M3-B5")
+            )
+        }
+
+        let blockedReferenceCourse = replacingContentBlock(
+            id: "M3-B5",
+            in: course
+        ) { block in
+            let references = block.sourceReferences.enumerated().map { index, reference in
+                guard index == 0 else { return reference }
+                return SourceReference(
+                    id: reference.id,
+                    document: reference.document,
+                    edition: reference.edition,
+                    section: reference.section,
+                    page: reference.page,
+                    reviewStatus: "requires_sme_review",
+                    reviewer: reference.reviewer,
+                    lastClinicalReviewDate: reference.lastClinicalReviewDate,
+                    contentVersion: reference.contentVersion,
+                    clinicalFactID: reference.clinicalFactID
+                )
+            }
+            return ContentBlock(
+                id: block.id,
+                kind: block.kind,
+                title: block.title,
+                body: block.body,
+                sourceReferences: references,
+                reviewStatus: block.reviewStatus
+            )
+        }
+        let blockedReferenceID = try XCTUnwrap(
+            course.modules
+                .flatMap(\.lessons)
+                .flatMap(\.contentBlocks)
+                .first(where: { $0.id == "M3-B5" })?
+                .sourceReferences.first?.id
+        )
+        XCTAssertThrowsError(
+            try PracticeMachineContentContract.make(
+                course: blockedReferenceCourse,
+                scenarios: scenarios,
+                facts: facts
+            )
+        ) { error in
+            XCTAssertEqual(
+                error as? PracticeMachineContentError,
+                .blockedCourseBlockSourceReference(
+                    blockID: "M3-B5",
+                    referenceID: blockedReferenceID
+                )
+            )
         }
     }
 
@@ -512,6 +687,28 @@ final class StateMachineCoreTests: XCTestCase {
         XCTAssertEqual(machine.state, .simulatedShock)
     }
 
+    func testAEDAnalysisOutcomeIsRejectedWhileAnyoneIsTouching() {
+        var machine = aedAtPadsCorrect()
+        machine.handle(
+            .interactiveAnalysisClearCheck(
+                clearZoneActivated: true,
+                bystandersConfirmedClear: true,
+                anyoneTouching: false
+            )
+        )
+
+        let blocked = machine.handle(
+            .receiveAnalysisOutcome(.shock, anyoneTouching: true)
+        )
+
+        XCTAssertFalse(blocked.wasAccepted)
+        XCTAssertEqual(machine.state, .analysing)
+        XCTAssertEqual(machine.criticalFailures, [.contactDuringAnalysis])
+        guard case .rejected(reason: .anyoneTouchingDuringAnalysis, remediation: _) = blocked.outcome else {
+            return XCTFail("Touch during analysis must be an explicit rejection")
+        }
+    }
+
     func testAEDShockAndNoShockPathsBothRequireResumeCompressions() {
         var shockMachine = aedAtPadsCorrect()
         shockMachine.handle(
@@ -533,6 +730,9 @@ final class StateMachineCoreTests: XCTestCase {
         )
         shockMachine.handle(.pressShockControl(anyoneTouching: false))
         XCTAssertEqual(shockMachine.state, .simulatedShock)
+        let prematureShockFinish = shockMachine.handle(.finish)
+        XCTAssertFalse(prematureShockFinish.wasAccepted)
+        XCTAssertEqual(shockMachine.state, .simulatedShock)
         shockMachine.handle(.resumeCompressions)
         XCTAssertEqual(shockMachine.state, .resumeCompressions)
 
@@ -553,21 +753,23 @@ final class StateMachineCoreTests: XCTestCase {
     }
 
     func testAEDFailureToResumeWithinCoachedWindowIsCritical() {
-        var machine = aedAtPadsCorrect()
-        machine.handle(
-            .interactiveAnalysisClearCheck(
-                clearZoneActivated: true,
-                bystandersConfirmedClear: true,
-                anyoneTouching: false
+        for outcome in [AEDAnalysisOutcome.shock, .noShock] {
+            var machine = aedAwaitingResume(after: outcome)
+
+            machine.handle(.coachedResumeWindowExpired)
+
+            XCTAssertTrue(machine.resumeWindowHasExpired, String(describing: outcome))
+            XCTAssertEqual(
+                machine.criticalFailures,
+                [.cprNotResumed],
+                String(describing: outcome)
             )
-        )
-        machine.handle(.receiveAnalysisOutcome(.noShock, anyoneTouching: false))
-
-        machine.handle(.coachedResumeWindowExpired)
-
-        XCTAssertTrue(machine.resumeWindowHasExpired)
-        XCTAssertEqual(machine.criticalFailures, [.cprNotResumed])
-        XCTAssertEqual(machine.state, .noShockAdvised)
+            XCTAssertEqual(
+                machine.state,
+                outcome == .shock ? .simulatedShock : .noShockAdvised,
+                String(describing: outcome)
+            )
+        }
     }
 
     func testReplayProducesIdenticalStatesMetricsFailuresAndLog() throws {
@@ -703,6 +905,50 @@ final class StateMachineCoreTests: XCTestCase {
 }
 
 private extension StateMachineCoreTests {
+    func replacingContentBlock(
+        id blockID: String,
+        in course: Course,
+        transform: (ContentBlock) -> ContentBlock
+    ) -> Course {
+        let modules = course.modules.map { module in
+            Module(
+                id: module.id,
+                title: module.title,
+                summary: module.summary,
+                order: module.order,
+                lessons: module.lessons.map { lesson in
+                    Lesson(
+                        id: lesson.id,
+                        title: lesson.title,
+                        summary: lesson.summary,
+                        order: lesson.order,
+                        learningObjectives: lesson.learningObjectives,
+                        contentBlocks: lesson.contentBlocks.map { block in
+                            block.id == blockID ? transform(block) : block
+                        },
+                        interactiveActivities: lesson.interactiveActivities,
+                        scenarios: lesson.scenarios,
+                        assessments: lesson.assessments,
+                        sourceReferences: lesson.sourceReferences
+                    )
+                },
+                sourceReferences: module.sourceReferences,
+                reviewStatus: module.reviewStatus,
+                accessRequirements: module.accessRequirements
+            )
+        }
+        return Course(
+            id: course.id,
+            title: course.title,
+            summary: course.summary,
+            version: course.version,
+            modules: modules,
+            instructorRequirement: course.instructorRequirement,
+            completionRule: course.completionRule,
+            sourceReferences: course.sourceReferences
+        )
+    }
+
     func drsabcAtAEDDelegation() -> DRSABCStateMachine {
         var machine = DRSABCStateMachine()
         machine.handle(.inspectDanger(sceneUnsafe: false, enteredUnsafeScene: false))
@@ -735,6 +981,31 @@ private extension StateMachineCoreTests {
     func aedAtPadsCorrect() -> AEDStateMachine {
         var machine = AEDStateMachine()
         machine.handle(.placePads(rightPadCorrect: true, leftPadCorrect: true))
+        return machine
+    }
+
+    func aedAwaitingResume(after outcome: AEDAnalysisOutcome) -> AEDStateMachine {
+        var machine = aedAtPadsCorrect()
+        machine.handle(
+            .interactiveAnalysisClearCheck(
+                clearZoneActivated: true,
+                bystandersConfirmedClear: true,
+                anyoneTouching: false
+            )
+        )
+        machine.handle(.receiveAnalysisOutcome(outcome, anyoneTouching: false))
+        if outcome == .shock {
+            machine.handle(.beginCharging(anyoneTouching: false))
+            machine.handle(.chargingComplete(anyoneTouching: false))
+            machine.handle(
+                .interactiveClearCheck(
+                    clearZoneActivated: true,
+                    bystandersConfirmedClear: true,
+                    anyoneTouching: false
+                )
+            )
+            machine.handle(.pressShockControl(anyoneTouching: false))
+        }
         return machine
     }
 }
