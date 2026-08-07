@@ -12,57 +12,142 @@ struct ClinicalSafetyValidator: Sendable {
         var excludedScenarioIDs: [String] = []
         var allIssues: [ClinicalSafetyIssue] = []
 
-        for assessment in course.modules.flatMap(\.lessons).flatMap(\.assessments) {
-            guard assessment.isScored else {
-                // Awareness-only questions remain available to learning views but can never
-                // enter the scored-content catalogue.
-                excludedAssessmentIDs.append(assessment.id)
-                continue
-            }
+        for module in course.modules {
+            for lesson in module.lessons {
+                for assessment in lesson.assessments {
+                    guard assessment.isScored else {
+                        // Awareness-only assessments remain available to learning views but
+                        // can never enter the scored-content catalogue.
+                        excludedAssessmentIDs.append(assessment.id)
+                        continue
+                    }
 
-            var assessmentIssues: [ClinicalSafetyIssue] = []
-            if assessment.questions.isEmpty || !assessment.sourceReferences.isEmpty {
-                assessmentIssues.append(
-                    contentsOf: issues(
-                        for: assessment.sourceReferences,
-                        scoredItemID: assessment.id,
-                        contentVersion: course.version.contentVersion,
-                        facts: facts
-                    )
-                )
-            }
-            for question in assessment.questions {
-                assessmentIssues.append(
-                    contentsOf: issues(
-                        for: question.sourceReferences,
-                        scoredItemID: "\(assessment.id)/\(question.id)",
-                        contentVersion: course.version.contentVersion,
-                        facts: facts
-                    )
-                )
-            }
+                    var assessmentIssues: [ClinicalSafetyIssue] = []
+                    let scoredQuestions = assessment.questions.filter(\.isScored)
+                    if scoredQuestions.isEmpty {
+                        assessmentIssues.append(
+                            ClinicalSafetyIssue(
+                                id: "\(assessment.id)#no-scored-questions",
+                                scoredItemID: assessment.id,
+                                factID: nil,
+                                reason: .noScoredQuestions
+                            )
+                        )
+                    }
+                    if !assessment.sourceReferences.isEmpty {
+                        assessmentIssues.append(
+                            contentsOf: issues(
+                                for: assessment.sourceReferences,
+                                scoredItemID: assessment.id,
+                                contentVersion: course.version.contentVersion,
+                                facts: facts
+                            )
+                        )
+                    }
+                    for question in scoredQuestions {
+                        assessmentIssues.append(
+                            contentsOf: issues(
+                                for: question.sourceReferences,
+                                scoredItemID: "\(assessment.id)/\(question.id)",
+                                contentVersion: course.version.contentVersion,
+                                facts: facts
+                            )
+                        )
+                    }
 
-            if assessmentIssues.isEmpty {
-                eligibleAssessmentIDs.append(assessment.id)
-            } else {
-                excludedAssessmentIDs.append(assessment.id)
-                allIssues.append(contentsOf: assessmentIssues)
+                    let requiredWaiverCoverage = Set(
+                        (module.reviewStatus == .clinicalReviewRequired ? [module.id] : []) +
+                            lesson.contentBlocks
+                            .filter { $0.reviewStatus == .clinicalReviewRequired }
+                            .map(\.id)
+                    )
+                    if !requiredWaiverCoverage.isEmpty {
+                        if let waiver = assessment.scoredUseWaiver {
+                            let waiverCoverage = Set(waiver.coveredContentIDs)
+                            if waiver.id.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ||
+                                waiver.rationale.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ||
+                                waiverCoverage != requiredWaiverCoverage ||
+                                waiverCoverage.count != waiver.coveredContentIDs.count
+                            {
+                                assessmentIssues.append(
+                                    ClinicalSafetyIssue(
+                                        id: "\(assessment.id)#container-waiver-invalid",
+                                        scoredItemID: assessment.id,
+                                        factID: nil,
+                                        reason: .reviewRequiredContainerWaiverInvalid
+                                    )
+                                )
+                            }
+                        } else {
+                            assessmentIssues.append(
+                                ClinicalSafetyIssue(
+                                    id: "\(assessment.id)#container-waiver-missing",
+                                    scoredItemID: assessment.id,
+                                    factID: nil,
+                                    reason: .reviewRequiredContainerWaiverMissing
+                                )
+                            )
+                        }
+                    }
+
+                    if assessmentIssues.isEmpty {
+                        eligibleAssessmentIDs.append(assessment.id)
+                    } else {
+                        excludedAssessmentIDs.append(assessment.id)
+                        allIssues.append(contentsOf: assessmentIssues)
+                    }
+                }
             }
         }
 
         for scenario in course.modules.flatMap(\.lessons).flatMap(\.scenarios) {
-            let references = scenario.sourceReferences + scenario.criticalActions.flatMap(\.sourceReferences)
-            let issues = issues(
-                for: references,
-                scoredItemID: scenario.id,
-                contentVersion: course.version.contentVersion,
-                facts: facts
-            )
-            if issues.isEmpty {
+            var scenarioIssues: [ClinicalSafetyIssue] = []
+            func validate(_ itemID: String, _ references: [SourceReference]) {
+                scenarioIssues.append(
+                    contentsOf: issues(
+                        for: references,
+                        scoredItemID: itemID,
+                        contentVersion: course.version.contentVersion,
+                        facts: facts
+                    )
+                )
+            }
+
+            validate(scenario.id, scenario.sourceReferences)
+            validate(scenario.initialState.id, scenario.initialState.sourceReferences)
+            for feedback in scenario.feedbackStatements {
+                validate(feedback.id, feedback.sourceReferences)
+            }
+            for branch in scenario.branchingNodes {
+                validate(branch.id, branch.sourceReferences)
+                for feedback in branch.feedbackStatements {
+                    validate(feedback.id, feedback.sourceReferences)
+                }
+                for condition in branch.conditions {
+                    validate(condition.id, condition.sourceReferences)
+                    for feedback in condition.feedbackStatements {
+                        validate(feedback.id, feedback.sourceReferences)
+                    }
+                }
+            }
+            for action in scenario.criticalActions {
+                validate(action.id, action.sourceReferences)
+                for feedback in action.feedbackStatements {
+                    validate(feedback.id, feedback.sourceReferences)
+                }
+            }
+            for error in scenario.criticalErrors {
+                validate(error.id, error.sourceReferences)
+                for feedback in error.feedbackStatements {
+                    validate(feedback.id, feedback.sourceReferences)
+                }
+            }
+
+            if scenarioIssues.isEmpty {
                 eligibleScenarioIDs.append(scenario.id)
             } else {
                 excludedScenarioIDs.append(scenario.id)
-                allIssues.append(contentsOf: issues)
+                allIssues.append(contentsOf: scenarioIssues)
             }
         }
 
@@ -251,9 +336,43 @@ struct CourseStructureValidator: Sendable {
                 for scenario in lesson.scenarios {
                     try requireUnique(scenario.id, in: &identifiers)
                     try validateReferences(scenario.sourceReferences, course: course)
+                    try requireUnique(scenario.initialState.id, in: &identifiers)
+                    try validateReferences(scenario.initialState.sourceReferences, course: course)
+                    for feedback in scenario.feedbackStatements {
+                        try requireUnique(feedback.id, in: &identifiers)
+                        try validateReferences(feedback.sourceReferences, course: course)
+                    }
+                    for branch in scenario.branchingNodes {
+                        try requireUnique(branch.id, in: &identifiers)
+                        try validateReferences(branch.sourceReferences, course: course)
+                        for feedback in branch.feedbackStatements {
+                            try requireUnique(feedback.id, in: &identifiers)
+                            try validateReferences(feedback.sourceReferences, course: course)
+                        }
+                        for condition in branch.conditions {
+                            try requireUnique(condition.id, in: &identifiers)
+                            try validateReferences(condition.sourceReferences, course: course)
+                            for feedback in condition.feedbackStatements {
+                                try requireUnique(feedback.id, in: &identifiers)
+                                try validateReferences(feedback.sourceReferences, course: course)
+                            }
+                        }
+                    }
                     for action in scenario.criticalActions {
                         try requireUnique(action.id, in: &identifiers)
                         try validateReferences(action.sourceReferences, course: course)
+                        for feedback in action.feedbackStatements {
+                            try requireUnique(feedback.id, in: &identifiers)
+                            try validateReferences(feedback.sourceReferences, course: course)
+                        }
+                    }
+                    for error in scenario.criticalErrors {
+                        try requireUnique(error.id, in: &identifiers)
+                        try validateReferences(error.sourceReferences, course: course)
+                        for feedback in error.feedbackStatements {
+                            try requireUnique(feedback.id, in: &identifiers)
+                            try validateReferences(feedback.sourceReferences, course: course)
+                        }
                     }
                 }
                 for assessment in lesson.assessments {

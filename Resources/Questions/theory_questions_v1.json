@@ -224,9 +224,15 @@
       "title": "Chain of Survival",
       "isScored": true,
       "passingScore": 0.8,
+      "scoredUseWaiver": {
+        "id": "waiver-m2-source-checked-questions-v1",
+        "coveredContentIDs": ["M2", "M2-B1", "M2-B4"],
+        "rationale": "Scoring is limited to source-checked common ring meanings and early CPR/defibrillation facts. q-m2-01 and q-m2-05 remain awareness-only because Prevention and Recovery depend on the unresolved S5 presentation."
+      },
       "questions": [
         {
           "id": "q-m2-01",
+          "isScored": false,
           "type": "singleChoice",
           "prompt": "What does the Prevention concept emphasise?",
           "choices": [
@@ -291,6 +297,7 @@
         },
         {
           "id": "q-m2-05",
+          "isScored": false,
           "type": "singleChoice",
           "prompt": "What support is associated with Recovery after survival?",
           "choices": [
@@ -1090,6 +1097,11 @@
       "title": "Post-incident handover and reflection",
       "isScored": true,
       "passingScore": 0.8,
+      "scoredUseWaiver": {
+        "id": "waiver-m10-source-checked-questions-v1",
+        "coveredContentIDs": ["M10", "M10-B5A", "M10-B6", "M10-B7"],
+        "rationale": "Scored questions cover source-checked handover, AED continuity, post-ROSC care and post-use duties. They do not assess battery cadence, a decompression protocol or a refresher interval."
+      },
       "questions": [
         {
           "id": "q-m10-01",

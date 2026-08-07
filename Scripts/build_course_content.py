@@ -403,12 +403,12 @@ def build_m3() -> dict[str, Any]:
     ]
     blocks = [
         block("M3-B1", "DRSABC", "Move through DRSABC in order: first assess Danger, then test Responsiveness; Shout for help and activate 995; Ask another person for an AED; decide whether Breathing is normal; and begin continuous Chest Compressions when normal breathing is absent or uncertain. A pulse check appears only in the clearly labelled trained-healthcare-provider path.", "fact.drsabc.mnemonic"),
-        block("M3-B2", "Danger comes first", "Work only in a safe environment. Begin where the casualty is found unless traffic, fire, a wet floor, falling objects or another condition makes that place unsafe or unsuitable; then move the casualty to a safe, flat and open space as soon as possible.", "fact.drsabc.danger"),
+        block("M3-B2", "Danger comes first", "Confirm the area is safe before helping. Give care where the person is found unless traffic, flames, a slippery surface, falling objects or another hazard makes the location unsuitable. If so, promptly relocate the casualty to a clear, level place where care can continue safely.", "fact.drsabc.danger"),
         block("M3-B3", "Responsiveness and position", "Tap the shoulders firmly and ask loudly whether the casualty is okay. Do not shake violently or move the neck unnecessarily. Effective CPR needs the casualty on their back on a firm, flat surface; if turning is required, support and turn the head, neck and body together.", "fact.drsabc.responsiveness", "fact.drsabc.positionCasualty"),
         block(
             "M3-B4",
             "SIMULATION — 995 call rehearsal",
-            "This rehearsal never dials. Call 995 in the scenario, use speaker mode and stay on the line. Dialogue beats ask the learner to state the location, confirm a callback number, describe the incident and give the casualty count, then follow the simulated dispatcher's coaching.",
+            "This rehearsal never dials. In the scenario, call 995, use speaker mode, stay on the line, answer the simulated dispatcher's questions and hang up only when told. Follow the simulated dispatcher's coaching.",
             "fact.drsabc.call995",
             kind="callout",
             additional_references=[
@@ -445,7 +445,7 @@ def build_m3() -> dict[str, Any]:
             "M3-A2",
             "SIMULATION — 995 dialogue",
             "simulatedEmergencyCall",
-            "Practise the location, callback, incident and casualty-count dialogue beats, keep the simulated phone on speaker, and follow the on-screen dispatcher. No call is placed.",
+            "In a clearly labelled simulation that cannot place a call, practise calling 995 on speaker, answer the simulated dispatcher's questions and hang up only when told while following the on-screen dispatcher.",
             "fact.drsabc.call995",
             additional_references=[
                 supplemental_source_reference(
@@ -758,14 +758,21 @@ def attach_question_bank(modules: list[dict[str, Any]]) -> None:
         question_set = sets.get(course_module["id"])
         if question_set is None:
             raise ValueError(f"Missing question set for {course_module['id']}")
+        scored_questions = [
+            question
+            for question in question_set["questions"]
+            if question_set["isScored"] and question.get("isScored", True)
+        ]
         assessment = {
             "id": question_set["assessmentID"],
             "title": question_set["title"],
             "isScored": question_set["isScored"],
             "passingScore": question_set["passingScore"],
             "questions": question_set["questions"],
-            "sourceReferences": unique_references(question_set["questions"]),
+            "sourceReferences": unique_references(scored_questions),
         }
+        if "scoredUseWaiver" in question_set:
+            assessment["scoredUseWaiver"] = question_set["scoredUseWaiver"]
         course_module["lessons"][0]["assessments"] = [assessment]
 
 
@@ -774,28 +781,9 @@ def attach_scenarios(modules: list[dict[str, Any]]) -> None:
     if scenario_document["contentVersion"] != CONTENT_VERSION:
         raise ValueError("Scenario content version does not match the course")
     m8 = next(item for item in modules if item["id"] == "M8")
-    embedded: list[dict[str, Any]] = []
-    for definition in scenario_document["scenarios"]:
-        actions = [
-            {
-                "id": action["id"],
-                "title": action["title"],
-                "actionDescription": action["actionDescription"],
-                "isRequired": action["isRequired"],
-                "sourceReferences": action["sourceReferences"],
-            }
-            for action in definition["criticalActions"]
-        ]
-        embedded.append(
-            {
-                "id": definition["id"],
-                "title": definition["title"],
-                "summary": definition["summary"],
-                "criticalActions": actions,
-                "sourceReferences": definition["sourceReferences"],
-            }
-        )
-    m8["lessons"][0]["scenarios"] = embedded
+    # Embed the complete definitions. Clinical validation must see every nested
+    # reference that can influence a scored scenario, not a lossy projection.
+    m8["lessons"][0]["scenarios"] = scenario_document["scenarios"]
 
 
 def build_course() -> dict[str, Any]:

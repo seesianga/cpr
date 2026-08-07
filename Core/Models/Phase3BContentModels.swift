@@ -117,6 +117,7 @@ struct TheoryQuestionModule: Codable, Identifiable, Sendable, Equatable {
     let isScored: Bool
     let questions: [Question]
     let sourceReferences: [SourceReference]
+    let scoredUseWaiver: ScoredUseWaiver?
 
     init(
         moduleID: String,
@@ -125,7 +126,8 @@ struct TheoryQuestionModule: Codable, Identifiable, Sendable, Equatable {
         passingScore: Double,
         isScored: Bool = true,
         questions: [Question],
-        sourceReferences: [SourceReference] = []
+        sourceReferences: [SourceReference] = [],
+        scoredUseWaiver: ScoredUseWaiver? = nil
     ) {
         self.moduleID = moduleID
         self.assessmentID = assessmentID
@@ -134,11 +136,12 @@ struct TheoryQuestionModule: Codable, Identifiable, Sendable, Equatable {
         self.isScored = isScored
         self.questions = questions
         self.sourceReferences = sourceReferences
+        self.scoredUseWaiver = scoredUseWaiver
     }
 
     private enum CodingKeys: String, CodingKey {
         case moduleID, assessmentID, title, passingScore, isScored
-        case questions, sourceReferences
+        case questions, sourceReferences, scoredUseWaiver
     }
 
     init(from decoder: any Decoder) throws {
@@ -153,6 +156,10 @@ struct TheoryQuestionModule: Codable, Identifiable, Sendable, Equatable {
             [SourceReference].self,
             forKey: .sourceReferences
         ) ?? []
+        scoredUseWaiver = try container.decodeIfPresent(
+            ScoredUseWaiver.self,
+            forKey: .scoredUseWaiver
+        )
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -166,6 +173,7 @@ struct TheoryQuestionModule: Codable, Identifiable, Sendable, Equatable {
         if !sourceReferences.isEmpty {
             try container.encode(sourceReferences, forKey: .sourceReferences)
         }
+        try container.encodeIfPresent(scoredUseWaiver, forKey: .scoredUseWaiver)
     }
 
     var assessment: Assessment {
@@ -175,7 +183,8 @@ struct TheoryQuestionModule: Codable, Identifiable, Sendable, Equatable {
             passingScore: passingScore,
             questions: questions,
             sourceReferences: sourceReferences,
-            isScored: isScored
+            isScored: isScored,
+            scoredUseWaiver: scoredUseWaiver
         )
     }
 }

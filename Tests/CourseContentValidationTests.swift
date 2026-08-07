@@ -103,7 +103,7 @@ final class CourseContentValidationTests: XCTestCase {
             "M1": ["cardiac arrest", "heart attack", "gasping", "2019 registry"],
             "M2": ["seven rings", "what changed since the 2018 manual", "clinical review required"],
             "M3": [
-                "drsabc", "simulation", "location", "callback", "incident", "casualty-count",
+                "drsabc", "simulation", "dispatcher's questions", "hang up only when told",
                 "bystander available", "lone rescuer", "aed near or far", "gasping",
                 "breathing normally", "unsafe"
             ],
@@ -253,6 +253,16 @@ final class CourseContentValidationTests: XCTestCase {
             bank.moduleQuestionSets.filter { !$0.isScored }.map(\.moduleID)
         )
         XCTAssertEqual(unscoredModuleIDs, Set(["M0", "M9"]))
+        XCTAssertEqual(
+            Set(
+                bank.moduleQuestionSets
+                    .filter(\.isScored)
+                    .flatMap(\.questions)
+                    .filter { !$0.isScored }
+                    .map(\.id)
+            ),
+            Set(["q-m2-01", "q-m2-05"])
+        )
 
         var allQuestionIDs = Set<String>()
         for questionSet in bank.moduleQuestionSets {
@@ -265,6 +275,7 @@ final class CourseContentValidationTests: XCTestCase {
             XCTAssertEqual(questionSet.assessmentID, embeddedAssessment.id)
             XCTAssertEqual(questionSet.isScored, embeddedAssessment.isScored)
             XCTAssertEqual(questionSet.questions, embeddedAssessment.questions)
+            XCTAssertEqual(questionSet.scoredUseWaiver, embeddedAssessment.scoredUseWaiver)
 
             for question in questionSet.questions {
                 XCTAssertTrue(allQuestionIDs.insert(question.id).inserted, question.id)
@@ -446,7 +457,27 @@ final class CourseContentValidationTests: XCTestCase {
                 XCTAssertEqual(mappedCategories[error.id], error.scoringCategory, error.id)
             }
             XCTAssertEqual(Set(mappedCategories.values), Set(ScoringDimension.allCases), scenario.id)
+
+            let clearActionID = "\(scenario.id)-action-clear-for-aed"
+            let outcomeConditions = scenario.branchingNodes
+                .flatMap(\.conditions)
+                .filter { $0.condition == "shockOutcome" || $0.condition == "noShockOutcome" }
+            XCTAssertEqual(
+                Set(outcomeConditions.map(\.condition)),
+                Set(["shockOutcome", "noShockOutcome"]),
+                scenario.id
+            )
+            XCTAssertTrue(
+                outcomeConditions.allSatisfy { $0.requiredActionIDs.contains(clearActionID) },
+                "\(scenario.id) must require the AED clear action on shock and no-shock paths"
+            )
         }
+
+        let course = try CourseContentCodec.loadCourse(named: "course_v1")
+        let embeddedScenarios = try XCTUnwrap(
+            course.modules.first { $0.id == "M8" }?.lessons.first?.scenarios
+        )
+        XCTAssertEqual(embeddedScenarios, document.scenarios)
 
         for (itemID, references) in allScenarioReferenceGroups(in: document) {
             assertSafeFactReferences(references, facts: facts, itemID: itemID)

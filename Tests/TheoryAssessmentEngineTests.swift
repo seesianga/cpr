@@ -47,6 +47,64 @@ final class TheoryAssessmentEngineTests: XCTestCase {
         XCTAssertTrue(outcome.passed)
     }
 
+    func testUnscoredQuestionResponsesDoNotChangeTheScore() throws {
+        let reference = sourceReference()
+        let scoredQuestion = Question(
+            id: "scored",
+            prompt: "Scored prompt",
+            choices: [
+                QuestionChoice(id: "scored-correct", text: "Correct"),
+                QuestionChoice(id: "scored-wrong", text: "Incorrect")
+            ],
+            correctChoiceIDs: ["scored-correct"],
+            explanation: "Scored explanation",
+            sourceReferences: [reference]
+        )
+        let awarenessQuestion = Question(
+            id: "awareness",
+            prompt: "Awareness-only prompt",
+            choices: [
+                QuestionChoice(id: "awareness-correct", text: "Correct"),
+                QuestionChoice(id: "awareness-wrong", text: "Incorrect")
+            ],
+            correctChoiceIDs: ["awareness-correct"],
+            explanation: "Awareness explanation",
+            sourceReferences: [reference],
+            isScored: false
+        )
+        let assessment = Assessment(
+            id: "mixed-assessment",
+            title: "Mixed scored and awareness content",
+            passingScore: 1,
+            questions: [scoredQuestion, awarenessQuestion],
+            sourceReferences: [reference]
+        )
+
+        let awarenessCorrect = try evaluate(
+            assessment: assessment,
+            responses: [
+                QuestionResponse(questionID: "scored", selectedChoiceIDs: ["scored-correct"]),
+                QuestionResponse(questionID: "awareness", selectedChoiceIDs: ["awareness-correct"])
+            ]
+        )
+        let awarenessIncorrect = try evaluate(
+            assessment: assessment,
+            responses: [
+                QuestionResponse(questionID: "scored", selectedChoiceIDs: ["scored-correct"]),
+                QuestionResponse(questionID: "awareness", selectedChoiceIDs: ["awareness-wrong"])
+            ]
+        )
+
+        XCTAssertEqual(awarenessCorrect.score, 1, accuracy: 0.000_001)
+        XCTAssertEqual(awarenessIncorrect.score, awarenessCorrect.score, accuracy: 0.000_001)
+        XCTAssertTrue(awarenessCorrect.passed)
+        XCTAssertTrue(awarenessIncorrect.passed)
+        XCTAssertNotEqual(
+            awarenessCorrect.reviews.first { $0.questionID == "awareness" }?.isCorrect,
+            awarenessIncorrect.reviews.first { $0.questionID == "awareness" }?.isCorrect
+        )
+    }
+
     func testClinicallyExcludedAssessmentFailsClosedEvenWhenEveryAnswerIsCorrect() {
         let issue = ClinicalSafetyIssue(
             id: "assessment-1#requires-review",

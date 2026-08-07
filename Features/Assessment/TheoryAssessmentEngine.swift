@@ -16,7 +16,8 @@ struct TheoryAssessmentEngine: Sendable {
         if case let .excluded(issues) = clinicalEligibility {
             throw TheoryAssessmentError.clinicallyIneligible(issues)
         }
-        guard !assessment.questions.isEmpty else {
+        let scoredQuestions = assessment.questions.filter(\.isScored)
+        guard !scoredQuestions.isEmpty else {
             throw TheoryAssessmentError.noQuestions
         }
         guard configuration.passThreshold.isFinite,
@@ -79,7 +80,9 @@ struct TheoryAssessmentEngine: Sendable {
             )
         }
 
-        let score = Double(reviews.filter(\.isCorrect).count) / Double(reviews.count)
+        let scoredQuestionIDs = Set(scoredQuestions.map(\.id))
+        let scoredReviews = reviews.filter { scoredQuestionIDs.contains($0.questionID) }
+        let score = Double(scoredReviews.filter(\.isCorrect).count) / Double(scoredReviews.count)
         return TheoryAssessmentOutcome(
             attemptID: attemptID,
             learnerID: learnerID,

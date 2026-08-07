@@ -177,6 +177,210 @@ final class Phase3BSchemaTests: XCTestCase {
         XCTAssertEqual(catalogue.assessments.map(\.id), [scored.id])
     }
 
+    func testReviewRequiredContainersRequireAnExactDocumentedScoredUseWaiver() {
+        let safeReference = sourceReference(factID: "fact.safe")
+        let reviewBlock = ContentBlock(
+            id: "M2-B1",
+            kind: .callout,
+            title: "Review-gated presentation",
+            body: "This presentation remains outside scoring.",
+            sourceReferences: [safeReference],
+            reviewStatus: .clinicalReviewRequired
+        )
+        let safeQuestion = question(id: "question-safe", reference: safeReference)
+        let missingWaiver = Assessment(
+            id: "assessment-missing-waiver",
+            title: "Missing waiver",
+            passingScore: 0.8,
+            questions: [safeQuestion],
+            sourceReferences: [safeReference]
+        )
+        let invalidWaiver = Assessment(
+            id: "assessment-invalid-waiver",
+            title: "Invalid waiver",
+            passingScore: 0.8,
+            questions: [safeQuestion],
+            sourceReferences: [safeReference],
+            scoredUseWaiver: ScoredUseWaiver(
+                id: "waiver-invalid",
+                coveredContentIDs: ["M2"],
+                rationale: ""
+            )
+        )
+        let exactWaiver = Assessment(
+            id: "assessment-exact-waiver",
+            title: "Exact waiver",
+            passingScore: 0.8,
+            questions: [safeQuestion],
+            sourceReferences: [safeReference],
+            scoredUseWaiver: ScoredUseWaiver(
+                id: "waiver-exact",
+                coveredContentIDs: ["M2", "M2-B1"],
+                rationale: "Only this source-checked question contributes to scoring."
+            )
+        )
+        let facts = catalogue(facts: [fact(id: "fact.safe", status: .sourceChecked)])
+
+        let missingReport = ClinicalSafetyValidator().validateScoredContent(
+            in: course(
+                assessments: [missingWaiver],
+                contentBlocks: [reviewBlock],
+                moduleID: "M2",
+                moduleReviewStatus: .clinicalReviewRequired
+            ),
+            facts: facts
+        )
+        XCTAssertTrue(missingReport.issues.contains {
+            $0.reason == .reviewRequiredContainerWaiverMissing
+        })
+
+        let invalidReport = ClinicalSafetyValidator().validateScoredContent(
+            in: course(
+                assessments: [invalidWaiver],
+                contentBlocks: [reviewBlock],
+                moduleID: "M2",
+                moduleReviewStatus: .clinicalReviewRequired
+            ),
+            facts: facts
+        )
+        XCTAssertTrue(invalidReport.issues.contains {
+            $0.reason == .reviewRequiredContainerWaiverInvalid
+        })
+
+        let exactReport = ClinicalSafetyValidator().validateScoredContent(
+            in: course(
+                assessments: [exactWaiver],
+                contentBlocks: [reviewBlock],
+                moduleID: "M2",
+                moduleReviewStatus: .clinicalReviewRequired
+            ),
+            facts: facts
+        )
+        XCTAssertTrue(exactReport.permitsActivation)
+        XCTAssertEqual(exactReport.eligibleAssessmentIDs, [exactWaiver.id])
+    }
+
+    func testScoredUseWaiverCannotOverrideAnSMEFlaggedQuestionReference() {
+        let safeReference = sourceReference(factID: "fact.safe")
+        let flaggedReference = sourceReference(
+            factID: "fact.flagged",
+            reviewStatus: "requires_sme_review"
+        )
+        let reviewBlock = ContentBlock(
+            id: "M2-B1",
+            kind: .callout,
+            title: "Review-gated presentation",
+            body: "This presentation remains outside scoring.",
+            sourceReferences: [safeReference],
+            reviewStatus: .clinicalReviewRequired
+        )
+        let assessment = Assessment(
+            id: "assessment-flagged-question",
+            title: "Flagged question",
+            passingScore: 0.8,
+            questions: [question(id: "question-flagged", reference: flaggedReference)],
+            sourceReferences: [safeReference],
+            scoredUseWaiver: ScoredUseWaiver(
+                id: "waiver-exact",
+                coveredContentIDs: ["M2", "M2-B1"],
+                rationale: "Only source-checked questions may be scored."
+            )
+        )
+        let report = ClinicalSafetyValidator().validateScoredContent(
+            in: course(
+                assessments: [assessment],
+                contentBlocks: [reviewBlock],
+                moduleID: "M2",
+                moduleReviewStatus: .clinicalReviewRequired
+            ),
+            facts: catalogue(
+                facts: [
+                    fact(id: "fact.safe", status: .sourceChecked),
+                    fact(id: "fact.flagged", status: .requiresSMEReview)
+                ]
+            )
+        )
+
+        XCTAssertFalse(report.permitsActivation)
+        XCTAssertTrue(report.issues.contains {
+            $0.scoredItemID == "assessment-flagged-question/question-flagged" &&
+                $0.factID == "fact.flagged" &&
+                $0.reason == .requiresSMEReview
+        })
+    }
+
+    func testSMEFlaggedCriticalErrorReferenceBlocksTheEntireScenario() {
+        let safeReference = sourceReference(factID: "fact.safe")
+        let flaggedReference = sourceReference(
+            factID: "fact.flagged",
+            reviewStatus: "requires_sme_review"
+        )
+        let feedback = ScenarioFeedbackStatement(
+            id: "feedback-safe",
+            statement: "Repeat the source-backed step.",
+            sourceReferences: [safeReference]
+        )
+        let criticalErrorID = "scenario-test-error-unsafe-contact"
+        let scenario = ScenarioDefinition(
+            id: "scenario-test",
+            title: "Validator regression",
+            summary: "A full scenario test fixture.",
+            initialState: ScenarioInitialState(
+                id: "scenario-test-initial",
+                values: [:],
+                sourceReferences: [safeReference]
+            ),
+            branchingNodes: [],
+            criticalActions: [
+                ScenarioCriticalActionDefinition(
+                    id: "scenario-test-action-safe",
+                    title: "Safe action",
+                    actionDescription: "Perform the source-backed action.",
+                    isRequired: true,
+                    scoringCategory: .recognitionAndActivation,
+                    feedbackStatements: [feedback],
+                    sourceReferences: [safeReference]
+                )
+            ],
+            criticalErrors: [
+                ScenarioCriticalErrorDefinition(
+                    id: criticalErrorID,
+                    code: "unsafe_contact",
+                    title: "Unsafe contact",
+                    errorDescription: "Injected regression item.",
+                    remediation: "Repeat the clear check.",
+                    scoringCategory: .aedPreparationAndPlacement,
+                    feedbackStatements: [feedback],
+                    sourceReferences: [flaggedReference]
+                )
+            ],
+            randomisation: ScenarioRandomisationDefinition(
+                shockPatternIDs: [],
+                clinicalRulesInvariant: true
+            ),
+            scoringCategoryMapping: [],
+            feedbackStatements: [feedback],
+            sourceReferences: [safeReference]
+        )
+        let report = ClinicalSafetyValidator().validateScoredContent(
+            in: course(assessments: [], scenarios: [scenario]),
+            facts: catalogue(
+                facts: [
+                    fact(id: "fact.safe", status: .sourceChecked),
+                    fact(id: "fact.flagged", status: .requiresSMEReview)
+                ]
+            )
+        )
+
+        XCTAssertFalse(report.permitsActivation)
+        XCTAssertEqual(report.excludedScenarioIDs, [scenario.id])
+        XCTAssertTrue(report.issues.contains {
+            $0.scoredItemID == criticalErrorID &&
+                $0.factID == "fact.flagged" &&
+                $0.reason == .requiresSMEReview
+        })
+    }
+
     func testExternalTheoryAndScenarioDocumentsRoundTrip() throws {
         let reference = sourceReference(factID: "fact.safe")
         let questionDocument = TheoryQuestionBankDocument(
@@ -343,14 +547,17 @@ final class Phase3BSchemaTests: XCTestCase {
         )
     }
 
-    private func sourceReference(factID: String) -> SourceReference {
+    private func sourceReference(
+        factID: String,
+        reviewStatus: String = "source_checked"
+    ) -> SourceReference {
         SourceReference(
             id: "source-\(factID)",
             document: "test-source.pdf",
             edition: "2026",
             section: "Test section",
             page: "1",
-            reviewStatus: "source_checked",
+            reviewStatus: reviewStatus,
             reviewer: nil,
             lastClinicalReviewDate: nil,
             contentVersion: "1.0.0",
@@ -389,16 +596,22 @@ final class Phase3BSchemaTests: XCTestCase {
         )
     }
 
-    private func course(assessments: [Assessment]) -> Course {
+    private func course(
+        assessments: [Assessment],
+        scenarios: [Scenario] = [],
+        contentBlocks: [ContentBlock] = [],
+        moduleID: String = "M0",
+        moduleReviewStatus: ContentLifecycle = .sourceChecked
+    ) -> Course {
         let lesson = Lesson(
             id: "lesson-1",
             title: "Lesson",
             summary: "Summary",
             order: 1,
             learningObjectives: [],
-            contentBlocks: [],
+            contentBlocks: contentBlocks,
             interactiveActivities: [],
-            scenarios: [],
+            scenarios: scenarios,
             assessments: assessments,
             sourceReferences: []
         )
@@ -414,12 +627,13 @@ final class Phase3BSchemaTests: XCTestCase {
             ),
             modules: [
                 Module(
-                    id: "M0",
+                    id: moduleID,
                     title: "Orientation",
                     summary: "Summary",
                     order: 0,
                     lessons: [lesson],
-                    sourceReferences: []
+                    sourceReferences: [],
+                    reviewStatus: moduleReviewStatus
                 )
             ],
             instructorRequirement: InstructorRequirement(

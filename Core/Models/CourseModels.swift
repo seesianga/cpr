@@ -177,13 +177,16 @@ struct InteractiveActivity: Codable, Identifiable, Sendable, Equatable {
     let sourceReferences: [SourceReference]
 }
 
-/// A clinical training situation and its reviewable critical actions.
-struct Scenario: Codable, Identifiable, Sendable, Equatable {
+/// Course scenarios retain the complete externally-authored definition so clinical
+/// validation cannot be bypassed by hiding references in nested scenario elements.
+typealias Scenario = ScenarioDefinition
+
+/// Documents the narrowly-scoped decision to score source-checked questions inside a
+/// module or lesson that also contains separately review-gated learning material.
+struct ScoredUseWaiver: Codable, Sendable, Equatable {
     let id: String
-    let title: String
-    let summary: String
-    let criticalActions: [CriticalAction]
-    let sourceReferences: [SourceReference]
+    let coveredContentIDs: [String]
+    let rationale: String
 }
 
 /// A scored knowledge check containing traceable questions.
@@ -194,6 +197,7 @@ struct Assessment: Codable, Identifiable, Sendable, Equatable {
     let questions: [Question]
     let sourceReferences: [SourceReference]
     let isScored: Bool
+    let scoredUseWaiver: ScoredUseWaiver?
 
     init(
         id: String,
@@ -201,7 +205,8 @@ struct Assessment: Codable, Identifiable, Sendable, Equatable {
         passingScore: Double,
         questions: [Question],
         sourceReferences: [SourceReference],
-        isScored: Bool = true
+        isScored: Bool = true,
+        scoredUseWaiver: ScoredUseWaiver? = nil
     ) {
         self.id = id
         self.title = title
@@ -209,10 +214,12 @@ struct Assessment: Codable, Identifiable, Sendable, Equatable {
         self.questions = questions
         self.sourceReferences = sourceReferences
         self.isScored = isScored
+        self.scoredUseWaiver = scoredUseWaiver
     }
 
     private enum CodingKeys: String, CodingKey {
         case id, title, passingScore, questions, sourceReferences, isScored
+        case scoredUseWaiver
     }
 
     init(from decoder: any Decoder) throws {
@@ -223,6 +230,10 @@ struct Assessment: Codable, Identifiable, Sendable, Equatable {
         questions = try container.decode([Question].self, forKey: .questions)
         sourceReferences = try container.decode([SourceReference].self, forKey: .sourceReferences)
         isScored = try container.decodeIfPresent(Bool.self, forKey: .isScored) ?? true
+        scoredUseWaiver = try container.decodeIfPresent(
+            ScoredUseWaiver.self,
+            forKey: .scoredUseWaiver
+        )
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -233,6 +244,7 @@ struct Assessment: Codable, Identifiable, Sendable, Equatable {
         try container.encode(questions, forKey: .questions)
         try container.encode(sourceReferences, forKey: .sourceReferences)
         try container.encode(isScored, forKey: .isScored)
+        try container.encodeIfPresent(scoredUseWaiver, forKey: .scoredUseWaiver)
     }
 }
 
@@ -257,6 +269,7 @@ struct Question: Codable, Identifiable, Sendable, Equatable {
     let correctChoiceIDs: [String]
     let explanation: String
     let sourceReferences: [SourceReference]
+    let isScored: Bool
 
     init(
         id: String,
@@ -265,7 +278,8 @@ struct Question: Codable, Identifiable, Sendable, Equatable {
         choices: [QuestionChoice],
         correctChoiceIDs: [String],
         explanation: String,
-        sourceReferences: [SourceReference]
+        sourceReferences: [SourceReference],
+        isScored: Bool = true
     ) {
         self.id = id
         self.type = type
@@ -274,11 +288,12 @@ struct Question: Codable, Identifiable, Sendable, Equatable {
         self.correctChoiceIDs = correctChoiceIDs
         self.explanation = explanation
         self.sourceReferences = sourceReferences
+        self.isScored = isScored
     }
 
     private enum CodingKeys: String, CodingKey {
         case id, type, prompt, choices, correctChoiceIDs, correctChoiceIndex
-        case explanation, sourceReferences
+        case explanation, sourceReferences, isScored
     }
 
     init(from decoder: any Decoder) throws {
@@ -304,6 +319,7 @@ struct Question: Codable, Identifiable, Sendable, Equatable {
         }
         explanation = try container.decode(String.self, forKey: .explanation)
         sourceReferences = try container.decode([SourceReference].self, forKey: .sourceReferences)
+        isScored = try container.decodeIfPresent(Bool.self, forKey: .isScored) ?? true
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -315,16 +331,8 @@ struct Question: Codable, Identifiable, Sendable, Equatable {
         try container.encode(correctChoiceIDs, forKey: .correctChoiceIDs)
         try container.encode(explanation, forKey: .explanation)
         try container.encode(sourceReferences, forKey: .sourceReferences)
+        try container.encode(isScored, forKey: .isScored)
     }
-}
-
-/// A required or recommended action evaluated within a training scenario.
-struct CriticalAction: Codable, Identifiable, Sendable, Equatable {
-    let id: String
-    let title: String
-    let actionDescription: String
-    let isRequired: Bool
-    let sourceReferences: [SourceReference]
 }
 
 /// Traceability metadata connecting authored content to an approved source.

@@ -1,6 +1,6 @@
 # Medical Review Required
 
-This register is generated from the v1.0.0 content lifecycle fields and the twelve reconciliation gates in `Docs/COURSE_SOURCE_DIFFERENCES.md`. Items below are not eligible for scored use or clinical release until the stated approval is recorded.
+This register is generated from the v1.0.0 content lifecycle fields and the twelve reconciliation gates in `Docs/COURSE_SOURCE_DIFFERENCES.md`. Unresolved learner-facing material is not eligible for clinical release. A documented scored-use waiver may isolate source-checked questions from a review-required container; it does not approve, score or release the unresolved material itself.
 
 ## Items marked or derived as `clinicalReviewRequired`
 
@@ -32,6 +32,15 @@ This register is generated from the v1.0.0 content lifecycle fields and the twel
 | q-m9-05-feedback | The current sources express the selection rule differently | 2018 gave ages 1-8 for paediatric pads (C-8, p.34); the 2021 summary table instead keys child pads to weight under 25 kg (slide 23). SME must set the single learner-facing rule (SME item S1). Conflicts in form (weight vs age) with the 2022 manual's 1-12 years rule. Do not surface both to learners without SME reconciliation (SME item S1). | A qualified SRFAC instructor or clinical SME must approve, revise or reject this item before clinical release; it must remain outside scoring while unresolved. | CA-Manual-REV-1-2022.pdf (2022), p. 44; 03-SG-BCLSAED-Guidelines-2021.pdf (2021), p. 23 |
 | q-m9-06 | Which statement accurately reflects the unresolved infant defibrillation evidence supplied to the course? | 2018 (C-8, p.34): under 1 year shockable rhythms are very low but risk/benefit may favour AED use, preferably with paediatric pads. 2022 groups child/infant and permits adult pads when no paediatric option, without an explicit infant statement. App must not instruct adult pads on infants pending SME ruling (SME item S2). | A qualified SRFAC instructor or clinical SME must approve, revise or reject this item before clinical release; it must remain outside scoring while unresolved. | 03-SG-BCLSAED-Guidelines-2021.pdf (2021), p. 23; CA-Manual-REV-1-2022.pdf (2022), p. 45 |
 | q-m9-06-feedback | This is awareness-only content awaiting SME review | 2018 (C-8, p.34): under 1 year shockable rhythms are very low but risk/benefit may favour AED use, preferably with paediatric pads. 2022 groups child/infant and permits adult pads when no paediatric option, without an explicit infant statement. App must not instruct adult pads on infants pending SME ruling (SME item S2). | A qualified SRFAC instructor or clinical SME must approve, revise or reject this item before clinical release; it must remain outside scoring while unresolved. | 03-SG-BCLSAED-Guidelines-2021.pdf (2021), p. 23; CA-Manual-REV-1-2022.pdf (2022), p. 45 |
+
+## Scored-assessment container waivers
+
+The runtime validator requires exact coverage and a non-empty rationale. These waivers never override a blocked or SME-flagged reference on a scored question.
+
+| Assessment | Waiver | Review-required coverage | Rationale |
+|---|---|---|---|
+| assessment-m2-theory-v1 | waiver-m2-source-checked-questions-v1 | M2, M2-B1, M2-B4 | Scoring is limited to source-checked common ring meanings and early CPR/defibrillation facts. q-m2-01 and q-m2-05 remain awareness-only because Prevention and Recovery depend on the unresolved S5 presentation. |
+| assessment-m10-theory-v1 | waiver-m10-source-checked-questions-v1 | M10, M10-B5A, M10-B6, M10-B7 | Scored questions cover source-checked handover, AED continuity, post-ROSC care and post-use duties. They do not assess battery cadence, a decompression protocol or a refresher interval. |
 
 ## Course-source reconciliation gates
 

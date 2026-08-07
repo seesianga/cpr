@@ -117,6 +117,7 @@
 		E78EF4E7D132349712AB38A3 /* RealityKitAssetTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB730BB4FFA4A509C7852563 /* RealityKitAssetTests.swift */; };
 		E79E1934814928D371DC6631 /* .gitkeep in Resources */ = {isa = PBXBuildFile; fileRef = 508127EED3172A0D03AD2283 /* .gitkeep */; };
 		E80AC71772F31DD2162EB8AF /* TheoryAssessmentEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6322623C46BC39DEF7B9137A /* TheoryAssessmentEngine.swift */; };
+		E8EF0E01D5068356283B85B5 /* ModulePresentationAccessTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F81AEC93B7E92D3235F5F6B /* ModulePresentationAccessTests.swift */; };
 		EBA721896E9E1974BC85006D /* portal_m11.usdz in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8F57FC6398A10D410CE9A232 /* portal_m11.usdz */; };
 		ECB84CCA61546543F94AE48F /* xp-orb.usdz in CopyFiles */ = {isa = PBXBuildFile; fileRef = 337E25BA42FB1B8C937413EE /* xp-orb.usdz */; };
 		EF516A2309B8622C7201D308 /* Interactions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4232A9CDF551C554A082E3FB /* Interactions.swift */; };
@@ -302,6 +303,7 @@
 		9C2ADD08B1DC4DD541D992AE /* battery-prop.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "battery-prop.usdz"; sourceTree = "<group>"; };
 		9EBC6F5CB1D2796962C0CAE4 /* badge_m14.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = badge_m14.usdz; sourceTree = "<group>"; };
 		9F17515043A751995B34EA45 /* TheoryLearningView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TheoryLearningView.swift; sourceTree = "<group>"; };
+		9F81AEC93B7E92D3235F5F6B /* ModulePresentationAccessTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModulePresentationAccessTests.swift; sourceTree = "<group>"; };
 		9FD3831E824DC288873D6B1C /* portal_m09.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = portal_m09.usdz; sourceTree = "<group>"; };
 		9FD4D21E092ACBB990924248 /* ContentVersionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentVersionService.swift; sourceTree = "<group>"; };
 		A0DA25F32967757121DF6A50 /* LearningEventModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LearningEventModels.swift; sourceTree = "<group>"; };
@@ -541,6 +543,7 @@
 				23D300E714D9A79713F4FBE5 /* ClinicalContentAndExportTests.swift */,
 				97CE72015BC303A436C9AEAE /* CourseContentValidationTests.swift */,
 				485EC33251720F743FA78A97 /* LifesaverVisionTests.swift */,
+				9F81AEC93B7E92D3235F5F6B /* ModulePresentationAccessTests.swift */,
 				98267160BB6426E0ED88E1E7 /* Phase3BSchemaTests.swift */,
 				252A06BBC531386D696A0CCB /* PrivacyOperationsTests.swift */,
 				FB730BB4FFA4A509C7852563 /* RealityKitAssetTests.swift */,
@@ -1038,6 +1041,7 @@
 				08C51299235D3B308BA92E67 /* ClinicalContentAndExportTests.swift in Sources */,
 				55F54844E539B713CB9D405A /* CourseContentValidationTests.swift in Sources */,
 				F47929C9FA6E10B78A66F6F3 /* LifesaverVisionTests.swift in Sources */,
+				E8EF0E01D5068356283B85B5 /* ModulePresentationAccessTests.swift in Sources */,
 				505DF9290C93533424D131AB /* Phase3BSchemaTests.swift in Sources */,
 				329A16FB9956C1AB206E861E /* PrivacyOperationsTests.swift in Sources */,
 				E78EF4E7D132349712AB38A3 /* RealityKitAssetTests.swift in Sources */,

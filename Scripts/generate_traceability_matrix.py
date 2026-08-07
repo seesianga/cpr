@@ -27,6 +27,13 @@ EXPECTED_PATTERNS = {
     "N-N-S": ["noShock", "noShock", "shock"],
     "N-N-N": ["noShock", "noShock", "noShock"],
 }
+S11_EXCLUDED_FACT_IDS = {
+    "fact.ventilation.bvmForHcp",
+    "fact.ventilation.techniqueHcp",
+    "fact.ventilation.reassessCycleHcp",
+    "fact.ventilation.rescueBreathing",
+}
+EXPECTED_UNSCORED_QUESTIONS_IN_SCORED_ASSESSMENTS = {"q-m2-01", "q-m2-05"}
 
 
 @dataclass(frozen=True)
@@ -356,6 +363,7 @@ def collect_question_rows(
         require(len(assessments) == 1, f"{module['id']}: expected one assessment")
         embedded_by_module[module["id"]] = assessments[0]
 
+    unscored_questions_in_scored_assessments: set[str] = set()
     for question_set in sets:
         module_id = question_set["moduleID"]
         questions = question_set["questions"]
@@ -368,8 +376,14 @@ def collect_question_rows(
         require(embedded["id"] == question_set["assessmentID"], f"{module_id}: assessment ID mismatch")
         require(embedded["isScored"] == question_set["isScored"], f"{module_id}: embedded score flag mismatch")
         require(embedded["questions"] == questions, f"{module_id}: embedded questions differ from question bank")
+        require(
+            embedded.get("scoredUseWaiver") == question_set.get("scoredUseWaiver"),
+            f"{module_id}: embedded scored-use waiver differs from question bank",
+        )
         for question in questions:
-            scored = question_set["isScored"]
+            scored = question_set["isScored"] and question.get("isScored", True)
+            if question_set["isScored"] and not question.get("isScored", True):
+                unscored_questions_in_scored_assessments.add(question["id"])
             references = question["sourceReferences"]
             fact_ids = {reference.get("clinicalFactID") for reference in references}
             require(None not in fact_ids and "" not in fact_ids, f"{question['id']}: answer has no fact ID")
@@ -397,6 +411,11 @@ def collect_question_rows(
                 content_version=version,
                 facts=facts,
             )
+    require(
+        unscored_questions_in_scored_assessments
+        == EXPECTED_UNSCORED_QUESTIONS_IN_SCORED_ASSESSMENTS,
+        "Only q-m2-01 and q-m2-05 may be unscored inside scored assessments",
+    )
     return rows
 
 
@@ -509,6 +528,22 @@ def collect_scenario_rows(
             condition_action_ids <= action_ids,
             f"{scenario_id}: a branch requires an unknown CriticalAction",
         )
+        clear_action_id = f"{scenario_id}-action-clear-for-aed"
+        outcome_conditions = {
+            condition["condition"]: condition
+            for branch in scenario["branchingNodes"]
+            for condition in branch["conditions"]
+            if condition["condition"] in {"shockOutcome", "noShockOutcome"}
+        }
+        require(
+            set(outcome_conditions) == {"shockOutcome", "noShockOutcome"},
+            f"{scenario_id}: missing shock or no-shock outcome branch",
+        )
+        for outcome_name, condition in outcome_conditions.items():
+            require(
+                clear_action_id in condition["requiredActionIDs"],
+                f"{scenario_id}: {outcome_name} does not require the AED clear action",
+            )
         mapping = {item["itemID"]: item["category"] for item in scenario["scoringCategoryMapping"]}
         require(set(mapping) == action_ids | {error["id"] for error in scenario["criticalErrors"]}, f"{scenario_id}: scoring map does not cover every action/error")
         require(len(action_ids) == len(scenario["criticalActions"]), f"{scenario_id}: duplicate critical action ID")
@@ -532,8 +567,8 @@ def collect_scenario_rows(
         embedded = embedded_scenarios.get(scenario_id)
         require(embedded is not None, f"{scenario_id}: missing embedded Course scenario")
         require(
-            {item["id"] for item in embedded["criticalActions"]} == action_ids,
-            f"{scenario_id}: embedded action IDs differ from scenarios_v1.json",
+            embedded == scenario,
+            f"{scenario_id}: embedded definition differs from scenarios_v1.json",
         )
     return rows
 
@@ -573,6 +608,10 @@ def write_matrix(rows: list[TraceRow], course: dict[str, Any]) -> None:
         f"Validation result: **PASS — {len(rows)} mapped items, 0 unmapped; {scored_rows} scored trace rows contain only source-checked or clinically-approved facts.**",
         "",
         "`source_checked` is preserved from the supplied extract and is not represented as SME approval. Learner-facing release still requires the course lifecycle and sign-off checklist to be completed.",
+        "",
+        "**ID convention:** assessment-container IDs have no standalone rows because their questions and feedback are rowed; choice IDs have no standalone rows because the owning question is rowed and its choice mapping remains in source JSON.",
+        "",
+        "**S11 exclusion:** this adult hands-only course deliberately leaves `fact.ventilation.bvmForHcp`, `fact.ventilation.techniqueHcp`, `fact.ventilation.reassessCycleHcp`, and `fact.ventilation.rescueBreathing` uncited and outside the matrix.",
         "",
         "| Type | ID | Scope | Scored | Content state | Statement | Approved source(s) | Clinical fact ID(s) |",
         "|---|---|---|---:|---|---|---|---|",
@@ -614,11 +653,14 @@ SME_ITEMS = [
 ]
 
 
-def write_review_documents(review_items: list[dict[str, str]]) -> None:
+def write_review_documents(
+    review_items: list[dict[str, str]],
+    question_bank: dict[str, Any],
+) -> None:
     lines = [
         "# Medical Review Required",
         "",
-        "This register is generated from the v1.0.0 content lifecycle fields and the twelve reconciliation gates in `Docs/COURSE_SOURCE_DIFFERENCES.md`. Items below are not eligible for scored use or clinical release until the stated approval is recorded.",
+        "This register is generated from the v1.0.0 content lifecycle fields and the twelve reconciliation gates in `Docs/COURSE_SOURCE_DIFFERENCES.md`. Unresolved learner-facing material is not eligible for clinical release. A documented scored-use waiver may isolate source-checked questions from a review-required container; it does not approve, score or release the unresolved material itself.",
         "",
         "## Items marked or derived as `clinicalReviewRequired`",
         "",
@@ -628,6 +670,34 @@ def write_review_documents(review_items: list[dict[str, str]]) -> None:
     for item in review_items:
         lines.append(
             f"| {markdown_escape(item['id'])} | {markdown_escape(item['title'])} | {markdown_escape(item['why'])} | {markdown_escape(item['approval'])} | {markdown_escape(item['sources'])} |"
+        )
+    lines.extend(
+        [
+            "",
+            "## Scored-assessment container waivers",
+            "",
+            "The runtime validator requires exact coverage and a non-empty rationale. These waivers never override a blocked or SME-flagged reference on a scored question.",
+            "",
+            "| Assessment | Waiver | Review-required coverage | Rationale |",
+            "|---|---|---|---|",
+        ]
+    )
+    for question_set in question_bank["moduleQuestionSets"]:
+        waiver = question_set.get("scoredUseWaiver")
+        if waiver is None:
+            continue
+        lines.append(
+            "| "
+            + " | ".join(
+                markdown_escape(value)
+                for value in (
+                    question_set["assessmentID"],
+                    waiver["id"],
+                    ", ".join(waiver["coveredContentIDs"]),
+                    waiver["rationale"],
+                )
+            )
+            + " |"
         )
     lines.extend(
         [
@@ -710,6 +780,16 @@ def main() -> None:
     rows = course_rows + question_rows + scenario_rows
     identifiers = [(row.kind, row.identifier) for row in rows]
     require(len(identifiers) == len(set(identifiers)), "Duplicate traceability row kind/identifier")
+    referenced_fact_ids = {
+        reference["clinicalFactID"]
+        for row in rows
+        for reference in row.references
+        if reference.get("clinicalFactID")
+    }
+    require(
+        set(facts) - referenced_fact_ids == S11_EXCLUDED_FACT_IDS,
+        "The uncited clinical-fact set must match the four explicit S11 exclusions",
+    )
 
     existing_review_ids = {item["id"] for item in review_items}
     for row in rows:
@@ -730,7 +810,7 @@ def main() -> None:
         existing_review_ids.add(row.identifier)
 
     write_matrix(rows, course)
-    write_review_documents(review_items)
+    write_review_documents(review_items, question_bank)
     print(
         f"PASS: {len(rows)} mapped trace rows, 0 unmapped; "
         f"wrote {MATRIX_PATH.relative_to(ROOT)}, {REVIEW_PATH.relative_to(ROOT)} "

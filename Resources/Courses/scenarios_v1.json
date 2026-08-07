@@ -4865,6 +4865,7 @@
               },
               "nextNodeID": "scenario-a-home-branch-aed-analysis",
               "requiredActionIDs": [
+                "scenario-a-home-action-clear-for-aed",
                 "scenario-a-home-action-resume-cpr"
               ],
               "feedbackStatements": [
@@ -5320,7 +5321,7 @@
         {
           "id": "scenario-a-home-action-check-responsiveness",
           "title": "Check responsiveness",
-          "actionDescription": "Tap the casualty’s shoulders firmly and ask loudly whether they are okay, without violent shaking or unnecessary neck movement.",
+          "actionDescription": "Make firm contact at both shoulders and call out a simple question to check for any response. Do not jolt the casualty, and keep neck movement to a minimum.",
           "isRequired": true,
           "scoringCategory": "recognitionAndActivation",
           "feedbackStatements": [
@@ -11856,6 +11857,7 @@
               },
               "nextNodeID": "scenario-b-shopping-centre-branch-aed-analysis",
               "requiredActionIDs": [
+                "scenario-b-shopping-centre-action-clear-for-aed",
                 "scenario-b-shopping-centre-action-resume-cpr"
               ],
               "feedbackStatements": [
@@ -12311,7 +12313,7 @@
         {
           "id": "scenario-b-shopping-centre-action-check-responsiveness",
           "title": "Check responsiveness",
-          "actionDescription": "Tap the casualty’s shoulders firmly and ask loudly whether they are okay, without violent shaking or unnecessary neck movement.",
+          "actionDescription": "Make firm contact at both shoulders and call out a simple question to check for any response. Do not jolt the casualty, and keep neck movement to a minimum.",
           "isRequired": true,
           "scoringCategory": "recognitionAndActivation",
           "feedbackStatements": [
@@ -18811,6 +18813,7 @@
               },
               "nextNodeID": "scenario-c-workplace-branch-aed-analysis",
               "requiredActionIDs": [
+                "scenario-c-workplace-action-clear-for-aed",
                 "scenario-c-workplace-action-resume-cpr"
               ],
               "feedbackStatements": [
@@ -19266,7 +19269,7 @@
         {
           "id": "scenario-c-workplace-action-check-responsiveness",
           "title": "Check responsiveness",
-          "actionDescription": "Tap the casualty’s shoulders firmly and ask loudly whether they are okay, without violent shaking or unnecessary neck movement.",
+          "actionDescription": "Make firm contact at both shoulders and call out a simple question to check for any response. Do not jolt the casualty, and keep neck movement to a minimum.",
           "isRequired": true,
           "scoringCategory": "recognitionAndActivation",
           "feedbackStatements": [
@@ -25730,6 +25733,7 @@
               },
               "nextNodeID": "scenario-d-community-facility-branch-aed-analysis",
               "requiredActionIDs": [
+                "scenario-d-community-facility-action-clear-for-aed",
                 "scenario-d-community-facility-action-resume-cpr"
               ],
               "feedbackStatements": [
@@ -26185,7 +26189,7 @@
         {
           "id": "scenario-d-community-facility-action-check-responsiveness",
           "title": "Check responsiveness",
-          "actionDescription": "Tap the casualty’s shoulders firmly and ask loudly whether they are okay, without violent shaking or unnecessary neck movement.",
+          "actionDescription": "Make firm contact at both shoulders and call out a simple question to check for any response. Do not jolt the casualty, and keep neck movement to a minimum.",
           "isRequired": true,
           "scoringCategory": "recognitionAndActivation",
           "feedbackStatements": [

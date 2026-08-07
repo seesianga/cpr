@@ -1,5 +1,28 @@
 import Foundation
 
+/// Learner and instructor state supplied when resolving which modules may be presented.
+///
+/// The content lifecycle is deliberately absent: `CourseEngine` reads the authoritative
+/// `ContentVersionState` from its repository before evaluating every module.
+struct ModulePresentationRequest: Sendable, Equatable {
+    let courseID: String
+    let contentVersion: String
+    let completedModuleIDs: Set<String>
+    let instructorApprovalGranted: Bool
+
+    init(
+        courseID: String,
+        contentVersion: String,
+        completedModuleIDs: Set<String> = [],
+        instructorApprovalGranted: Bool = false
+    ) {
+        self.courseID = courseID
+        self.contentVersion = contentVersion
+        self.completedModuleIDs = completedModuleIDs
+        self.instructorApprovalGranted = instructorApprovalGranted
+    }
+}
+
 /// Loads, structurally validates, versions, and exposes course content.
 actor CourseEngine {
     private let courseRepository: any CourseRepository
@@ -7,19 +30,22 @@ actor CourseEngine {
     private let facts: ClinicalFactCatalogue
     private let structureValidator: CourseStructureValidator
     private let safetyValidator: ClinicalSafetyValidator
+    private let moduleAccessEvaluator: ModuleAccessEvaluator
 
     init(
         courseRepository: any CourseRepository,
         versionRepository: any ContentVersionRepository,
         facts: ClinicalFactCatalogue,
         structureValidator: CourseStructureValidator = CourseStructureValidator(),
-        safetyValidator: ClinicalSafetyValidator = ClinicalSafetyValidator()
+        safetyValidator: ClinicalSafetyValidator = ClinicalSafetyValidator(),
+        moduleAccessEvaluator: ModuleAccessEvaluator = ModuleAccessEvaluator()
     ) {
         self.courseRepository = courseRepository
         self.versionRepository = versionRepository
         self.facts = facts
         self.structureValidator = structureValidator
         self.safetyValidator = safetyValidator
+        self.moduleAccessEvaluator = moduleAccessEvaluator
     }
 
     /// Imports named JSON resources from `Resources/Courses` idempotently by version.
@@ -40,23 +66,44 @@ actor CourseEngine {
         )
     }
 
-    func course(id: String, contentVersion: String) async throws -> Course? {
-        try await courseRepository.course(id: id, contentVersion: contentVersion)
-    }
+    /// The sole `CourseEngine` module-listing API used by presentation features.
+    ///
+    /// Every module is evaluated against completion, instructor approval, and the
+    /// repository-owned content lifecycle. Callers cannot bypass the lifecycle gate by
+    /// supplying their own status or by retrieving an unfiltered `Course` from this actor.
+    func presentableModules(for request: ModulePresentationRequest) async throws -> [Module] {
+        guard let state = try await versionRepository.versionState(
+            courseID: request.courseID,
+            contentVersion: request.contentVersion
+        ) else {
+            throw ClinicalContentError.lifecycleNotFound(
+                courseID: request.courseID,
+                contentVersion: request.contentVersion
+            )
+        }
+        guard let course = try await courseRepository.course(
+            id: request.courseID,
+            contentVersion: request.contentVersion
+        ) else {
+            throw ClinicalContentError.courseNotFound(
+                courseID: request.courseID,
+                contentVersion: request.contentVersion
+            )
+        }
 
-    func activeCourse(id: String) async throws -> Course? {
-        let states = try await versionRepository.versionStates(courseID: id)
-        let eligible = states
-            .filter { $0.lifecycle == .published || $0.lifecycle == .clinicallyApproved }
-            .sorted { lhs, rhs in
-                if lhs.lifecycle == rhs.lifecycle { return lhs.updatedAt > rhs.updatedAt }
-                return lhs.lifecycle == .published
+        return course.modules
+            .filter { module in
+                moduleAccessEvaluator.evaluate(
+                    module: module,
+                    completedModuleIDs: request.completedModuleIDs,
+                    instructorApprovalGranted: request.instructorApprovalGranted,
+                    contentLifecycle: state.lifecycle
+                ).isUnlocked
             }
-        guard let state = eligible.first else { return nil }
-        return try await courseRepository.course(
-            id: id,
-            contentVersion: state.contentVersion
-        )
+            .sorted { lhs, rhs in
+                if lhs.order == rhs.order { return lhs.id < rhs.id }
+                return lhs.order < rhs.order
+            }
     }
 
     func scoredContent(

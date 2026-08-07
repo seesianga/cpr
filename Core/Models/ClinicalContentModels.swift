@@ -171,6 +171,9 @@ enum ClinicalSafetyReason: String, Codable, Sendable, Equatable {
     case unknownReviewStatus
     case embeddedReviewStatusBlocked
     case contentVersionMismatch
+    case reviewRequiredContainerWaiverMissing
+    case reviewRequiredContainerWaiverInvalid
+    case noScoredQuestions
 }
 
 struct ClinicalSafetyIssue: Codable, Identifiable, Sendable, Equatable {
