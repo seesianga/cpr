@@ -29,24 +29,44 @@ actor InMemoryAuthenticationService: AuthenticationService {
 
 /// In-memory course repository for previews and deterministic unit tests.
 actor InMemoryCourseRepository: CourseRepository {
-    private var coursesByID: [String: Course] = [:]
+    private struct Key: Hashable, Sendable {
+        let courseID: String
+        let contentVersion: String
+    }
+
+    private var coursesByKey: [Key: Course] = [:]
 
     init(courses: [Course] = []) {
         for course in courses {
-            coursesByID[course.id] = course
+            coursesByKey[Key(courseID: course.id, contentVersion: course.version.contentVersion)] = course
         }
     }
 
     func allCourses() -> [Course] {
-        coursesByID.values.sorted { $0.id < $1.id }
+        coursesByKey.values.sorted {
+            ($0.id, $0.version.contentVersion) < ($1.id, $1.version.contentVersion)
+        }
     }
 
     func course(id: String) -> Course? {
-        coursesByID[id]
+        coursesByKey.values
+            .filter { $0.id == id }
+            .sorted { $0.version.contentVersion > $1.version.contentVersion }
+            .first
+    }
+
+    func course(id: String, contentVersion: String) -> Course? {
+        coursesByKey[Key(courseID: id, contentVersion: contentVersion)]
+    }
+
+    func versions(courseID: String) -> [Course] {
+        coursesByKey.values
+            .filter { $0.id == courseID }
+            .sorted { $0.version.contentVersion < $1.version.contentVersion }
     }
 
     func save(_ course: Course) {
-        coursesByID[course.id] = course
+        coursesByKey[Key(courseID: course.id, contentVersion: course.version.contentVersion)] = course
     }
 }
 
@@ -158,10 +178,23 @@ actor InMemoryClinicalContentRepository: ClinicalContentRepository {
 
 /// Deterministic no-network synchronization boundary for previews and tests.
 actor InMemorySyncService: SyncService {
+    private var queuedEvents: [QueuedSyncEvent] = []
+
+    func enqueue(_ event: QueuedSyncEvent) {
+        queuedEvents.removeAll { $0.id == event.id }
+        queuedEvents.append(event)
+    }
+
+    func pendingEvents() -> [QueuedSyncEvent] {
+        queuedEvents.sorted { $0.queuedAt < $1.queuedAt }
+    }
+
     func synchronize() -> SyncReport {
-        SyncReport(
+        let uploadedCount = queuedEvents.count
+        queuedEvents.removeAll()
+        return SyncReport(
             completedAt: .now,
-            uploadedRecordCount: 0,
+            uploadedRecordCount: uploadedCount,
             downloadedRecordCount: 0
         )
     }
@@ -180,7 +213,27 @@ actor InMemoryAuditLogService: AuditLogService {
     }
 
     func record(_ event: AuditEvent) {
-        storedEvents.append(event)
+        let previousHash = storedEvents.last?.entryHash ?? ""
+        storedEvents.append(
+            AuditEvent(
+                id: event.id,
+                actorID: event.actorID,
+                category: event.category,
+                action: event.action,
+                timestamp: event.timestamp,
+                metadata: event.metadata,
+                previousHash: previousHash,
+                entryHash: event.entryHash
+            )
+        )
+    }
+
+    func verifyIntegrity() -> Bool {
+        for (index, event) in storedEvents.enumerated() {
+            let expectedPrevious = index == 0 ? "" : storedEvents[index - 1].entryHash
+            guard event.previousHash == expectedPrevious else { return false }
+        }
+        return true
     }
 }
 

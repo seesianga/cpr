@@ -28,8 +28,34 @@ struct AssessmentAttemptSummary: Codable, Identifiable, Sendable, Equatable {
     let id: String
     let learnerID: String
     let assessmentID: String
+    let courseID: String
+    let contentVersion: String
     let score: Double
+    let passed: Bool
+    let criticalErrorCodes: [String]
     let submittedAt: Date
+
+    init(
+        id: String,
+        learnerID: String,
+        assessmentID: String,
+        courseID: String = "",
+        contentVersion: String = "",
+        score: Double,
+        passed: Bool? = nil,
+        criticalErrorCodes: [String] = [],
+        submittedAt: Date
+    ) {
+        self.id = id
+        self.learnerID = learnerID
+        self.assessmentID = assessmentID
+        self.courseID = courseID
+        self.contentVersion = contentVersion
+        self.score = score
+        self.passed = passed ?? (score >= 0.8)
+        self.criticalErrorCodes = criticalErrorCodes
+        self.submittedAt = submittedAt
+    }
 }
 
 /// A named learner cohort used by instructor tooling.
@@ -37,6 +63,25 @@ struct CohortSummary: Codable, Identifiable, Sendable, Equatable {
     let id: String
     let name: String
     let learnerIDs: [String]
+    let instructorIDs: [String]
+    let assignedCourseIDs: [String]
+    let isActive: Bool
+
+    init(
+        id: String,
+        name: String,
+        learnerIDs: [String] = [],
+        instructorIDs: [String] = [],
+        assignedCourseIDs: [String] = [],
+        isActive: Bool = true
+    ) {
+        self.id = id
+        self.name = name
+        self.learnerIDs = learnerIDs
+        self.instructorIDs = instructorIDs
+        self.assignedCourseIDs = assignedCourseIDs
+        self.isActive = isActive
+    }
 }
 
 /// An internal learner achievement; it is not an external certification.
@@ -52,15 +97,90 @@ struct SyncReport: Codable, Sendable, Equatable {
     let completedAt: Date
     let uploadedRecordCount: Int
     let downloadedRecordCount: Int
+    let conflictCount: Int
+
+    init(
+        completedAt: Date,
+        uploadedRecordCount: Int,
+        downloadedRecordCount: Int,
+        conflictCount: Int = 0
+    ) {
+        self.completedAt = completedAt
+        self.uploadedRecordCount = uploadedRecordCount
+        self.downloadedRecordCount = downloadedRecordCount
+        self.conflictCount = conflictCount
+    }
 }
 
 /// A structured event retained for accountability and troubleshooting.
 struct AuditEvent: Codable, Identifiable, Sendable, Equatable {
     let id: String
     let actorID: String?
+    let category: String
     let action: String
     let timestamp: Date
     let metadata: [String: String]
+    let previousHash: String
+    let entryHash: String
+
+    init(
+        id: String,
+        actorID: String?,
+        category: String = "application",
+        action: String,
+        timestamp: Date,
+        metadata: [String: String] = [:],
+        previousHash: String = "",
+        entryHash: String = ""
+    ) {
+        self.id = id
+        self.actorID = actorID
+        self.category = category
+        self.action = action
+        self.timestamp = timestamp
+        self.metadata = metadata
+        self.previousHash = previousHash
+        self.entryHash = entryHash
+    }
+}
+
+/// A local mutation represented in a CloudKit-shaped synchronization envelope.
+struct QueuedSyncEvent: Codable, Identifiable, Sendable, Equatable {
+    let id: String
+    let aggregateType: String
+    let aggregateID: String
+    let eventType: String
+    let payloadJSON: String
+    let queuedAt: Date
+    let localUpdatedAt: Date
+    let attemptCount: Int
+}
+
+/// A remote record competing with a locally queued mutation.
+struct SyncConflict: Codable, Sendable, Equatable {
+    let localEventID: String
+    let remotePayloadJSON: String
+    let remoteUpdatedAt: Date
+}
+
+/// Result returned by an optional cloud backend for a pushed batch.
+struct CloudPushResult: Codable, Sendable, Equatable {
+    let acceptedEventIDs: Set<String>
+    let conflicts: [SyncConflict]
+
+    init(acceptedEventIDs: Set<String> = [], conflicts: [SyncConflict] = []) {
+        self.acceptedEventIDs = acceptedEventIDs
+        self.conflicts = conflicts
+    }
+}
+
+/// Downloaded remote mutation. Application-specific handlers decide how to apply it.
+struct CloudChange: Codable, Identifiable, Sendable, Equatable {
+    let id: String
+    let aggregateType: String
+    let aggregateID: String
+    let payloadJSON: String
+    let updatedAt: Date
 }
 
 /// A sample supplied by a verified external CPR sensor integration.
@@ -82,6 +202,8 @@ protocol AuthenticationService: Sendable {
 protocol CourseRepository: Sendable {
     func allCourses() async throws -> [Course]
     func course(id: String) async throws -> Course?
+    func course(id: String, contentVersion: String) async throws -> Course?
+    func versions(courseID: String) async throws -> [Course]
     func save(_ course: Course) async throws
 }
 
@@ -118,13 +240,22 @@ protocol ClinicalContentRepository: Sendable {
 
 /// Synchronizes local-first records through the configured remote abstraction.
 protocol SyncService: Sendable {
+    func enqueue(_ event: QueuedSyncEvent) async throws
+    func pendingEvents() async throws -> [QueuedSyncEvent]
     func synchronize() async throws -> SyncReport
+}
+
+/// CloudKit-shaped transport boundary. The simulator uses `NoopCloudBackend`.
+protocol CloudBackend: Sendable {
+    func push(_ events: [QueuedSyncEvent]) async throws -> CloudPushResult
+    func pullChanges(since: Date?) async throws -> [CloudChange]
 }
 
 /// Persists structured audit events.
 protocol AuditLogService: Sendable {
     func events() async throws -> [AuditEvent]
     func record(_ event: AuditEvent) async throws
+    func verifyIntegrity() async throws -> Bool
 }
 
 /// Supplies measurements from an explicitly verified external CPR sensor.

@@ -31,6 +31,7 @@
 		BBE811FE446E1AB7EDF5848A /* AppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA008142D9428529D8C9B406 /* AppModel.swift */; };
 		BE7AF60656B0432F667F75B0 /* DashboardRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5242B8035CE0851ED08BC8E2 /* DashboardRootView.swift */; };
 		BFDFC3D2C7F42382E07C8FAD /* HandTrackingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92385E507D55CA1777A3F4C7 /* HandTrackingService.swift */; };
+		C95E563C97CB50F0AAB93400 /* OfflineFirstSyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2FD9ED93E2327ADBB08FEDC /* OfflineFirstSyncService.swift */; };
 		CDE5B4858B2FE516B5BC1E3E /* TheoryLearningView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F17515043A751995B34EA45 /* TheoryLearningView.swift */; };
 		D0BB61CFD188CA0014CA1EB8 /* AssessmentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7EB61FE610FCF3F623AF4519 /* AssessmentView.swift */; };
 		D585502CA819241FB38649A3 /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C7C5D4BF061AE518210DAA /* DashboardView.swift */; };
@@ -41,6 +42,7 @@
 		F47929C9FA6E10B78A66F6F3 /* LifesaverVisionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 485EC33251720F743FA78A97 /* LifesaverVisionTests.swift */; };
 		FB54CC3AA9336C0CEED13F8E /* InstructorDashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F54BAD8AA4DF74871D356B /* InstructorDashboardView.swift */; };
 		FBC50F12E137A5F0BAA80369 /* course_v1.json in Resources */ = {isa = PBXBuildFile; fileRef = 379E0D7AB5D65014DC6EE94E /* course_v1.json */; };
+		FEDEEAA8E650DC042E77168B /* SwiftDataRepositories.swift in Sources */ = {isa = PBXBuildFile; fileRef = B645A9F3813782C7AB7F53F8 /* SwiftDataRepositories.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -94,6 +96,8 @@
 		A1F54BAD8AA4DF74871D356B /* InstructorDashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstructorDashboardView.swift; sourceTree = "<group>"; };
 		A75B557DE09FD3DBDC1E12D4 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		AA008142D9428529D8C9B406 /* AppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModel.swift; sourceTree = "<group>"; };
+		B645A9F3813782C7AB7F53F8 /* SwiftDataRepositories.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftDataRepositories.swift; sourceTree = "<group>"; };
+		C2FD9ED93E2327ADBB08FEDC /* OfflineFirstSyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfflineFirstSyncService.swift; sourceTree = "<group>"; };
 		DB20949E05C50D2E813FD3B6 /* ApplicationProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplicationProtocols.swift; sourceTree = "<group>"; };
 		EF0D26B59AF8D550AEC32EA0 /* .gitkeep */ = {isa = PBXFileReference; path = .gitkeep; sourceTree = "<group>"; };
 		EFCC85261BAA2B8EA2C1EEE4 /* LifesaverVisionTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = LifesaverVisionTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -136,8 +140,10 @@
 			isa = PBXGroup;
 			children = (
 				71D5BDBABCC18ADDCE23D262 /* InMemoryRepositories.swift */,
+				C2FD9ED93E2327ADBB08FEDC /* OfflineFirstSyncService.swift */,
 				6F67C420CD18EFAD3A3FFF70 /* PersistenceBootstrap.swift */,
 				1B80330B316C610B9D0D074C /* SwiftDataModels.swift */,
+				B645A9F3813782C7AB7F53F8 /* SwiftDataRepositories.swift */,
 			);
 			path = Persistence;
 			sourceTree = "<group>";
@@ -569,6 +575,7 @@
 				EF516A2309B8622C7201D308 /* Interactions.swift in Sources */,
 				F0F06BFCECB26ECF6ED5053E /* LearningLabRootView.swift in Sources */,
 				DF85D43B3D24671C10922DF4 /* LifesaverVisionApp.swift in Sources */,
+				C95E563C97CB50F0AAB93400 /* OfflineFirstSyncService.swift in Sources */,
 				2CD8857302B9E609DCFBB356 /* PersistenceBootstrap.swift in Sources */,
 				8D68767498262C9A01AA74A6 /* ScenariosView.swift in Sources */,
 				2689B063C77FD3438F4A1995 /* ScenePlacement.swift in Sources */,
@@ -578,6 +585,7 @@
 				B7D83DFFB99193477D5E3ED8 /* SpatialLaboratoryView.swift in Sources */,
 				5E2AC697B07D0A98C90CB0C9 /* SpatialRealityKit.swift in Sources */,
 				0A73E9810163DB68D273F78F /* SwiftDataModels.swift in Sources */,
+				FEDEEAA8E650DC042E77168B /* SwiftDataRepositories.swift in Sources */,
 				CDE5B4858B2FE516B5BC1E3E /* TheoryLearningView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

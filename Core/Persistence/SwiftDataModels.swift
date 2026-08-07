@@ -123,6 +123,7 @@ final class AuditLogEntry {
     var category: String
     var action: String
     var timestamp: Date
+    var sequenceNumber: Int
     var metadataJSON: String
     var previousHash: String
     var entryHash: String
@@ -133,6 +134,7 @@ final class AuditLogEntry {
         category: String,
         action: String,
         timestamp: Date = .now,
+        sequenceNumber: Int = 0,
         metadataJSON: String = "{}",
         previousHash: String = "",
         entryHash: String = ""
@@ -142,6 +144,7 @@ final class AuditLogEntry {
         self.category = category
         self.action = action
         self.timestamp = timestamp
+        self.sequenceNumber = sequenceNumber
         self.metadataJSON = metadataJSON
         self.previousHash = previousHash
         self.entryHash = entryHash
