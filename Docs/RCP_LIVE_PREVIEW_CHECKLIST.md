@@ -23,7 +23,7 @@ visionOS build, scene, result, and evidence location for each run.
 - [ ] Expand the local `RealityKitContent` package in Xcode and locate `Sources/RealityKitContent/RealityKitContent.rkassets` — requires operator verification.
 - [ ] Open that project-local `.rkassets` catalogue in the Xcode 26.6-bundled Reality Composer Pro — requires operator verification.
 - [ ] Confirm the open catalogue path is inside `LifesaverVision`, not inside the read-only external asset-library root — requires operator verification.
-- [ ] Confirm `Assets/ShowcaseOnly/` contains the four hardware props and that no clinical scene references them — requires operator verification.
+- [ ] Confirm the catalogue contains no USDZ payloads, the four hardware props have no entries in `spatial_asset_manifest_v1.json` scene placements, and runtime composition never introduces them into a clinical scene — requires operator verification.
 
 ## Start and stop Live Preview
 

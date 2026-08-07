@@ -8,8 +8,8 @@ struct SimulationSpaceRootView: View {
     @Environment(AppModel.self) private var appModel
     @State private var isLoading = true
     @State private var loadErrorMessage: String?
-
-    private let assetRegistry = AssetRegistry()
+    @State private var loadedScene: SpatialSceneName?
+    @State private var assetRegistry = AssetRegistry()
 
     var body: some View {
         RealityView { content, attachments in
@@ -27,6 +27,7 @@ struct SimulationSpaceRootView: View {
                 try assetRegistry.decorateSemanticEntities(in: scene, for: selectedScene)
                 scene.isEnabled = !appModel.isSimulationPaused
                 content.add(scene)
+                loadedScene = selectedScene
                 isLoading = false
                 loadErrorMessage = nil
             } catch is CancellationError {
@@ -75,6 +76,10 @@ struct SimulationSpaceRootView: View {
 
                         Button("Exit Simulation", systemImage: "xmark.circle.fill") {
                             Task {
+                                if let loadedScene {
+                                    assetRegistry.releaseScene(loadedScene)
+                                    self.loadedScene = nil
+                                }
                                 await appModel.dismissSimulation(using: dismissImmersiveSpace)
                             }
                         }
@@ -91,6 +96,10 @@ struct SimulationSpaceRootView: View {
             appModel.handleScenePhase(newPhase)
         }
         .onDisappear {
+            if let loadedScene {
+                assetRegistry.releaseScene(loadedScene)
+                self.loadedScene = nil
+            }
             appModel.simulationSpaceDidDisappear()
         }
     }

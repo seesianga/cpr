@@ -3,18 +3,18 @@
 Decision record for every reusable 3D asset found under ASSET_ROOT. Source files are
 never modified; the approved delivery assets are copied into the app bundle.
 
-Phase 4 packaging choice: all delivery USDZ files live in
-`Packages/RealityKitContent/Sources/RealityKitContent/RealityKitContent.rkassets/Assets/`.
-That resource catalogue is already processed by the `RealityKitContent` Swift package,
-keeps referenced USDZs beside the RCP scenes, and avoids a second app-target resource
-copy path. The 46 general-use assets are at the `Assets/` root. The four hardware props
-are isolated under `Assets/ShowcaseOnly/` so clinical scenes cannot reference them by
-accident. `Scripts/validate_assets.py` verifies this exact mapping against the recorded
-SHA-256 and byte count for every delivery asset.
+Phase 4R packaging choice: all 50 delivery USDZ files live flat under
+`Media/3D/USDZ/` and are copied by the app target into bundle subdirectory `USDZ/`.
+The `RealityKitContent.rkassets` catalogue contains only 13 lightweight scene skeletons
+and six hand-authored USDA model/helper layers. Scenes retain transforms on empty
+`anchor_*` prims; `AssetRegistry` uses `spatial_asset_manifest_v1.json` to load mapped
+USDZs only when composing a scene and evicts that scene on exit. The four hardware props
+remain declared showcase-only in policy and have no scene placements.
+`Scripts/validate_assets.py` verifies this layout, mapping, SHA-256, and byte count.
 
-Status values: `copied` = packaged at the `Assets/` root; `showcase-only` = packaged in
-the restricted subgroup and excluded from clinical lessons; `excluded` = not packaged.
-Current counts are 46 copied, 4 showcase-only, and 0 excluded.
+Status values: `copied` = packaged as a loose USDZ app resource; `showcase-only` =
+packaged for a restricted non-clinical showcase and absent from scene mappings;
+`excluded` = not packaged. Current counts are 46 copied, 4 showcase-only, and 0 excluded.
 
 - Assets inventoried: 50 logical assets (221 files hashed incl. all tiers)
 - Tiers per asset: Source GLB (master, not shipped) -> Optimized GLB -> USDZ -> USDZ_Delivery (shipped)
@@ -87,4 +87,7 @@ Current counts are 46 copied, 4 showcase-only, and 0 excluded.
 - `49205da157ffd78f…`: `SpatialMastery/Media/3D/Source/portal_m13/model_1.glb` == `SpatialMastery/Media/3D/Optimized/portal_m13/portal_m13.glb`
 - `4da5f3318271ac32…`: `SpatialMastery/Media/3D/Source/portal_m01/model_1.glb` == `SpatialMastery/Media/3D/Optimized/portal_m01/portal_m01.glb`
 
-Unmapped assets: none — all 50 assets have a mapped use or an explicit exclusion.
+Fourteen assets are intentionally absent from current scene composition: portals M12-M14,
+three accessibility props, three gesture props, `privacy-shield`, and the four
+showcase-only hardware props. They remain independently runtime-audited as loose bundle
+resources; their planned-use rows above do not claim that Phase 4 presents them.

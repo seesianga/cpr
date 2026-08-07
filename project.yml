@@ -28,7 +28,7 @@ targets:
     platform: visionOS
     deploymentTarget: "26.0"
     preBuildScripts:
-      - name: Validate imported RealityKit delivery assets
+      - name: Validate loose RealityKit delivery assets
         script: |
           set -euo pipefail
           PYTHONDONTWRITEBYTECODE=1 /usr/bin/python3 "$SRCROOT/Scripts/validate_assets.py"
@@ -49,6 +49,12 @@ targets:
         buildPhase: resources
       - path: Resources/Configuration
         buildPhase: resources
+      - path: Media/3D/USDZ
+        type: group
+        buildPhase:
+          copyFiles:
+            destination: resources
+            subpath: USDZ
       - path: Docs/CLINICAL_FACTS_EXTRACT.json
         buildPhase: resources
     dependencies:

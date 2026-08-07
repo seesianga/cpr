@@ -8,9 +8,7 @@
 
 def Xform "AcademyLobby"
 {
-    def "observatory_environment" (
-        prepend references = @Assets/observatory-environment.usdz@
-    )
+    def Xform "anchor_observatory_environment"
     {
         float3 xformOp:translate = (0, 0, -2.4)
         float xformOp:rotateX = -90
@@ -18,9 +16,7 @@ def Xform "AcademyLobby"
         uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateX", "xformOp:scale"]
     }
 
-    def "companion_orb_bot" (
-        prepend references = @Assets/companion-orb-bot.usdz@
-    )
+    def Xform "anchor_companion_orb_bot"
     {
         float3 xformOp:translate = (0, 1.32, -1.1)
         float xformOp:rotateX = -90
@@ -28,9 +24,7 @@ def Xform "AcademyLobby"
         uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateX", "xformOp:scale"]
     }
 
-    def "control_panel" (
-        prepend references = @Assets/control-panel.usdz@
-    )
+    def Xform "anchor_control_panel"
     {
         float3 xformOp:translate = (0, 0.52, -0.72)
         float xformOp:rotateX = -90
@@ -38,7 +32,7 @@ def Xform "AcademyLobby"
         uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateX", "xformOp:scale"]
     }
 
-    def "portal_m01" ( prepend references = @Assets/portal_m01.usdz@ )
+    def Xform "anchor_portal_m01"
     {
         float3 xformOp:translate = (-2.30, 0.88, -1.05)
         float xformOp:rotateX = -90
@@ -46,7 +40,7 @@ def Xform "AcademyLobby"
         float3 xformOp:scale = (1.75, 1.75, 1.75)
         uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateX", "xformOp:rotateY", "xformOp:scale"]
     }
-    def "portal_m02" ( prepend references = @Assets/portal_m02.usdz@ )
+    def Xform "anchor_portal_m02"
     {
         float3 xformOp:translate = (-1.88, 0.88, -1.65)
         float xformOp:rotateX = -90
@@ -54,7 +48,7 @@ def Xform "AcademyLobby"
         float3 xformOp:scale = (1.75, 1.75, 1.75)
         uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateX", "xformOp:rotateY", "xformOp:scale"]
     }
-    def "portal_m03" ( prepend references = @Assets/portal_m03.usdz@ )
+    def Xform "anchor_portal_m03"
     {
         float3 xformOp:translate = (-1.36, 0.88, -2.12)
         float xformOp:rotateX = -90
@@ -62,7 +56,7 @@ def Xform "AcademyLobby"
         float3 xformOp:scale = (1.75, 1.75, 1.75)
         uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateX", "xformOp:rotateY", "xformOp:scale"]
     }
-    def "portal_m04" ( prepend references = @Assets/portal_m04.usdz@ )
+    def Xform "anchor_portal_m04"
     {
         float3 xformOp:translate = (-0.74, 0.88, -2.42)
         float xformOp:rotateX = -90
@@ -70,7 +64,7 @@ def Xform "AcademyLobby"
         float3 xformOp:scale = (1.75, 1.75, 1.75)
         uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateX", "xformOp:rotateY", "xformOp:scale"]
     }
-    def "portal_m05" ( prepend references = @Assets/portal_m05.usdz@ )
+    def Xform "anchor_portal_m05"
     {
         float3 xformOp:translate = (-0.04, 0.88, -2.54)
         float xformOp:rotateX = -90
@@ -78,7 +72,7 @@ def Xform "AcademyLobby"
         float3 xformOp:scale = (1.75, 1.75, 1.75)
         uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateX", "xformOp:rotateY", "xformOp:scale"]
     }
-    def "portal_m06" ( prepend references = @Assets/portal_m06.usdz@ )
+    def Xform "anchor_portal_m06"
     {
         float3 xformOp:translate = (0.66, 0.88, -2.44)
         float xformOp:rotateX = -90
@@ -86,7 +80,7 @@ def Xform "AcademyLobby"
         float3 xformOp:scale = (1.75, 1.75, 1.75)
         uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateX", "xformOp:rotateY", "xformOp:scale"]
     }
-    def "portal_m07" ( prepend references = @Assets/portal_m07.usdz@ )
+    def Xform "anchor_portal_m07"
     {
         float3 xformOp:translate = (1.30, 0.88, -2.15)
         float xformOp:rotateX = -90
@@ -94,7 +88,7 @@ def Xform "AcademyLobby"
         float3 xformOp:scale = (1.75, 1.75, 1.75)
         uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateX", "xformOp:rotateY", "xformOp:scale"]
     }
-    def "portal_m08" ( prepend references = @Assets/portal_m08.usdz@ )
+    def Xform "anchor_portal_m08"
     {
         float3 xformOp:translate = (1.83, 0.88, -1.70)
         float xformOp:rotateX = -90
@@ -102,7 +96,7 @@ def Xform "AcademyLobby"
         float3 xformOp:scale = (1.75, 1.75, 1.75)
         uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateX", "xformOp:rotateY", "xformOp:scale"]
     }
-    def "portal_m09" ( prepend references = @Assets/portal_m09.usdz@ )
+    def Xform "anchor_portal_m09"
     {
         float3 xformOp:translate = (2.24, 0.88, -1.12)
         float xformOp:rotateX = -90
@@ -110,7 +104,7 @@ def Xform "AcademyLobby"
         float3 xformOp:scale = (1.75, 1.75, 1.75)
         uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateX", "xformOp:rotateY", "xformOp:scale"]
     }
-    def "portal_m10" ( prepend references = @Assets/portal_m10.usdz@ )
+    def Xform "anchor_portal_m10"
     {
         float3 xformOp:translate = (-1.05, 0.88, -0.74)
         float xformOp:rotateX = -90
@@ -118,7 +112,7 @@ def Xform "AcademyLobby"
         float3 xformOp:scale = (1.55, 1.55, 1.55)
         uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateX", "xformOp:rotateY", "xformOp:scale"]
     }
-    def "portal_m11" ( prepend references = @Assets/portal_m11.usdz@ )
+    def Xform "anchor_portal_m11"
     {
         float3 xformOp:translate = (1.05, 0.88, -0.74)
         float xformOp:rotateX = -90

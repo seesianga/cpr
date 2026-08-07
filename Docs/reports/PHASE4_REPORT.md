@@ -443,3 +443,76 @@ ac0a456 Phase 4.4: complete AED semantic decoration
 
 The final report handoff is committed separately with the required message
 `Phase 4: RealityKit content + scenes`.
+
+## Phase 4R.1 Addendum — Loose, Scene-Scoped Asset Loading
+
+This addendum, verified 2026-08-08 on the recorded visionOS 26.5 simulator, supersedes
+the Phase 4 packaging and size statements above while retaining them as historical
+baseline evidence. The 50 approved delivery USDZs are now flat source resources under
+`Media/3D/USDZ` and are copied into app-bundle subdirectory `USDZ/`. The compiled
+RealityKit catalogue contains zero USDZs: only the 13 scene skeletons and six original
+hand-authored model/helper USDA layers remain.
+
+The 13 skeletons contain no USDZ reference arcs. Forty-seven original transforms now
+live on empty, named `anchor_*` prims. `spatial_asset_manifest_v1.json` maps those
+placements to 36 unique loose payloads. `AssetRegistry` loads the skeleton, asynchronously
+decodes only the scene's mapped USDZs with `Entity(contentsOf:)`, renames payload roots to
+preserve semantic contracts, attaches them to the anchors, and caches the composed root.
+The volumetric and immersive views explicitly evict and detach that root on exit. The 14
+currently unmapped resources remain packaged and independently runtime-audited.
+
+This is scene-scoped runtime decoding and memory release. It is not an on-demand download,
+byte-range streaming claim, or removal of the 141,007,707 source USDZ bytes from the app.
+
+### Before/after Debug-Beta simulator package
+
+Both app measurements use the same canonical DerivedData path and the Debug-Beta product.
+
+| Measurement | Phase 4 before | Phase 4R.1 after | Delta |
+|---|---:|---:|---:|
+| App regular-file bytes | 728,000,264 (694.28 MiB) | 155,255,729 (148.06 MiB) | -572,744,535 (-546.21 MiB) |
+| App allocated KiB (`du -sk`) | 710,992 | 151,764 | -559,228 |
+| `RealityKitContent.reality` bytes | 716,251,834 (683.07 MiB) | 2,351,118 (2.24 MiB) | -713,900,716 |
+| Loose bundled USDZ files | 0 | 50 / 141,007,707 bytes | +50 / +141,007,707 bytes |
+
+The app regular-file payload fell 78.67% and is below the requested approximate 300 MB
+target.
+
+### Verification evidence
+
+`Scripts/validate_assets.py` result:
+
+```text
+Asset validation PASSED
+Expected delivery assets: 50
+Loose USDZ assets verified: 50
+Total loose USDZ size: 141007707 bytes (141.01 MB; 134.48 MiB)
+RealityKit catalogue USDZ payloads: 0
+Authored USDA layers: 19 (13 scene skeletons + 6 model/helper layers)
+Manifest scene contracts: 13
+Lazy composition placements: 47
+```
+
+Canonical build result:
+
+```text
+warning: Metadata extraction skipped. No AppIntents.framework dependency found.
+** BUILD SUCCEEDED **
+```
+
+The simulator runtime asset suite loaded all 50 loose resources plus all 13 composed
+scenes (63 resource contracts total), validated all authored semantic targets and runtime
+interaction/accessibility decorations, and exercised missing-anchor handling plus explicit
+cache eviction:
+
+```text
+Test Suite 'RealityKitAssetTests' passed at 2026-08-08 00:48:52.567.
+     Executed 8 tests, with 0 failures (0 unexpected) in 87.333 (87.357) seconds
+Test Suite 'Selected tests' passed at 2026-08-08 00:48:52.569.
+     Executed 8 tests, with 0 failures (0 unexpected) in 87.333 (87.363) seconds
+** TEST SUCCEEDED **
+```
+
+The simulator continued to log RealityKit `NetworkAssetManager` dependency diagnostics
+during successful loads. No RCP Live Preview or physical-device visual, comfort, memory,
+frame-rate, or thermal verification was performed; those operator gates remain open.

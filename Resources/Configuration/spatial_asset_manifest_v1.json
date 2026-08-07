@@ -1,0 +1,158 @@
+{
+  "schemaVersion": 1,
+  "bundleSubdirectory": "USDZ",
+  "resources": [
+    "accessibility-audio-beacon",
+    "accessibility-switch-puck",
+    "accessibility-text-block",
+    "achievement-vault-environment",
+    "badge_m01",
+    "badge_m02",
+    "badge_m03",
+    "badge_m04",
+    "badge_m05",
+    "badge_m06",
+    "badge_m07",
+    "badge_m08",
+    "badge_m09",
+    "badge_m10",
+    "badge_m11",
+    "badge_m12",
+    "badge_m13",
+    "badge_m14",
+    "battery-prop",
+    "capstone-environment",
+    "certificate-pedestal",
+    "companion-orb-bot",
+    "constellation-star",
+    "control-panel",
+    "gesture-practice-cube",
+    "gesture-practice-orb",
+    "gesture-practice-ring",
+    "headband",
+    "headset-mockup",
+    "light-seal-cushion",
+    "observatory-environment",
+    "portal_m01",
+    "portal_m02",
+    "portal_m03",
+    "portal_m04",
+    "portal_m05",
+    "portal_m06",
+    "portal_m07",
+    "portal_m08",
+    "portal_m09",
+    "portal_m10",
+    "portal_m11",
+    "portal_m12",
+    "portal_m13",
+    "portal_m14",
+    "practice-window-frame",
+    "privacy-shield",
+    "safety-props-set",
+    "theatre-environment",
+    "xp-orb"
+  ],
+  "scenes": [
+    {
+      "sceneName": "AcademyLobby",
+      "placements": [
+        { "anchorName": "anchor_observatory_environment", "resourceName": "observatory-environment", "semanticName": "observatory_environment" },
+        { "anchorName": "anchor_companion_orb_bot", "resourceName": "companion-orb-bot", "semanticName": "companion_orb_bot" },
+        { "anchorName": "anchor_control_panel", "resourceName": "control-panel", "semanticName": "control_panel" },
+        { "anchorName": "anchor_portal_m01", "resourceName": "portal_m01", "semanticName": "portal_m01" },
+        { "anchorName": "anchor_portal_m02", "resourceName": "portal_m02", "semanticName": "portal_m02" },
+        { "anchorName": "anchor_portal_m03", "resourceName": "portal_m03", "semanticName": "portal_m03" },
+        { "anchorName": "anchor_portal_m04", "resourceName": "portal_m04", "semanticName": "portal_m04" },
+        { "anchorName": "anchor_portal_m05", "resourceName": "portal_m05", "semanticName": "portal_m05" },
+        { "anchorName": "anchor_portal_m06", "resourceName": "portal_m06", "semanticName": "portal_m06" },
+        { "anchorName": "anchor_portal_m07", "resourceName": "portal_m07", "semanticName": "portal_m07" },
+        { "anchorName": "anchor_portal_m08", "resourceName": "portal_m08", "semanticName": "portal_m08" },
+        { "anchorName": "anchor_portal_m09", "resourceName": "portal_m09", "semanticName": "portal_m09" },
+        { "anchorName": "anchor_portal_m10", "resourceName": "portal_m10", "semanticName": "portal_m10" },
+        { "anchorName": "anchor_portal_m11", "resourceName": "portal_m11", "semanticName": "portal_m11" }
+      ]
+    },
+    {
+      "sceneName": "HeartAndLungsVolume",
+      "placements": [
+        { "anchorName": "anchor_practice_window_frame", "resourceName": "practice-window-frame", "semanticName": "practice_window_frame" }
+      ]
+    },
+    { "sceneName": "ChainOfSurvivalVolume", "placements": [] },
+    {
+      "sceneName": "DRSABCTrainingRoom",
+      "placements": [
+        { "anchorName": "anchor_safety_hazards", "resourceName": "safety-props-set", "semanticName": "safety_hazards" }
+      ]
+    },
+    {
+      "sceneName": "CPRPracticeRoom",
+      "placements": [
+        { "anchorName": "anchor_control_panel", "resourceName": "control-panel", "semanticName": "control_panel" }
+      ]
+    },
+    { "sceneName": "AEDPreparationRoom", "placements": [] },
+    { "sceneName": "AEDPlacementRoom", "placements": [] },
+    {
+      "sceneName": "Scenario_Home",
+      "placements": [
+        { "anchorName": "anchor_capstone_environment", "resourceName": "capstone-environment", "semanticName": "capstone_environment" }
+      ]
+    },
+    {
+      "sceneName": "Scenario_ShoppingCentre",
+      "placements": [
+        { "anchorName": "anchor_theatre_environment", "resourceName": "theatre-environment", "semanticName": "theatre_environment" }
+      ]
+    },
+    {
+      "sceneName": "Scenario_Workplace",
+      "placements": [
+        { "anchorName": "anchor_capstone_environment", "resourceName": "capstone-environment", "semanticName": "capstone_environment" }
+      ]
+    },
+    {
+      "sceneName": "Scenario_CommunityFacility",
+      "placements": [
+        { "anchorName": "anchor_theatre_environment", "resourceName": "theatre-environment", "semanticName": "theatre_environment" }
+      ]
+    },
+    {
+      "sceneName": "AchievementGallery",
+      "placements": [
+        { "anchorName": "anchor_achievement_vault_environment", "resourceName": "achievement-vault-environment", "semanticName": "achievement_vault_environment" },
+        { "anchorName": "anchor_certificate_pedestal", "resourceName": "certificate-pedestal", "semanticName": "certificate_pedestal" },
+        { "anchorName": "anchor_xp_orb", "resourceName": "xp-orb", "semanticName": "xp_orb" },
+        { "anchorName": "anchor_badge_m01", "resourceName": "badge_m01", "semanticName": "badge_m01" },
+        { "anchorName": "anchor_badge_m02", "resourceName": "badge_m02", "semanticName": "badge_m02" },
+        { "anchorName": "anchor_badge_m03", "resourceName": "badge_m03", "semanticName": "badge_m03" },
+        { "anchorName": "anchor_badge_m04", "resourceName": "badge_m04", "semanticName": "badge_m04" },
+        { "anchorName": "anchor_badge_m05", "resourceName": "badge_m05", "semanticName": "badge_m05" },
+        { "anchorName": "anchor_badge_m06", "resourceName": "badge_m06", "semanticName": "badge_m06" },
+        { "anchorName": "anchor_badge_m07", "resourceName": "badge_m07", "semanticName": "badge_m07" },
+        { "anchorName": "anchor_badge_m08", "resourceName": "badge_m08", "semanticName": "badge_m08" },
+        { "anchorName": "anchor_badge_m09", "resourceName": "badge_m09", "semanticName": "badge_m09" },
+        { "anchorName": "anchor_badge_m10", "resourceName": "badge_m10", "semanticName": "badge_m10" },
+        { "anchorName": "anchor_badge_m11", "resourceName": "badge_m11", "semanticName": "badge_m11" },
+        { "anchorName": "anchor_badge_m12", "resourceName": "badge_m12", "semanticName": "badge_m12" },
+        { "anchorName": "anchor_badge_m13", "resourceName": "badge_m13", "semanticName": "badge_m13" },
+        { "anchorName": "anchor_badge_m14", "resourceName": "badge_m14", "semanticName": "badge_m14" },
+        { "anchorName": "anchor_constellation_star_01", "resourceName": "constellation-star", "semanticName": "constellation_star_01" },
+        { "anchorName": "anchor_constellation_star_02", "resourceName": "constellation-star", "semanticName": "constellation_star_02" },
+        { "anchorName": "anchor_constellation_star_03", "resourceName": "constellation-star", "semanticName": "constellation_star_03" },
+        { "anchorName": "anchor_constellation_star_04", "resourceName": "constellation-star", "semanticName": "constellation_star_04" },
+        { "anchorName": "anchor_constellation_star_05", "resourceName": "constellation-star", "semanticName": "constellation_star_05" },
+        { "anchorName": "anchor_constellation_star_06", "resourceName": "constellation-star", "semanticName": "constellation_star_06" },
+        { "anchorName": "anchor_constellation_star_07", "resourceName": "constellation-star", "semanticName": "constellation_star_07" }
+      ]
+    },
+    {
+      "sceneName": "DebriefSpace",
+      "placements": [
+        { "anchorName": "anchor_theatre_environment", "resourceName": "theatre-environment", "semanticName": "theatre_environment" },
+        { "anchorName": "anchor_control_panel", "resourceName": "control-panel", "semanticName": "control_panel" }
+      ]
+    }
+  ]
+}

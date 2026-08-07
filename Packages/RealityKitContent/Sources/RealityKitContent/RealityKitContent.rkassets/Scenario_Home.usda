@@ -8,7 +8,7 @@
 
 def Xform "Scenario_Home"
 {
-    def "capstone_environment" ( prepend references = @Assets/capstone-environment.usdz@ )
+    def Xform "anchor_capstone_environment"
     {
         float3 xformOp:translate = (0, 0, -2.15)
         float xformOp:rotateX = -90

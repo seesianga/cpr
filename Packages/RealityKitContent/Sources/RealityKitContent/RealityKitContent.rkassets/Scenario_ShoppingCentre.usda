@@ -8,7 +8,7 @@
 
 def Xform "Scenario_ShoppingCentre"
 {
-    def "theatre_environment" ( prepend references = @Assets/theatre-environment.usdz@ )
+    def Xform "anchor_theatre_environment"
     {
         float3 xformOp:translate = (0, 0, -2.35)
         float xformOp:rotateX = -90

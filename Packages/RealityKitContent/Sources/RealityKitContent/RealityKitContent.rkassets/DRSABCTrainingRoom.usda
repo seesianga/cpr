@@ -15,7 +15,7 @@ def Xform "DRSABCTrainingRoom"
         double radius = 1.65
         color3f[] primvars:displayColor = [(0.085, 0.095, 0.11)]
     }
-    def "safety_hazards" ( prepend references = @Assets/safety-props-set.usdz@ )
+    def Xform "anchor_safety_hazards"
     {
         float3 xformOp:translate = (-0.85, 0.44, -0.65)
         float xformOp:rotateX = -90

@@ -21,7 +21,7 @@ def Xform "CPRPracticeRoom"
         float3 xformOp:translate = (0, 0, -0.58)
         uniform token[] xformOpOrder = ["xformOp:translate"]
     }
-    def "control_panel" ( prepend references = @Assets/control-panel.usdz@ )
+    def Xform "anchor_control_panel"
     {
         float3 xformOp:translate = (0.78, 0.52, -0.82)
         float xformOp:rotateX = -90

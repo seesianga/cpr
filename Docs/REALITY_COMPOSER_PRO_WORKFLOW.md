@@ -32,16 +32,16 @@ recorded, so this document does not invent one.
 - Package: `Packages/RealityKitContent/Package.swift`
 - RCP content catalogue:
   `Packages/RealityKitContent/Sources/RealityKitContent/RealityKitContent.rkassets`
-- Approved copied delivery assets: `RealityKitContent.rkassets/Assets/`
-- Showcase-only hardware props: `RealityKitContent.rkassets/Assets/ShowcaseOnly/`
+- Approved loose delivery assets: `Media/3D/USDZ/` (bundle subdirectory `USDZ/`)
+- Scene-to-payload mapping: `Resources/Configuration/spatial_asset_manifest_v1.json`
 - Runtime bundle handle:
   `Packages/RealityKitContent/Sources/RealityKitContent/RealityKitContent.swift`
 
-`Package.swift` processes the whole `RealityKitContent.rkassets` directory as a package
-resource. `project.yml` links the local `RealityKitContent` product into the
-`LifesaverVision` visionOS app. Keeping scenes and their referenced USDZ files in this
-catalogue lets each top-level scene remain independently loadable through
-`realityKitContentBundle`.
+`Package.swift` processes the lightweight `RealityKitContent.rkassets` directory as a
+package resource. `project.yml` links that package and separately copies `Media/3D/USDZ`
+into the app's `USDZ/` resource subdirectory. Each top-level skeleton loads through
+`realityKitContentBundle`; `AssetRegistry` then resolves the scene's manifest entry and
+attaches loose payloads to its `anchor_*` entities with `Entity(contentsOf:)`.
 
 ## Open the catalogue from Xcode 26.6
 
@@ -65,8 +65,8 @@ catalogue lets each top-level scene remain independently loadable through
    verification.
 
 Do not open or save edits into the external asset library. That source is read-only.
-Only approved files already copied into this project's `Assets/` hierarchy may be
-referenced by scenes.
+Only approved files copied into this project's `Media/3D/USDZ/` directory may be mapped
+for runtime scene composition. USDA scene skeletons must never hard-reference USDZs.
 
 ## Per-scene editing workflow
 
@@ -76,9 +76,9 @@ rooms and runtime instantiation remains scene-scoped.
 
 1. Select the intended top-level scene document in RCP and inspect its hierarchy before
    changing transforms or materials. This GUI action requires operator verification.
-2. Confirm the scene's `defaultPrim`, metres scale, Y-up orientation, and referenced
-   project-local assets. Do not flatten USDZ references into a monolithic scene. This
-   GUI inspection requires operator verification.
+2. Confirm the scene's `defaultPrim`, metres scale, Y-up orientation, authored USDA
+   references, and named empty `anchor_*` prims. Confirm there are no USDZ reference arcs.
+   This GUI inspection requires operator verification.
 3. Preserve every semantic prim name used by runtime lookup and contract tests. Examples
    include `training_manikin`, `sternum_target`, `xiphoid_avoid_zone`,
    `aed_right_pad_zone`, `aed_left_pad_zone`, `aed_case`, `aed_power_button`,
@@ -87,9 +87,10 @@ rooms and runtime instantiation remains scene-scoped.
    stylised training aesthetic. Interactive targets must retain comfortable selection
    areas of approximately 4 cm or greater.
 5. Keep source visuals and runtime interaction concerns separate. RCP owns authored
-   transforms, hierarchy, references, and PBR presentation. The Swift runtime decorator
-   owns `InputTargetComponent`, simplified box/capsule collision, hover treatment, and
-   localised accessibility labels; never use rendered mesh geometry as collision.
+   transforms, hierarchy, USDA references, and anchor placement. The manifest maps loose
+   payloads to those anchors. Swift owns composition, `InputTargetComponent`, simplified
+   box/capsule collision, hover treatment, and localised accessibility labels; never use
+   rendered mesh geometry as collision.
 6. Save the scene, close and reopen it, then check that the hierarchy, materials, and
    external references resolve. These GUI actions require operator verification.
 7. Validate the package through the canonical Xcode build before moving to another
@@ -128,8 +129,8 @@ contract. A scene rename is an app API change and must be updated in the manifes
 - Do not turn authored geometry into new medical instructions. Safety-critical text and
   placement must trace to the current approved clinical sources; unresolved decisions
   are marked `requires SME review`.
-- The four Vision Pro hardware props remain under `Assets/ShowcaseOnly/` and must not
-  appear in clinical lessons or simulations.
+- The four Vision Pro hardware props are loose bundle resources with showcase-only policy
+  and no scene mappings; they must not appear in clinical lessons or simulations.
 - Scenes must not imply physical compression depth or force measurement. Those values
   are `Not physically assessed` unless a verified external `CPRSensorProvider` supplies
   them.

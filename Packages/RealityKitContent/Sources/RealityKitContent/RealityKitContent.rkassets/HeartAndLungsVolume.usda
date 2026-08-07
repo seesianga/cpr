@@ -8,9 +8,7 @@
 
 def Xform "HeartAndLungsVolume"
 {
-    def "practice_window_frame" (
-        prepend references = @Assets/practice-window-frame.usdz@
-    )
+    def Xform "anchor_practice_window_frame"
     {
         float3 xformOp:translate = (0, 0.34, 0.10)
         float xformOp:rotateX = -90

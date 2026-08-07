@@ -7,8 +7,7 @@ struct LearningLabRootView: View {
     @Environment(AppModel.self) private var appModel
     @State private var isLoading = true
     @State private var loadErrorMessage: String?
-
-    private let assetRegistry = AssetRegistry()
+    @State private var assetRegistry = AssetRegistry()
 
     var body: some View {
         ZStack {
@@ -48,6 +47,9 @@ struct LearningLabRootView: View {
         .accessibilityElement(children: .contain)
         .onChange(of: scenePhase, initial: true) { _, newPhase in
             appModel.handleScenePhase(newPhase)
+        }
+        .onDisappear {
+            assetRegistry.releaseScene(.heartAndLungsVolume)
         }
     }
 }

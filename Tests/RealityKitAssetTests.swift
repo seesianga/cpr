@@ -67,6 +67,26 @@ final class RealityKitAssetTests: XCTestCase {
         for scene in SpatialSceneName.allCases {
             do {
                 let root = try await registry.loadScene(scene)
+                XCTAssertTrue(registry.isSceneCached(scene))
+
+                let placementContracts = try registry.placementContracts(for: scene)
+                for placement in placementContracts {
+                    guard let anchor = registry.firstEntity(
+                        named: placement.anchorName,
+                        in: root
+                    ) else {
+                        failures.append(
+                            "\(scene.rawValue): missing composition anchor \(placement.anchorName)"
+                        )
+                        continue
+                    }
+                    XCTAssertEqual(
+                        anchor.children.filter { $0.name == placement.semanticName }.count,
+                        1,
+                        "\(scene.rawValue)/\(placement.anchorName) must contain exactly one mapped payload"
+                    )
+                }
+
                 let requiredNames = registry.semanticEntityNames(for: scene)
                 XCTAssertEqual(
                     Set(requiredNames).count,
@@ -136,6 +156,8 @@ final class RealityKitAssetTests: XCTestCase {
             } catch {
                 failures.append("\(scene.rawValue): failed to load or decorate (\(error))")
             }
+            registry.releaseScene(scene)
+            XCTAssertFalse(registry.isSceneCached(scene))
         }
 
         XCTAssertTrue(
@@ -144,20 +166,20 @@ final class RealityKitAssetTests: XCTestCase {
         )
     }
 
-    func testAllFiftyImportedUSDZResourcesLoadFromCompiledCatalog() async {
-        // Reality Composer Pro compiles the source USDZ files into one .reality archive.
-        // Loading every approved package-relative resource path verifies catalog presence
-        // more strongly than checking for raw .usdz files, which are not separately copied
-        // into the app bundle.
+    func testAllFiftyLooseUSDZResourcesLoadFromAppBundle() async throws {
+        // The lightweight RealityKit archive contains only authored USDA. Every approved
+        // payload must remain independently loadable from the app's USDZ subdirectory.
         let registry = AssetRegistry()
         var failures: [String] = []
 
         XCTAssertEqual(Self.deliveryAssetNames.count, 50)
         XCTAssertEqual(Set(Self.deliveryAssetNames).count, 50)
+        XCTAssertEqual(try registry.deliveryAssetNames(), Self.deliveryAssetNames)
+        XCTAssertEqual(SpatialSceneName.allCases.count + Self.deliveryAssetNames.count, 63)
 
         for assetName in Self.deliveryAssetNames {
             do {
-                _ = try await registry.loadEntity(named: assetName)
+                _ = try await registry.loadLooseAsset(named: assetName)
             } catch {
                 failures.append("\(assetName): \(error)")
             }
@@ -165,7 +187,67 @@ final class RealityKitAssetTests: XCTestCase {
 
         XCTAssertTrue(
             failures.isEmpty,
-            "Compiled RealityKit delivery-asset failures:\n\(failures.joined(separator: "\n"))"
+            "Loose RealityKit delivery-asset failures:\n\(failures.joined(separator: "\n"))"
+        )
+    }
+
+    func testSceneCacheReturnsOneRootUntilExplicitEviction() async throws {
+        let counter = EntityLoadCounter()
+        let registry = AssetRegistry(loader: { name, _ in
+            counter.count += 1
+            let entity = Entity()
+            entity.name = name
+            return entity
+        })
+
+        let first = try await registry.loadScene(.chainOfSurvivalVolume)
+        let second = try await registry.loadScene(.chainOfSurvivalVolume)
+        XCTAssertTrue(first === second)
+        XCTAssertEqual(counter.count, 1)
+        XCTAssertTrue(registry.isSceneCached(.chainOfSurvivalVolume))
+
+        registry.releaseScene(.chainOfSurvivalVolume)
+        XCTAssertFalse(registry.isSceneCached(.chainOfSurvivalVolume))
+
+        let third = try await registry.loadScene(.chainOfSurvivalVolume)
+        XCTAssertFalse(first === third)
+        XCTAssertEqual(counter.count, 2)
+        registry.releaseScene(.chainOfSurvivalVolume)
+    }
+
+    func testMissingCompositionAnchorFailsBeforePayloadAttachment() async {
+        let registry = AssetRegistry(loader: { name, _ in
+            let entity = Entity()
+            entity.name = name
+            return entity
+        })
+
+        do {
+            _ = try await registry.loadScene(.academyLobby)
+            XCTFail("A skeleton missing declared anchors must not be cached or presented")
+        } catch let error as AssetRegistryError {
+            guard case let .compositionAnchorMissing(scene, anchor) = error else {
+                return XCTFail("Expected compositionAnchorMissing, received \(error)")
+            }
+            XCTAssertEqual(scene, SpatialSceneName.academyLobby.rawValue)
+            XCTAssertEqual(anchor, "anchor_observatory_environment")
+            XCTAssertFalse(registry.isSceneCached(.academyLobby))
+        } catch {
+            XCTFail("Expected a safe AssetRegistryError, received \(error)")
+        }
+    }
+
+    func testCompositionManifestCoversAllScenesAndFortySevenPlacements() throws {
+        let registry = AssetRegistry()
+        let placements = try SpatialSceneName.allCases.flatMap {
+            try registry.placementContracts(for: $0)
+        }
+
+        XCTAssertEqual(placements.count, 47)
+        XCTAssertTrue(placements.allSatisfy { $0.anchorName.hasPrefix("anchor_") })
+        XCTAssertTrue(placements.allSatisfy { !$0.semanticName.isEmpty })
+        XCTAssertTrue(
+            placements.allSatisfy { Self.deliveryAssetNames.contains($0.resourceName) }
         )
     }
 }
@@ -174,58 +256,63 @@ private enum MissingResourceProbeError: Error, Sendable {
     case expectedFailure
 }
 
+@MainActor
+private final class EntityLoadCounter {
+    var count = 0
+}
+
 private extension RealityKitAssetTests {
     static let deliveryAssetNames = [
-        "Assets/accessibility-audio-beacon",
-        "Assets/accessibility-switch-puck",
-        "Assets/accessibility-text-block",
-        "Assets/achievement-vault-environment",
-        "Assets/badge_m01",
-        "Assets/badge_m02",
-        "Assets/badge_m03",
-        "Assets/badge_m04",
-        "Assets/badge_m05",
-        "Assets/badge_m06",
-        "Assets/badge_m07",
-        "Assets/badge_m08",
-        "Assets/badge_m09",
-        "Assets/badge_m10",
-        "Assets/badge_m11",
-        "Assets/badge_m12",
-        "Assets/badge_m13",
-        "Assets/badge_m14",
-        "Assets/capstone-environment",
-        "Assets/certificate-pedestal",
-        "Assets/companion-orb-bot",
-        "Assets/constellation-star",
-        "Assets/control-panel",
-        "Assets/gesture-practice-cube",
-        "Assets/gesture-practice-orb",
-        "Assets/gesture-practice-ring",
-        "Assets/observatory-environment",
-        "Assets/portal_m01",
-        "Assets/portal_m02",
-        "Assets/portal_m03",
-        "Assets/portal_m04",
-        "Assets/portal_m05",
-        "Assets/portal_m06",
-        "Assets/portal_m07",
-        "Assets/portal_m08",
-        "Assets/portal_m09",
-        "Assets/portal_m10",
-        "Assets/portal_m11",
-        "Assets/portal_m12",
-        "Assets/portal_m13",
-        "Assets/portal_m14",
-        "Assets/practice-window-frame",
-        "Assets/privacy-shield",
-        "Assets/safety-props-set",
-        "Assets/ShowcaseOnly/battery-prop",
-        "Assets/ShowcaseOnly/headband",
-        "Assets/ShowcaseOnly/headset-mockup",
-        "Assets/ShowcaseOnly/light-seal-cushion",
-        "Assets/theatre-environment",
-        "Assets/xp-orb"
+        "accessibility-audio-beacon",
+        "accessibility-switch-puck",
+        "accessibility-text-block",
+        "achievement-vault-environment",
+        "badge_m01",
+        "badge_m02",
+        "badge_m03",
+        "badge_m04",
+        "badge_m05",
+        "badge_m06",
+        "badge_m07",
+        "badge_m08",
+        "badge_m09",
+        "badge_m10",
+        "badge_m11",
+        "badge_m12",
+        "badge_m13",
+        "badge_m14",
+        "battery-prop",
+        "capstone-environment",
+        "certificate-pedestal",
+        "companion-orb-bot",
+        "constellation-star",
+        "control-panel",
+        "gesture-practice-cube",
+        "gesture-practice-orb",
+        "gesture-practice-ring",
+        "headband",
+        "headset-mockup",
+        "light-seal-cushion",
+        "observatory-environment",
+        "portal_m01",
+        "portal_m02",
+        "portal_m03",
+        "portal_m04",
+        "portal_m05",
+        "portal_m06",
+        "portal_m07",
+        "portal_m08",
+        "portal_m09",
+        "portal_m10",
+        "portal_m11",
+        "portal_m12",
+        "portal_m13",
+        "portal_m14",
+        "practice-window-frame",
+        "privacy-shield",
+        "safety-props-set",
+        "theatre-environment",
+        "xp-orb"
     ]
 
     static func originalClinicalEntityNames(for scene: SpatialSceneName) -> [String] {

@@ -23,22 +23,47 @@ enum SpatialSceneName: String, CaseIterable, Identifiable, Sendable {
 
 enum AssetRegistryError: Error, Equatable, LocalizedError {
     case resourceUnavailable(name: String, diagnostic: String)
+    case manifestUnavailable(diagnostic: String)
+    case compositionAnchorMissing(scene: String, name: String)
     case semanticEntityMissing(scene: String, name: String)
 
     var errorDescription: String? {
         switch self {
         case let .resourceUnavailable(name, _):
             return "The spatial resource \"\(name)\" is unavailable. You can leave this space safely and try again."
+        case .manifestUnavailable:
+            return "The spatial asset manifest is unavailable. You can leave this space safely and try again."
+        case let .compositionAnchorMissing(scene, name):
+            return "The spatial scene \"\(scene)\" is missing its required composition anchor \"\(name)\"."
         case let .semanticEntityMissing(scene, name):
             return "The spatial scene \"\(scene)\" is missing its required \"\(name)\" training target."
         }
     }
 }
 
+struct SpatialAssetPlacement: Decodable, Equatable, Sendable {
+    let anchorName: String
+    let resourceName: String
+    let semanticName: String
+}
+
+private struct SpatialAssetManifest: Decodable, Sendable {
+    struct Scene: Decodable, Sendable {
+        let sceneName: String
+        let placements: [SpatialAssetPlacement]
+    }
+
+    let schemaVersion: Int
+    let bundleSubdirectory: String
+    let resources: [String]
+    let scenes: [Scene]
+}
+
 /// Loads package content and adds safe interaction affordances to authored semantic targets.
 @MainActor
 final class AssetRegistry {
     typealias EntityLoader = @MainActor @Sendable (String, Bundle) async throws -> Entity
+    typealias LooseEntityLoader = @MainActor @Sendable (URL) async throws -> Entity
 
     private enum CollisionProxy {
         case box
@@ -52,32 +77,53 @@ final class AssetRegistry {
         let collisionProxy: CollisionProxy
     }
 
-    private let bundle: Bundle
+    private let sceneBundle: Bundle
+    private let assetBundle: Bundle
     private let entityLoader: EntityLoader
+    private let looseEntityLoader: LooseEntityLoader
+    private var cachedManifest: SpatialAssetManifest?
+    private var cachedScenes: [SpatialSceneName: Entity] = [:]
 
     init(
         bundle: Bundle = realityKitContentBundle,
-        loader: EntityLoader? = nil
+        assetBundle: Bundle = .main,
+        loader: EntityLoader? = nil,
+        looseLoader: LooseEntityLoader? = nil
     ) {
-        self.bundle = bundle
+        sceneBundle = bundle
+        self.assetBundle = assetBundle
         entityLoader = loader ?? { name, bundle in
             try await Entity(named: name, in: bundle)
+        }
+        looseEntityLoader = looseLoader ?? { url in
+            try await Entity(contentsOf: url)
         }
     }
 
     var compiledArchiveURL: URL? {
-        bundle.url(forResource: "RealityKitContent", withExtension: "reality")
+        sceneBundle.url(forResource: "RealityKitContent", withExtension: "reality")
     }
 
     func loadScene(_ scene: SpatialSceneName) async throws -> Entity {
+        if let cachedScene = cachedScenes[scene] {
+            return cachedScene
+        }
+
         let entity = try await loadEntity(named: scene.rawValue)
         entity.name = scene.rawValue
+        do {
+            try await composeLooseAssets(in: entity, for: scene)
+        } catch {
+            entity.removeFromParent()
+            throw error
+        }
+        cachedScenes[scene] = entity
         return entity
     }
 
     func loadEntity(named name: String) async throws -> Entity {
         do {
-            return try await entityLoader(name, bundle)
+            return try await entityLoader(name, sceneBundle)
         } catch let cancellation as CancellationError {
             throw cancellation
         } catch {
@@ -86,6 +132,51 @@ final class AssetRegistry {
                 diagnostic: String(describing: error)
             )
         }
+    }
+
+    func loadLooseAsset(named name: String) async throws -> Entity {
+        let url = try looseAssetURL(named: name)
+        do {
+            return try await looseEntityLoader(url)
+        } catch let cancellation as CancellationError {
+            throw cancellation
+        } catch {
+            throw AssetRegistryError.resourceUnavailable(
+                name: name,
+                diagnostic: String(describing: error)
+            )
+        }
+    }
+
+    func deliveryAssetNames() throws -> [String] {
+        try manifest().resources
+    }
+
+    func placementContracts(for scene: SpatialSceneName) throws -> [SpatialAssetPlacement] {
+        let loadedManifest = try manifest()
+        guard let sceneManifest = loadedManifest.scenes.first(where: {
+            $0.sceneName == scene.rawValue
+        }) else {
+            throw AssetRegistryError.manifestUnavailable(
+                diagnostic: "No placement entry for \(scene.rawValue)"
+            )
+        }
+        return sceneManifest.placements
+    }
+
+    func isSceneCached(_ scene: SpatialSceneName) -> Bool {
+        cachedScenes[scene] != nil
+    }
+
+    func releaseScene(_ scene: SpatialSceneName) {
+        cachedScenes.removeValue(forKey: scene)?.removeFromParent()
+    }
+
+    func releaseAllScenes() {
+        for scene in cachedScenes.values {
+            scene.removeFromParent()
+        }
+        cachedScenes.removeAll(keepingCapacity: false)
     }
 
     func firstEntity(named name: String, in root: Entity) -> Entity? {
@@ -135,6 +226,87 @@ final class AssetRegistry {
 
     func semanticEntityNames(for scene: SpatialSceneName) -> [String] {
         Self.descriptors(for: scene).map(\.name)
+    }
+
+    private func looseAssetURL(named name: String) throws -> URL {
+        let loadedManifest = try manifest()
+        guard loadedManifest.resources.contains(name) else {
+            throw AssetRegistryError.resourceUnavailable(
+                name: name,
+                diagnostic: "Resource is not declared in spatial_asset_manifest_v1.json"
+            )
+        }
+        guard let url = assetBundle.url(
+            forResource: name,
+            withExtension: "usdz",
+            subdirectory: loadedManifest.bundleSubdirectory
+        ) else {
+            throw AssetRegistryError.resourceUnavailable(
+                name: name,
+                diagnostic: "Missing loose bundle resource USDZ/\(name).usdz"
+            )
+        }
+        return url
+    }
+
+    private func manifest() throws -> SpatialAssetManifest {
+        if let cachedManifest {
+            return cachedManifest
+        }
+
+        guard let url = assetBundle.url(
+            forResource: "spatial_asset_manifest_v1",
+            withExtension: "json"
+        ) else {
+            throw AssetRegistryError.manifestUnavailable(
+                diagnostic: "spatial_asset_manifest_v1.json is missing from the app bundle"
+            )
+        }
+
+        do {
+            let data = try Data(contentsOf: url)
+            let decoded = try JSONDecoder().decode(SpatialAssetManifest.self, from: data)
+            guard decoded.schemaVersion == 1 else {
+                throw AssetRegistryError.manifestUnavailable(
+                    diagnostic: "Unsupported schema version \(decoded.schemaVersion)"
+                )
+            }
+            cachedManifest = decoded
+            return decoded
+        } catch let registryError as AssetRegistryError {
+            throw registryError
+        } catch {
+            throw AssetRegistryError.manifestUnavailable(
+                diagnostic: String(describing: error)
+            )
+        }
+    }
+
+    private func composeLooseAssets(in root: Entity, for scene: SpatialSceneName) async throws {
+        let placements = try placementContracts(for: scene)
+        var prototypes: [String: Entity] = [:]
+
+        for placement in placements {
+            guard let anchor = firstEntity(named: placement.anchorName, in: root) else {
+                throw AssetRegistryError.compositionAnchorMissing(
+                    scene: scene.rawValue,
+                    name: placement.anchorName
+                )
+            }
+
+            let prototype: Entity
+            if let cachedPrototype = prototypes[placement.resourceName] {
+                prototype = cachedPrototype
+            } else {
+                let loadedPrototype = try await loadLooseAsset(named: placement.resourceName)
+                prototypes[placement.resourceName] = loadedPrototype
+                prototype = loadedPrototype
+            }
+
+            let payload = prototype.clone(recursive: true)
+            payload.name = placement.semanticName
+            anchor.addChild(payload)
+        }
     }
 
     private func decorate(_ entity: Entity, with descriptor: SemanticDescriptor) {
