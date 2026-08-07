@@ -6,7 +6,11 @@ enum PracticeMachineContentError: Error, Equatable, Sendable {
     case invalidAEDStateCount(Int)
     case missingCourseModule(String)
     case missingCourseBlock(String)
+    case blockedCourseBlock(String)
+    case missingCourseBlockSourceReferences(String)
+    case blockedCourseBlockSourceReference(blockID: String, referenceID: String)
     case missingClinicalFact(String)
+    case missingClinicalFactSources(String)
     case blockedClinicalFact(String)
     case missingClinicalFactValue(factID: String, key: String)
     case invalidClinicalFactValue(factID: String, key: String)
@@ -20,6 +24,19 @@ struct PracticeContentInstruction: Sendable, Equatable {
     let title: String
     let body: String
     let sourceReferences: [SourceReference]
+}
+
+/// Learner-visible traceability for corrective clinical guidance.
+struct PracticeSourceCitation: Identifiable, Sendable, Equatable {
+    let factID: String
+    let document: String
+    let edition: String
+    let section: String
+    let page: Int
+
+    var id: String {
+        "\(factID)|\(document)|\(edition)|\(section)|\(page)"
+    }
 }
 
 /// Validated bridge from audited Phase 3B content to the Phase 5A runtime reducers.
@@ -36,7 +53,11 @@ struct PracticeMachineContentContract: Sendable, Equatable {
     let simulatedCallTitle: String
     let simulatedCallBody: String
     let simulatedCallSourceReferences: [SourceReference]
+    let responseInstruction: PracticeContentInstruction
+    let breathingBranchInstruction: PracticeContentInstruction
     let dispatcherReminder: PracticeContentInstruction
+    let aedDelegationInstruction: PracticeContentInstruction
+    let remediationCitationsByFactID: [String: [PracticeSourceCitation]]
     let aedPreparationInstructions: [AEDChestCondition: PracticeContentInstruction]
     let aedPadPlacementInstruction: PracticeContentInstruction
 
@@ -95,17 +116,23 @@ struct PracticeMachineContentContract: Sendable, Equatable {
         guard let module3 = course.modules.first(where: { $0.id == "M3" }) else {
             throw PracticeMachineContentError.missingCourseModule("M3")
         }
-        guard let callBlock = module3.lessons
-            .flatMap(\.contentBlocks)
-            .first(where: { $0.id == "M3-B4" })
-        else {
+        let module3Blocks = Dictionary(
+            uniqueKeysWithValues: module3.lessons.flatMap(\.contentBlocks).map { ($0.id, $0) }
+        )
+        guard let responseBlock = module3Blocks["M3-B3"] else {
+            throw PracticeMachineContentError.missingCourseBlock("M3-B3")
+        }
+        guard let callBlock = module3Blocks["M3-B4"] else {
             throw PracticeMachineContentError.missingCourseBlock("M3-B4")
         }
-        guard let dispatcherBlock = module3.lessons
-            .flatMap(\.contentBlocks)
-            .first(where: { $0.id == "M3-B5" })
-        else {
+        guard let dispatcherBlock = module3Blocks["M3-B5"] else {
             throw PracticeMachineContentError.missingCourseBlock("M3-B5")
+        }
+        guard let aedDelegationBlock = module3Blocks["M3-B6"] else {
+            throw PracticeMachineContentError.missingCourseBlock("M3-B6")
+        }
+        guard let breathingBranchBlock = module3Blocks["M3-B8"] else {
+            throw PracticeMachineContentError.missingCourseBlock("M3-B8")
         }
         guard let module4 = course.modules.first(where: { $0.id == "M4" }) else {
             throw PracticeMachineContentError.missingCourseModule("M4")
@@ -140,6 +167,31 @@ struct PracticeMachineContentContract: Sendable, Equatable {
         guard let padPlacementBlock = module5Blocks["M5-B3"] else {
             throw PracticeMachineContentError.missingCourseBlock("M5-B3")
         }
+
+        try ([
+            responseBlock,
+            callBlock,
+            dispatcherBlock,
+            aedDelegationBlock,
+            breathingBranchBlock,
+            tempoBlock,
+            padPlacementBlock
+        ] + preparationBlockIDs.compactMap { module5Blocks[$0.1] })
+            .forEach(validateInstructionBlock)
+
+        let remediationFactIDs = [
+            "fact.drsabc.danger",
+            "fact.drsabc.call995",
+            "fact.drsabc.dispatcherCapabilities",
+            "fact.drsabc.getAed",
+            "fact.recognition.gaspingAbnormal",
+            "fact.drsabc.breathingCheck"
+        ]
+        let remediationCitations = try Dictionary(
+            uniqueKeysWithValues: remediationFactIDs.map { factID in
+                (factID, try requiredCitations(facts: facts, factID: factID))
+            }
+        )
 
         let breathingMaximum = try requiredNumber(
             facts: facts,
@@ -230,7 +282,11 @@ struct PracticeMachineContentContract: Sendable, Equatable {
             simulatedCallTitle: callBlock.title,
             simulatedCallBody: callBlock.body,
             simulatedCallSourceReferences: callBlock.sourceReferences,
+            responseInstruction: PracticeContentInstruction(block: responseBlock),
+            breathingBranchInstruction: PracticeContentInstruction(block: breathingBranchBlock),
             dispatcherReminder: PracticeContentInstruction(block: dispatcherBlock),
+            aedDelegationInstruction: PracticeContentInstruction(block: aedDelegationBlock),
+            remediationCitationsByFactID: remediationCitations,
             aedPreparationInstructions: preparationInstructions,
             aedPadPlacementInstruction: PracticeContentInstruction(block: padPlacementBlock)
         )
@@ -260,6 +316,50 @@ struct PracticeMachineContentContract: Sendable, Equatable {
             )
         }
         return number
+    }
+
+    private static func validateInstructionBlock(_ block: ContentBlock) throws {
+        switch block.reviewStatus {
+        case .sourceChecked, .clinicallyApproved, .published:
+            break
+        case .draft, .clinicalReviewRequired, .superseded, .retired:
+            throw PracticeMachineContentError.blockedCourseBlock(block.id)
+        }
+        guard !block.sourceReferences.isEmpty else {
+            throw PracticeMachineContentError.missingCourseBlockSourceReferences(block.id)
+        }
+        if let blockedReference = block.sourceReferences.first(where: {
+            $0.typedReviewStatus.blocksScoredUse
+        }) {
+            throw PracticeMachineContentError.blockedCourseBlockSourceReference(
+                blockID: block.id,
+                referenceID: blockedReference.id
+            )
+        }
+    }
+
+    private static func requiredCitations(
+        facts: ClinicalFactCatalogue,
+        factID: String
+    ) throws -> [PracticeSourceCitation] {
+        guard let fact = facts[factID] else {
+            throw PracticeMachineContentError.missingClinicalFact(factID)
+        }
+        guard !fact.reviewStatus.blocksScoredUse else {
+            throw PracticeMachineContentError.blockedClinicalFact(factID)
+        }
+        guard !fact.sources.isEmpty else {
+            throw PracticeMachineContentError.missingClinicalFactSources(factID)
+        }
+        return fact.sources.map { source in
+            PracticeSourceCitation(
+                factID: factID,
+                document: source.doc,
+                edition: source.edition,
+                section: source.section,
+                page: source.page
+            )
+        }
     }
 
     private static func requiredBoolean(

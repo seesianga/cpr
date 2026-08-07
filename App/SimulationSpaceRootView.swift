@@ -13,6 +13,7 @@ struct SimulationSpaceRootView: View {
     @State private var assetRegistry = AssetRegistry()
     @State private var cprSession = CPRPracticeSessionModel()
     @State private var aedSession = AEDPracticeSessionModel()
+    @State private var drsabcSession = DRSABCPracticeSessionModel()
     @State private var draggedPadName: String?
     @State private var draggedPadOffset = SIMD3<Float>.zero
 
@@ -78,11 +79,12 @@ struct SimulationSpaceRootView: View {
             case .aed:
                 aedSession.prepare()
             case .drsabc:
-                break
+                drsabcSession.prepare()
             }
         }
         .onChange(of: appModel.isSimulationPaused, initial: true) { _, paused in
             aedSession.setPaused(paused)
+            drsabcSession.setPaused(paused)
             Task { await cprSession.setPaused(paused) }
         }
         .onChange(of: scenePhase, initial: true) { _, newPhase in
@@ -162,10 +164,7 @@ struct SimulationSpaceRootView: View {
                     }
                 )
             case .drsabc:
-                Text("DRSABC guided practice is prepared in the next milestone.")
-                    .frame(width: 560)
-                    .padding(20)
-                    .glassBackgroundEffect()
+                DRSABCPracticeImmersivePanel(model: drsabcSession)
             }
         }
     }
@@ -271,7 +270,20 @@ struct SimulationSpaceRootView: View {
             }
 
         case .drsabc:
-            break
+            guard let target = Self.semanticAncestor(
+                of: entity,
+                matching: ["safety_hazards", "training_manikin", "bystander_01"]
+            ) else { return }
+            switch (drsabcSession.currentStep, target.name) {
+            case (.danger, "safety_hazards"):
+                drsabcSession.inspectDanger(sceneUnsafe: true, enteredUnsafeScene: false)
+            case (.response, "training_manikin"):
+                drsabcSession.checkResponse(isUnresponsive: true)
+            case (.shout, "bystander_01"):
+                drsabcSession.shoutForHelp(helpActivated: true)
+            default:
+                break
+            }
         }
     }
 
