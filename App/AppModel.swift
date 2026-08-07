@@ -18,14 +18,17 @@ final class AppModel {
 
     private(set) var scenePhase: ScenePhase = .active
     private(set) var immersionState: ImmersionState = .closed
+    private(set) var isSimulationPaused = false
     var hasUserOptedInToImmersion = false
     var immersionNotice: String?
+    var selectedSimulationScene: SpatialSceneName = .cprPracticeRoom
 
     /// Records application lifecycle changes without making assumptions about learner progress.
     func handleScenePhase(_ newPhase: ScenePhase) {
         scenePhase = newPhase
 
         if newPhase != .active, immersionState == .open {
+            isSimulationPaused = true
             immersionNotice = "Simulation paused while Lifesaver Vision is inactive."
         }
     }
@@ -45,6 +48,7 @@ final class AppModel {
         switch await openImmersiveSpace(id: Self.simulationSpaceID) {
         case .opened:
             immersionState = .open
+            isSimulationPaused = false
         case .userCancelled:
             immersionState = .closed
             immersionNotice = "Simulation entry was cancelled."
@@ -64,11 +68,20 @@ final class AppModel {
         immersionState = .dismissing
         await dismissImmersiveSpace()
         immersionState = .closed
+        isSimulationPaused = false
         immersionNotice = nil
+    }
+
+    /// Pauses app-owned scene activity. RealityKit rendering remains available for safe exit controls.
+    func toggleSimulationPause() {
+        guard immersionState == .open else { return }
+        isSimulationPaused.toggle()
+        immersionNotice = isSimulationPaused ? "Simulation paused." : nil
     }
 
     /// Reconciles state when the system closes the immersive space independently of the exit button.
     func simulationSpaceDidDisappear() {
         immersionState = .closed
+        isSimulationPaused = false
     }
 }

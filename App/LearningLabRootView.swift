@@ -1,29 +1,49 @@
 import RealityKit
 import SwiftUI
 
-/// Volumetric learning laboratory placeholder for later procedural clinical models.
+/// Volumetric laboratory presenting the original heart-and-lungs learning model.
 struct LearningLabRootView: View {
     @Environment(\.scenePhase) private var scenePhase
     @Environment(AppModel.self) private var appModel
+    @State private var isLoading = true
+    @State private var loadErrorMessage: String?
+
+    private let assetRegistry = AssetRegistry()
 
     var body: some View {
         ZStack {
-            RealityView { _ in
-                // RealityKit entities are intentionally added in a later phase.
+            RealityView { content in
+                do {
+                    let scene = try await assetRegistry.loadScene(.heartAndLungsVolume)
+                    try assetRegistry.decorateSemanticEntities(
+                        in: scene,
+                        for: .heartAndLungsVolume
+                    )
+                    content.add(scene)
+                    isLoading = false
+                    loadErrorMessage = nil
+                } catch is CancellationError {
+                    // View teardown cancels in-flight loading; no learner-facing error is needed.
+                } catch {
+                    isLoading = false
+                    loadErrorMessage = error.localizedDescription
+                }
             }
 
-            VStack(spacing: 12) {
-                Image(systemName: "cube.transparent")
-                    .font(.system(size: 44))
-                    .foregroundStyle(.blue)
-                Text("Learning Laboratory")
-                    .font(.title2)
-                    .fontWeight(.semibold)
-                Text("Volumetric learning models will appear here.")
-                    .foregroundStyle(.secondary)
+            if isLoading {
+                ProgressView("Loading learning model…")
+                    .padding(24)
+                    .glassBackgroundEffect()
+                    .accessibilityLabel("Loading the heart and lungs learning model")
+            } else if let loadErrorMessage {
+                ContentUnavailableView {
+                    Label("Learning Model Unavailable", systemImage: "heart.slash")
+                } description: {
+                    Text(loadErrorMessage)
+                }
+                .padding(24)
+                .glassBackgroundEffect()
             }
-            .padding(28)
-            .glassBackgroundEffect()
         }
         .accessibilityElement(children: .contain)
         .onChange(of: scenePhase, initial: true) { _, newPhase in
