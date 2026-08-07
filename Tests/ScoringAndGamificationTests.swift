@@ -214,6 +214,233 @@ final class ScoringAndGamificationTests: XCTestCase {
         )
     }
 
+    func testCPRPracticeScoreUsesOnlyCollectedPracticeDimensionsAndIsDeterministic() throws {
+        let machine = completedPracticeMachine(handStacking: .likelyStacked)
+        let input = practiceScoreInput(from: machine)
+
+        let first = try scoringEngine.evaluate(input)
+        let replayed = try scoringEngine.evaluate(input)
+
+        XCTAssertEqual(first, replayed)
+        XCTAssertEqual(
+            first.contributions.map(\.dimension),
+            CPRPracticeScoringDimension.allCases
+        )
+        XCTAssertEqual(first.normalisedScore, 1, accuracy: 0.000_001)
+        XCTAssertEqual(first.percentage, 100, accuracy: 0.000_001)
+        XCTAssertTrue(first.passed)
+        XCTAssertTrue(first.xpEligible)
+        XCTAssertFalse(first.hasUnsafeCompletion)
+
+        let encodedInput = try XCTUnwrap(String(
+            data: JSONEncoder().encode(input),
+            encoding: .utf8
+        ))
+        XCTAssertFalse(encodedInput.contains("compressionDepth"))
+        XCTAssertFalse(encodedInput.contains("forceNewtons"))
+        XCTAssertFalse(encodedInput.contains("sceneSafety"))
+        XCTAssertFalse(encodedInput.contains("communication"))
+    }
+
+    func testIndeterminatePostureDoesNotBlockAccessibleFallbackCompletion() throws {
+        let machine = completedPracticeMachine(handStacking: .indeterminate)
+
+        let outcome = try scoringEngine.evaluate(practiceScoreInput(from: machine))
+        let posture = try XCTUnwrap(
+            outcome.contributions.first(where: { $0.dimension == .postureHeuristic })
+        )
+
+        XCTAssertNil(posture.normalisedScore)
+        XCTAssertFalse(posture.wasAssessed)
+        XCTAssertEqual(posture.evidenceCount, 0)
+        XCTAssertEqual(outcome.normalisedScore, 1, accuracy: 0.000_001)
+        XCTAssertTrue(outcome.passed)
+        XCTAssertTrue(outcome.xpEligible)
+    }
+
+    func testIncompleteCompressionCycleCannotPassOrEarnCompletionXP() throws {
+        var machine = activePracticeMachine(
+            handStacking: .indeterminate,
+            compressionCount: 1
+        )
+        machine.handle(.stop(.emergencyTeamTookOver))
+        machine.handle(.finish)
+
+        let outcome = try scoringEngine.evaluate(practiceScoreInput(from: machine))
+
+        XCTAssertEqual(machine.metrics.completedCycles, 0)
+        XCTAssertFalse(outcome.passed)
+        XCTAssertFalse(outcome.xpEligible)
+    }
+
+    func testCPRCriticalFailureBlocksPassAndXPAndProducesSortedUniqueRemediation() throws {
+        let machine = completedPracticeMachine(handStacking: .likelyStacked)
+        let input = CPRPracticeScoreInput(
+            attemptID: "practice-attempt-unsafe",
+            contentVersion: "1.0.0",
+            metrics: machine.metrics,
+            criticalFailures: [
+                .prolongedInterruption,
+                .compressionOnXiphoid,
+                .prolongedInterruption
+            ]
+        )
+
+        let outcome = try scoringEngine.evaluate(input)
+
+        XCTAssertFalse(outcome.passed)
+        XCTAssertFalse(outcome.xpEligible)
+        XCTAssertTrue(outcome.hasUnsafeCompletion)
+        XCTAssertTrue(outcome.requiresMandatoryRemediation)
+        XCTAssertEqual(
+            outcome.remediationCodes,
+            [
+                CPRPracticeCriticalFailure.compressionOnXiphoid.rawValue,
+                CPRPracticeCriticalFailure.prolongedInterruption.rawValue
+            ].sorted()
+        )
+    }
+
+    func testCPRScoringInfersProlongedInterruptionFailureFromMetrics() throws {
+        var machine = activePracticeMachine(handStacking: .likelyStacked, compressionCount: 4)
+        machine.handle(.recordInterruption(durationSeconds: 10.01))
+        machine.handle(.stop(.emergencyTeamTookOver))
+        machine.handle(.finish)
+        let input = CPRPracticeScoreInput(
+            attemptID: "practice-attempt-interruption",
+            contentVersion: "1.0.0",
+            metrics: machine.metrics,
+            // Defense in depth: scoring still blocks if a caller accidentally omits the
+            // state machine's critical-failure array.
+            criticalFailures: []
+        )
+
+        let outcome = try scoringEngine.evaluate(input)
+
+        XCTAssertTrue(outcome.hasUnsafeCompletion)
+        XCTAssertFalse(outcome.xpEligible)
+        XCTAssertEqual(
+            outcome.remediationCodes,
+            [CPRPracticeCriticalFailure.prolongedInterruption.rawValue]
+        )
+    }
+
+    func testCPRScoringRejectsInconsistentMetrics() {
+        let machine = completedPracticeMachine(handStacking: .likelyStacked)
+        var invalidMetrics = machine.metrics
+        invalidMetrics.cadenceBands.removeLast()
+        let input = CPRPracticeScoreInput(
+            attemptID: "practice-attempt-invalid",
+            contentVersion: "1.0.0",
+            metrics: invalidMetrics,
+            criticalFailures: []
+        )
+
+        XCTAssertThrowsError(try scoringEngine.evaluate(input)) { error in
+            XCTAssertEqual(error as? CPRPracticeScoringError, .invalidMetrics)
+        }
+    }
+
+    func testCPRSummaryWithNoVerifiedSensorLabelsDepthAndForceNotPhysicallyAssessed() async throws {
+        let machine = completedPracticeMachine(handStacking: .indeterminate)
+        let input = practiceScoreInput(from: machine)
+        let fixtureMeasurement = CPRSensorMeasurement(
+            providerIdentifier: "unit-test-sensor",
+            capturedAt: Date(timeIntervalSince1970: 1_700_000_010),
+            compressionDepthMetres: 0.05,
+            forceNewtons: 400
+        )
+        let unverifiedProvider = InMemoryCPRSensorProvider(
+            isVerifiedExternalSensorConnected: false,
+            measurement: fixtureMeasurement
+        )
+
+        let withoutProvider = try await scoringEngine.summarize(input)
+        let withUnverifiedProvider = try await scoringEngine.summarize(
+            input,
+            sensorProvider: unverifiedProvider
+        )
+
+        for summary in [withoutProvider, withUnverifiedProvider] {
+            XCTAssertEqual(summary.depthAssessment.status, .notPhysicallyAssessed)
+            XCTAssertEqual(summary.depthAssessment.statusLabel, "Not physically assessed")
+            XCTAssertNil(summary.depthAssessment.value)
+            XCTAssertEqual(summary.forceAssessment.status, .notPhysicallyAssessed)
+            XCTAssertEqual(summary.forceAssessment.statusLabel, "Not physically assessed")
+            XCTAssertNil(summary.forceAssessment.value)
+            XCTAssertEqual(summary.recordLabel, "Internal practice completion record")
+            XCTAssertTrue(summary.certificationNotice.contains("not SRFAC certification"))
+            XCTAssertTrue(summary.certificationNotice.contains("instructor sign-off"))
+        }
+    }
+
+    func testCPRSummaryExposesOnlyValuesFromVerifiedExternalSensor() async throws {
+        let machine = completedPracticeMachine(handStacking: .likelyStacked)
+        let capturedAt = Date(timeIntervalSince1970: 1_700_000_020)
+        let verifiedProvider = InMemoryCPRSensorProvider(
+            isVerifiedExternalSensorConnected: true,
+            measurement: CPRSensorMeasurement(
+                providerIdentifier: "unit-test-sensor",
+                capturedAt: capturedAt,
+                compressionDepthMetres: 0.051,
+                forceNewtons: 410
+            )
+        )
+
+        let summary = try await scoringEngine.summarize(
+            practiceScoreInput(from: machine),
+            sensorProvider: verifiedProvider
+        )
+
+        XCTAssertEqual(summary.depthAssessment.status, .verifiedExternalSensor)
+        XCTAssertEqual(summary.depthAssessment.value, 0.051)
+        XCTAssertEqual(summary.depthAssessment.unit, .metres)
+        XCTAssertEqual(summary.depthAssessment.providerIdentifier, "unit-test-sensor")
+        XCTAssertEqual(summary.depthAssessment.capturedAt, capturedAt)
+        XCTAssertEqual(summary.forceAssessment.status, .verifiedExternalSensor)
+        XCTAssertEqual(summary.forceAssessment.value, 410)
+        XCTAssertEqual(summary.forceAssessment.unit, .newtons)
+    }
+
+    func testCPRPracticeGamificationUsesSafeCompletionXPAndXPEligibility() throws {
+        let machine = completedPracticeMachine(handStacking: .indeterminate)
+        let safeOutcome = try scoringEngine.evaluate(practiceScoreInput(from: machine))
+        let safeEvent = practiceGamificationEvent(outcome: safeOutcome)
+        let policy = GamificationPolicy.standard(badgeRules: [])
+
+        let safeDecision = gamificationEngine.evaluate(
+            event: safeEvent,
+            currentXP: 25,
+            metrics: BadgeMetricSnapshot(values: [:]),
+            existingAwards: [],
+            approvedSignOffs: [],
+            policy: policy
+        )
+
+        let unsafeInput = CPRPracticeScoreInput(
+            attemptID: "practice-attempt-unsafe-xp",
+            contentVersion: "1.0.0",
+            metrics: machine.metrics,
+            criticalFailures: [.compressionOnXiphoid]
+        )
+        let unsafeOutcome = try scoringEngine.evaluate(unsafeInput)
+        let unsafeDecision = gamificationEngine.evaluate(
+            event: practiceGamificationEvent(outcome: unsafeOutcome),
+            currentXP: 25,
+            metrics: BadgeMetricSnapshot(values: [:]),
+            existingAwards: [],
+            approvedSignOffs: [],
+            policy: policy
+        )
+
+        XCTAssertEqual(safeDecision.xpAwarded, policy.safeCompletionXP)
+        XCTAssertEqual(safeDecision.totalXP, 25 + policy.safeCompletionXP)
+        XCTAssertEqual(unsafeDecision.xpAwarded, 0)
+        XCTAssertEqual(unsafeDecision.totalXP, 25)
+        XCTAssertLessThan(safeDecision.level.id, 8)
+        XCTAssertFalse(safeDecision.level.requiresApprovedPracticalSignOff)
+    }
+
     private func maximumDimensionScores() -> [ScoringDimension: Double] {
         Dictionary(uniqueKeysWithValues: ScoringDimension.allCases.map { ($0, 1) })
     }
@@ -232,6 +459,59 @@ final class ScoringAndGamificationTests: XCTestCase {
 
     private func event(outcome: ScenarioScoreOutcome) -> GamificationEvent {
         GamificationEvent(
+            learnerID: "learner-1",
+            courseID: "course-1",
+            contentVersion: outcome.contentVersion,
+            sourceAttemptID: outcome.attemptID,
+            completedAt: Date(timeIntervalSince1970: 1_700_000_000),
+            scoreOutcome: outcome
+        )
+    }
+
+    private func activePracticeMachine(
+        handStacking: CPRHandStackingHeuristic,
+        compressionCount: Int = CPRPracticePolicy.sourceBacked.preferredCompressionsPerCycle
+    ) -> CPRPracticeStateMachine {
+        var machine = CPRPracticeStateMachine()
+        machine.handle(.confirmPositioning)
+        machine.handle(.classifyHandPlacement(.sternumTarget))
+        let interval = 60 / CPRPracticePolicy.sourceBacked.practiceTempoPerMinute
+        for index in 0..<compressionCount {
+            machine.handle(
+                .compressionDetected(
+                    timestampSeconds: Double(index) * interval,
+                    placement: .sternumTarget,
+                    handStacking: handStacking
+                )
+            )
+        }
+        return machine
+    }
+
+    private func completedPracticeMachine(
+        handStacking: CPRHandStackingHeuristic
+    ) -> CPRPracticeStateMachine {
+        var machine = activePracticeMachine(handStacking: handStacking)
+        machine.handle(.stop(.emergencyTeamTookOver))
+        machine.handle(.finish)
+        return machine
+    }
+
+    private func practiceScoreInput(
+        from machine: CPRPracticeStateMachine
+    ) -> CPRPracticeScoreInput {
+        CPRPracticeScoreInput(
+            attemptID: "practice-attempt-1",
+            contentVersion: "1.0.0",
+            metrics: machine.metrics,
+            criticalFailures: machine.criticalFailures
+        )
+    }
+
+    private func practiceGamificationEvent(
+        outcome: CPRPracticeScoreOutcome
+    ) -> CPRPracticeGamificationEvent {
+        CPRPracticeGamificationEvent(
             learnerID: "learner-1",
             courseID: "course-1",
             contentVersion: outcome.contentVersion,

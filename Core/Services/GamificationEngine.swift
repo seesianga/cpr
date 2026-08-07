@@ -10,11 +10,61 @@ struct GamificationEngine: Sendable {
         approvedSignOffs: [PracticalSignOffValue],
         policy: GamificationPolicy
     ) -> GamificationDecision {
-        let xpAwarded = event.scoreOutcome.xpEligible ? max(0, policy.safeCompletionXP) : 0
+        makeDecision(
+            learnerID: event.learnerID,
+            courseID: event.courseID,
+            sourceAttemptID: event.sourceAttemptID,
+            completedAt: event.completedAt,
+            xpEligible: event.scoreOutcome.xpEligible,
+            currentXP: currentXP,
+            metrics: metrics,
+            existingAwards: existingAwards,
+            approvedSignOffs: approvedSignOffs,
+            policy: policy
+        )
+    }
+
+    /// Awards the same policy-defined safe-completion XP used by scenario attempts,
+    /// without translating CPR practice evidence into unrelated scenario dimensions.
+    func evaluate(
+        event: CPRPracticeGamificationEvent,
+        currentXP: Int,
+        metrics: BadgeMetricSnapshot,
+        existingAwards: [BadgeAwardValue],
+        approvedSignOffs: [PracticalSignOffValue],
+        policy: GamificationPolicy
+    ) -> GamificationDecision {
+        makeDecision(
+            learnerID: event.learnerID,
+            courseID: event.courseID,
+            sourceAttemptID: event.sourceAttemptID,
+            completedAt: event.completedAt,
+            xpEligible: event.scoreOutcome.xpEligible,
+            currentXP: currentXP,
+            metrics: metrics,
+            existingAwards: existingAwards,
+            approvedSignOffs: approvedSignOffs,
+            policy: policy
+        )
+    }
+
+    private func makeDecision(
+        learnerID: String,
+        courseID: String,
+        sourceAttemptID: String,
+        completedAt: Date,
+        xpEligible: Bool,
+        currentXP: Int,
+        metrics: BadgeMetricSnapshot,
+        existingAwards: [BadgeAwardValue],
+        approvedSignOffs: [PracticalSignOffValue],
+        policy: GamificationPolicy
+    ) -> GamificationDecision {
+        let xpAwarded = xpEligible ? max(0, policy.safeCompletionXP) : 0
         let totalXP = max(0, currentXP) + xpAwarded
         let signOffApproved = approvedSignOffs.contains {
-            $0.learnerID == event.learnerID &&
-            $0.courseID == event.courseID &&
+            $0.learnerID == learnerID &&
+            $0.courseID == courseID &&
             $0.status == .approved
         }
         let eligibleLevels = policy.levels.filter {
@@ -27,23 +77,23 @@ struct GamificationEngine: Sendable {
                 title: "Awareness Learner",
                 minimumXP: 0,
                 requiresApprovedPracticalSignOff: false
-            )
+        )
 
         let existingBadgeIDs = Set(existingAwards.map(\.badgeID))
         let awards: [BadgeAwardValue]
-        if event.scoreOutcome.xpEligible {
+        if xpEligible {
             awards = policy.badgeRules.compactMap { rule in
                 guard !existingBadgeIDs.contains(rule.id),
                       let value = metrics.values[rule.metric],
                       rule.comparison.matches(value: value, target: rule.target)
                 else { return nil }
                 return BadgeAwardValue(
-                    id: "\(event.learnerID)#\(rule.id)",
-                    learnerID: event.learnerID,
+                    id: "\(learnerID)#\(rule.id)",
+                    learnerID: learnerID,
                     badgeID: rule.id,
                     title: rule.title,
-                    sourceAttemptID: event.sourceAttemptID,
-                    awardedAt: event.completedAt
+                    sourceAttemptID: sourceAttemptID,
+                    awardedAt: completedAt
                 )
             }
         } else {

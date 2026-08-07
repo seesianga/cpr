@@ -42,7 +42,9 @@ targets:
       - path: Core
       - path: Features
       - path: Spatial
-      - path: Audio
+      # Phase 5A links only the audio boundary. Generated Phase 6 media is intentionally
+      # registered by its own manifest/resource phase so duplicate working files never ship.
+      - path: Audio/AudioDirector.swift
       - path: Resources/Courses
         buildPhase: resources
       - path: Resources/Questions
