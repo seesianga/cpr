@@ -516,3 +516,14 @@ Test Suite 'Selected tests' passed at 2026-08-08 00:48:52.569.
 The simulator continued to log RealityKit `NetworkAssetManager` dependency diagnostics
 during successful loads. No RCP Live Preview or physical-device visual, comfort, memory,
 frame-rate, or thermal verification was performed; those operator gates remain open.
+
+### Phase 4R.3 final measurement note
+
+After Phase 4R.2 embedded the complete scenario definitions for fail-closed runtime
+clinical validation, the final Debug-Beta app measures 156,456,890 regular-file bytes
+(149.21 MiB) and 152,936 allocated KiB. The RealityKit archive remains 2,351,118 bytes,
+all 50 loose USDZs remain present, and the overall reduction from the Phase 4 baseline is
+78.51%. The final complete `LifesaverVisionTests` run executed 76 tests with zero
+failures, including the eight-test 63-resource audit. The audit findings document that
+was intentionally outside the historical Phase 4 commits is now tracked in the Phase
+4R.2 remediation commit.
