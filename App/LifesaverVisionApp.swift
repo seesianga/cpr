@@ -1,3 +1,4 @@
+import SwiftData
 import SwiftUI
 
 @main
@@ -5,8 +6,10 @@ struct LifesaverVisionApp: App {
     @State private var appModel = AppModel()
     @State private var authenticationModel: AuthenticationModel
     @State private var immersionStyle: ImmersionStyle = .mixed
+    private let modelContainer: ModelContainer
 
     init() {
+        modelContainer = AppPersistence.makeContainer()
         let service = LocalAuthenticationService()
         _authenticationModel = State(
             initialValue: AuthenticationModel(service: service)
@@ -17,6 +20,7 @@ struct LifesaverVisionApp: App {
         WindowGroup("Dashboard", id: AppModel.dashboardWindowID) {
             AuthenticationGateView(model: authenticationModel)
                 .environment(appModel)
+                .modelContainer(modelContainer)
         }
 
         WindowGroup("Learning Lab", id: AppModel.learningLabWindowID) {
@@ -31,5 +35,22 @@ struct LifesaverVisionApp: App {
                 .environment(appModel)
         }
         .immersionStyle(selection: $immersionStyle, in: .mixed)
+    }
+}
+
+private enum AppPersistence {
+    @MainActor
+    static func makeContainer() -> ModelContainer {
+        do {
+            return try PersistenceBootstrap.makeModelContainer()
+        } catch {
+            // Retain full local functionality when the on-device store cannot be opened.
+            // The in-memory fallback is intentionally CloudKit-independent.
+            do {
+                return try PersistenceBootstrap.makeModelContainer(inMemory: true)
+            } catch {
+                fatalError("Unable to initialise the local learning store.")
+            }
+        }
     }
 }

@@ -46,6 +46,7 @@
 		B629B6D72F0419BF48541F7E /* ScoringModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99909D20EFD397C60F85B357 /* ScoringModels.swift */; };
 		B7D83DFFB99193477D5E3ED8 /* SpatialLaboratoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1332AC8581AF5C4C69654B21 /* SpatialLaboratoryView.swift */; };
 		B8EFF88EFCD81430447C537A /* AudioDirector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BB18FB85B195587F2494CA4 /* AudioDirector.swift */; };
+		BBA818EF65FC6B2C4EB5D1FC /* LMSExportDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2B019E9C96D12A7C3F41A42 /* LMSExportDocument.swift */; };
 		BBE811FE446E1AB7EDF5848A /* AppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA008142D9428529D8C9B406 /* AppModel.swift */; };
 		BE7AF60656B0432F667F75B0 /* DashboardRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5242B8035CE0851ED08BC8E2 /* DashboardRootView.swift */; };
 		BFDFC3D2C7F42382E07C8FAD /* HandTrackingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92385E507D55CA1777A3F4C7 /* HandTrackingService.swift */; };
@@ -55,6 +56,7 @@
 		D0BB61CFD188CA0014CA1EB8 /* AssessmentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7EB61FE610FCF3F623AF4519 /* AssessmentView.swift */; };
 		D585502CA819241FB38649A3 /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C7C5D4BF061AE518210DAA /* DashboardView.swift */; };
 		DF85D43B3D24671C10922DF4 /* LifesaverVisionApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 353CA1EBE9AF3912F64E7C52 /* LifesaverVisionApp.swift */; };
+		E190871532CA1C2BF590E1D4 /* CohortReportExportService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E06E4AB1904AE4C0999D10A3 /* CohortReportExportService.swift */; };
 		E80AC71772F31DD2162EB8AF /* TheoryAssessmentEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6322623C46BC39DEF7B9137A /* TheoryAssessmentEngine.swift */; };
 		EF516A2309B8622C7201D308 /* Interactions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4232A9CDF551C554A082E3FB /* Interactions.swift */; };
 		F0F06BFCECB26ECF6ED5053E /* LearningLabRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80F49591654C43E80DB7F320 /* LearningLabRootView.swift */; };
@@ -139,6 +141,8 @@
 		C2FD9ED93E2327ADBB08FEDC /* OfflineFirstSyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfflineFirstSyncService.swift; sourceTree = "<group>"; };
 		CA757C1AD1292C2B8B01A5D0 /* AuthenticationModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationModel.swift; sourceTree = "<group>"; };
 		DB20949E05C50D2E813FD3B6 /* ApplicationProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplicationProtocols.swift; sourceTree = "<group>"; };
+		E06E4AB1904AE4C0999D10A3 /* CohortReportExportService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CohortReportExportService.swift; sourceTree = "<group>"; };
+		E2B019E9C96D12A7C3F41A42 /* LMSExportDocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LMSExportDocument.swift; sourceTree = "<group>"; };
 		E9C327C0164543F660D42C98 /* LocalAuthenticationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalAuthenticationService.swift; sourceTree = "<group>"; };
 		EF0D26B59AF8D550AEC32EA0 /* .gitkeep */ = {isa = PBXFileReference; path = .gitkeep; sourceTree = "<group>"; };
 		EFCC85261BAA2B8EA2C1EEE4 /* LifesaverVisionTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = LifesaverVisionTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -237,6 +241,7 @@
 			isa = PBXGroup;
 			children = (
 				55A97ECE5205E7A39EC1D407 /* ClinicalSafetyValidator.swift */,
+				E06E4AB1904AE4C0999D10A3 /* CohortReportExportService.swift */,
 				9FD4D21E092ACBB990924248 /* ContentVersionService.swift */,
 				F4096E33EEA85FA3A5E8C96B /* CourseEngine.swift */,
 				AF2CECDD36F556E590240A07 /* GamificationEngine.swift */,
@@ -367,6 +372,7 @@
 			isa = PBXGroup;
 			children = (
 				EF0D26B59AF8D550AEC32EA0 /* .gitkeep */,
+				E2B019E9C96D12A7C3F41A42 /* LMSExportDocument.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -660,6 +666,7 @@
 				0BF6C30E7AF11CCDF9ABAAB1 /* CPRPracticeView.swift in Sources */,
 				89DCBC5D348AABEAEE3FF85A /* ClinicalContentModels.swift in Sources */,
 				7D08CD511D4C00D9905DFDBD /* ClinicalSafetyValidator.swift in Sources */,
+				E190871532CA1C2BF590E1D4 /* CohortReportExportService.swift in Sources */,
 				31C02E12B4F9F786DD227D62 /* ContentVersionService.swift in Sources */,
 				3B3B592B2F1EFECA1B2DF4EC /* CourseCatalogueView.swift in Sources */,
 				04A6DF8D691B32A94D7C445A /* CourseEngine.swift in Sources */,
@@ -674,6 +681,7 @@
 				FB54CC3AA9336C0CEED13F8E /* InstructorDashboardView.swift in Sources */,
 				EF516A2309B8622C7201D308 /* Interactions.swift in Sources */,
 				AFF03048BB35D9490863D65E /* KeychainStore.swift in Sources */,
+				BBA818EF65FC6B2C4EB5D1FC /* LMSExportDocument.swift in Sources */,
 				21133F968EE8435B7D66D722 /* LearningEventModels.swift in Sources */,
 				F0F06BFCECB26ECF6ED5053E /* LearningLabRootView.swift in Sources */,
 				DF85D43B3D24671C10922DF4 /* LifesaverVisionApp.swift in Sources */,

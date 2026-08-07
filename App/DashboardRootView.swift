@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// Shared-space LMS shell with role-oriented navigation placeholders.
+/// Shared-space LMS shell with role-scoped navigation.
 struct DashboardRootView: View {
     private enum Destination: String, Hashable {
         case learnerDashboard
@@ -18,30 +18,44 @@ struct DashboardRootView: View {
     }
 
     @Environment(AppModel.self) private var appModel
+    @Environment(AuthenticationModel.self) private var authenticationModel
     @Environment(\.scenePhase) private var scenePhase
     @State private var selection: Destination? = .learnerDashboard
+
+    private var role: Role {
+        authenticationModel.currentUser?.role ?? .learner
+    }
 
     var body: some View {
         NavigationSplitView {
             List(selection: $selection) {
-                Section("Learner") {
-                    navigationLabel("Dashboard", systemImage: "rectangle.grid.2x2", destination: .learnerDashboard)
-                    navigationLabel("Courses", systemImage: "books.vertical", destination: .courses)
-                    navigationLabel("Theory", systemImage: "book.pages", destination: .theory)
-                    navigationLabel("CPR Practice", systemImage: "heart", destination: .cprPractice)
-                    navigationLabel("AED Practice", systemImage: "waveform.path.ecg", destination: .aedPractice)
-                    navigationLabel("Scenarios", systemImage: "person.2", destination: .scenarios)
-                    navigationLabel("Assessments", systemImage: "checklist", destination: .assessments)
-                    navigationLabel("Progress", systemImage: "medal", destination: .progress)
-                    navigationLabel("Learning Lab", systemImage: "cube.transparent", destination: .learningLab)
+                if role == .learner {
+                    Section("Learner") {
+                        navigationLabel("Dashboard", systemImage: "rectangle.grid.2x2", destination: .learnerDashboard)
+                        navigationLabel("Courses", systemImage: "books.vertical", destination: .courses)
+                        navigationLabel("Theory", systemImage: "book.pages", destination: .theory)
+                        navigationLabel("CPR Practice", systemImage: "heart", destination: .cprPractice)
+                        navigationLabel("AED Practice", systemImage: "waveform.path.ecg", destination: .aedPractice)
+                        navigationLabel("Scenarios", systemImage: "person.2", destination: .scenarios)
+                        navigationLabel("Assessments", systemImage: "checklist", destination: .assessments)
+                        navigationLabel("Progress", systemImage: "medal", destination: .progress)
+                        navigationLabel("Learning Lab", systemImage: "cube.transparent", destination: .learningLab)
+                    }
                 }
 
-                Section("Instructor") {
-                    navigationLabel("Instructor Dashboard", systemImage: "person.2.badge.gearshape", destination: .instructor)
+                if role == .instructor {
+                    Section("Instructor") {
+                        navigationLabel("Instructor Dashboard", systemImage: "person.2.badge.gearshape", destination: .instructor)
+                    }
                 }
 
-                Section("Admin") {
-                    navigationLabel("Administration", systemImage: "gearshape.2", destination: .administration)
+                if role == .admin {
+                    Section("Administration") {
+                        navigationLabel("Administration", systemImage: "gearshape.2", destination: .administration)
+                    }
+                }
+
+                Section("Preferences") {
                     navigationLabel("Settings", systemImage: "slider.horizontal.3", destination: .settings)
                 }
             }
@@ -53,6 +67,29 @@ struct DashboardRootView: View {
         }
         .onChange(of: scenePhase, initial: true) { _, newPhase in
             appModel.handleScenePhase(newPhase)
+        }
+        .onChange(of: role, initial: true) { _, newRole in
+            let preferred: Destination = switch newRole {
+            case .learner: .learnerDashboard
+            case .instructor: .instructor
+            case .admin: .administration
+            }
+            if !isVisible(selection, for: newRole) {
+                selection = preferred
+            }
+        }
+    }
+
+    private func isVisible(_ destination: Destination?, for role: Role) -> Bool {
+        guard let destination else { return false }
+        if destination == .settings { return true }
+        switch role {
+        case .learner:
+            return ![Destination.instructor, .administration].contains(destination)
+        case .instructor:
+            return destination == .instructor
+        case .admin:
+            return destination == .administration
         }
     }
 
