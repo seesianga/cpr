@@ -25,13 +25,17 @@
 		80470F2BE3E7E02110AC9AE2 /* AEDPracticeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBF3643E671D034583F581EB /* AEDPracticeView.swift */; };
 		8D68767498262C9A01AA74A6 /* ScenariosView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B7788B494A1474F6109D2E0 /* ScenariosView.swift */; };
 		9DC84AE15CC29590B0D83D06 /* SpatialAccessibility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C003D64334B45957501A233 /* SpatialAccessibility.swift */; };
+		A1F1526A7F1EDBC8344A04B6 /* LocalAuthenticationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9C327C0164543F660D42C98 /* LocalAuthenticationService.swift */; };
 		A5A61C60D0423286BCA40725 /* AuthenticationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19DF7FD751A607D822ACA9E0 /* AuthenticationView.swift */; };
+		A7023ABF38CEC51E560B0F6D /* AppleCredentialStateProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3528BDD94D2143F8CB99F69 /* AppleCredentialStateProvider.swift */; };
+		AFF03048BB35D9490863D65E /* KeychainStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55C2483F4B9D5E2A0546A72F /* KeychainStore.swift */; };
 		B7D83DFFB99193477D5E3ED8 /* SpatialLaboratoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1332AC8581AF5C4C69654B21 /* SpatialLaboratoryView.swift */; };
 		B8EFF88EFCD81430447C537A /* AudioDirector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BB18FB85B195587F2494CA4 /* AudioDirector.swift */; };
 		BBE811FE446E1AB7EDF5848A /* AppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA008142D9428529D8C9B406 /* AppModel.swift */; };
 		BE7AF60656B0432F667F75B0 /* DashboardRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5242B8035CE0851ED08BC8E2 /* DashboardRootView.swift */; };
 		BFDFC3D2C7F42382E07C8FAD /* HandTrackingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92385E507D55CA1777A3F4C7 /* HandTrackingService.swift */; };
 		C95E563C97CB50F0AAB93400 /* OfflineFirstSyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2FD9ED93E2327ADBB08FEDC /* OfflineFirstSyncService.swift */; };
+		CA139B195F3BBCC078CACADD /* AuthenticationModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA757C1AD1292C2B8B01A5D0 /* AuthenticationModel.swift */; };
 		CDE5B4858B2FE516B5BC1E3E /* TheoryLearningView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F17515043A751995B34EA45 /* TheoryLearningView.swift */; };
 		D0BB61CFD188CA0014CA1EB8 /* AssessmentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7EB61FE610FCF3F623AF4519 /* AssessmentView.swift */; };
 		D585502CA819241FB38649A3 /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C7C5D4BF061AE518210DAA /* DashboardView.swift */; };
@@ -79,12 +83,14 @@
 		485EC33251720F743FA78A97 /* LifesaverVisionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LifesaverVisionTests.swift; sourceTree = "<group>"; };
 		4E25577CD11456085CA5FC06 /* CourseModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CourseModels.swift; sourceTree = "<group>"; };
 		5242B8035CE0851ED08BC8E2 /* DashboardRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardRootView.swift; sourceTree = "<group>"; };
+		55C2483F4B9D5E2A0546A72F /* KeychainStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainStore.swift; sourceTree = "<group>"; };
 		5DDBD4AFC87AA6D056BBF533 /* CPRPracticeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CPRPracticeView.swift; sourceTree = "<group>"; };
 		67E2A5ADFE21D89BD1298071 /* .gitkeep */ = {isa = PBXFileReference; path = .gitkeep; sourceTree = "<group>"; };
 		6F67C420CD18EFAD3A3FFF70 /* PersistenceBootstrap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceBootstrap.swift; sourceTree = "<group>"; };
 		71D5BDBABCC18ADDCE23D262 /* InMemoryRepositories.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InMemoryRepositories.swift; sourceTree = "<group>"; };
 		7BB18FB85B195587F2494CA4 /* AudioDirector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioDirector.swift; sourceTree = "<group>"; };
 		7DF5B09C284C49F4693D26AA /* LifesaverVision.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = LifesaverVision.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		7E52C2BF6FA4F38A8D57346F /* LifesaverVision.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = LifesaverVision.entitlements; sourceTree = "<group>"; };
 		7EB61FE610FCF3F623AF4519 /* AssessmentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssessmentView.swift; sourceTree = "<group>"; };
 		80F49591654C43E80DB7F320 /* LearningLabRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LearningLabRootView.swift; sourceTree = "<group>"; };
 		84C7C5D4BF061AE518210DAA /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
@@ -98,10 +104,13 @@
 		AA008142D9428529D8C9B406 /* AppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModel.swift; sourceTree = "<group>"; };
 		B645A9F3813782C7AB7F53F8 /* SwiftDataRepositories.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftDataRepositories.swift; sourceTree = "<group>"; };
 		C2FD9ED93E2327ADBB08FEDC /* OfflineFirstSyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfflineFirstSyncService.swift; sourceTree = "<group>"; };
+		CA757C1AD1292C2B8B01A5D0 /* AuthenticationModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationModel.swift; sourceTree = "<group>"; };
 		DB20949E05C50D2E813FD3B6 /* ApplicationProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplicationProtocols.swift; sourceTree = "<group>"; };
+		E9C327C0164543F660D42C98 /* LocalAuthenticationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalAuthenticationService.swift; sourceTree = "<group>"; };
 		EF0D26B59AF8D550AEC32EA0 /* .gitkeep */ = {isa = PBXFileReference; path = .gitkeep; sourceTree = "<group>"; };
 		EFCC85261BAA2B8EA2C1EEE4 /* LifesaverVisionTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = LifesaverVisionTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		F203CE2E4036DCC849CA06BC /* ScenePlacement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScenePlacement.swift; sourceTree = "<group>"; };
+		F3528BDD94D2143F8CB99F69 /* AppleCredentialStateProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleCredentialStateProvider.swift; sourceTree = "<group>"; };
 		FB1547039F983C313AA2675E /* SpatialRealityKit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpatialRealityKit.swift; sourceTree = "<group>"; };
 		FBF3643E671D034583F581EB /* AEDPracticeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AEDPracticeView.swift; sourceTree = "<group>"; };
 		FC7A5D70E5C28C746F8B6EC8 /* CourseCatalogueView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CourseCatalogueView.swift; sourceTree = "<group>"; };
@@ -197,6 +206,9 @@
 			isa = PBXGroup;
 			children = (
 				33DD952BF355150BDED942C8 /* .gitkeep */,
+				F3528BDD94D2143F8CB99F69 /* AppleCredentialStateProvider.swift */,
+				55C2483F4B9D5E2A0546A72F /* KeychainStore.swift */,
+				E9C327C0164543F660D42C98 /* LocalAuthenticationService.swift */,
 			);
 			path = Security;
 			sourceTree = "<group>";
@@ -208,6 +220,7 @@
 				5242B8035CE0851ED08BC8E2 /* DashboardRootView.swift */,
 				44416E61353A4435D27E7259 /* Info.plist */,
 				80F49591654C43E80DB7F320 /* LearningLabRootView.swift */,
+				7E52C2BF6FA4F38A8D57346F /* LifesaverVision.entitlements */,
 				353CA1EBE9AF3912F64E7C52 /* LifesaverVisionApp.swift */,
 				2C165DDD143CB188C78CE1C7 /* PrivacyInfo.xcprivacy */,
 				3D2C956BBD135F60A883C223 /* SimulationSpaceRootView.swift */,
@@ -389,6 +402,7 @@
 		C28B72367E7B7052BD1889D6 /* Authentication */ = {
 			isa = PBXGroup;
 			children = (
+				CA757C1AD1292C2B8B01A5D0 /* AuthenticationModel.swift */,
 				19DF7FD751A607D822ACA9E0 /* AuthenticationView.swift */,
 			);
 			path = Authentication;
@@ -559,9 +573,11 @@
 				80470F2BE3E7E02110AC9AE2 /* AEDPracticeView.swift in Sources */,
 				66727961FCADD16E8DCD0FCE /* AdministrationView.swift in Sources */,
 				BBE811FE446E1AB7EDF5848A /* AppModel.swift in Sources */,
+				A7023ABF38CEC51E560B0F6D /* AppleCredentialStateProvider.swift in Sources */,
 				226271939940DE8C52BF5A0E /* ApplicationProtocols.swift in Sources */,
 				D0BB61CFD188CA0014CA1EB8 /* AssessmentView.swift in Sources */,
 				B8EFF88EFCD81430447C537A /* AudioDirector.swift in Sources */,
+				CA139B195F3BBCC078CACADD /* AuthenticationModel.swift in Sources */,
 				A5A61C60D0423286BCA40725 /* AuthenticationView.swift in Sources */,
 				0BF6C30E7AF11CCDF9ABAAB1 /* CPRPracticeView.swift in Sources */,
 				3B3B592B2F1EFECA1B2DF4EC /* CourseCatalogueView.swift in Sources */,
@@ -573,8 +589,10 @@
 				F26B71208E2C08B006762FB3 /* InMemoryRepositories.swift in Sources */,
 				FB54CC3AA9336C0CEED13F8E /* InstructorDashboardView.swift in Sources */,
 				EF516A2309B8622C7201D308 /* Interactions.swift in Sources */,
+				AFF03048BB35D9490863D65E /* KeychainStore.swift in Sources */,
 				F0F06BFCECB26ECF6ED5053E /* LearningLabRootView.swift in Sources */,
 				DF85D43B3D24671C10922DF4 /* LifesaverVisionApp.swift in Sources */,
+				A1F1526A7F1EDBC8344A04B6 /* LocalAuthenticationService.swift in Sources */,
 				C95E563C97CB50F0AAB93400 /* OfflineFirstSyncService.swift in Sources */,
 				2CD8857302B9E609DCFBB356 /* PersistenceBootstrap.swift in Sources */,
 				8D68767498262C9A01AA74A6 /* ScenariosView.swift in Sources */,
@@ -769,6 +787,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = App/LifesaverVision.entitlements;
 				INFOPLIST_FILE = App/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -871,6 +890,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = App/LifesaverVision.entitlements;
 				INFOPLIST_FILE = App/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -973,6 +993,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = App/LifesaverVision.entitlements;
 				INFOPLIST_FILE = App/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1009,6 +1030,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = App/LifesaverVision.entitlements;
 				INFOPLIST_FILE = App/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

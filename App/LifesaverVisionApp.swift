@@ -3,11 +3,19 @@ import SwiftUI
 @main
 struct LifesaverVisionApp: App {
     @State private var appModel = AppModel()
+    @State private var authenticationModel: AuthenticationModel
     @State private var immersionStyle: ImmersionStyle = .mixed
+
+    init() {
+        let service = LocalAuthenticationService()
+        _authenticationModel = State(
+            initialValue: AuthenticationModel(service: service)
+        )
+    }
 
     var body: some Scene {
         WindowGroup("Dashboard", id: AppModel.dashboardWindowID) {
-            DashboardRootView()
+            AuthenticationGateView(model: authenticationModel)
                 .environment(appModel)
         }
 

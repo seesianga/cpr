@@ -12,17 +12,33 @@ actor InMemoryAuthenticationService: AuthenticationService {
         user
     }
 
-    func signIn(userID: String) -> AuthenticatedUser {
+    func restoreSession() -> AuthenticatedUser? {
+        user
+    }
+
+    func signInAsGuest(displayName: String?) -> AuthenticatedUser {
         let signedInUser = AuthenticatedUser(
-            id: userID,
-            displayName: "Preview Learner",
-            role: .learner
+            id: "guest-\(UUID().uuidString)",
+            displayName: displayName ?? "Preview Learner",
+            role: .learner,
+            sessionKind: .guest
         )
         user = signedInUser
         return signedInUser
     }
 
-    func signOut() {
+    func signInWithApple(_ credential: AppleSignInCredential) -> AuthenticatedUser {
+        let signedInUser = AuthenticatedUser(
+            id: "apple-\(credential.userIdentifier)",
+            displayName: credential.displayName ?? "Learner",
+            role: .learner,
+            sessionKind: .apple
+        )
+        user = signedInUser
+        return signedInUser
+    }
+
+    func signOut() throws {
         user = nil
     }
 }

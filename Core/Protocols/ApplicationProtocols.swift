@@ -4,14 +4,53 @@ import Foundation
 struct AuthenticatedUser: Codable, Identifiable, Sendable, Equatable {
     let id: String
     let displayName: String
-    let role: UserRole
+    let role: Role
+    let sessionKind: AuthenticationSessionKind
+
+    init(
+        id: String,
+        displayName: String,
+        role: Role,
+        sessionKind: AuthenticationSessionKind = .guest
+    ) {
+        self.id = id
+        self.displayName = displayName
+        self.role = role
+        self.sessionKind = sessionKind
+    }
 }
 
 /// Application roles represented in the shared-space dashboard shell.
-enum UserRole: String, Codable, Sendable, CaseIterable {
+///
+/// Production authorisation must be enforced server-side. Local role checks are UI and
+/// demonstration controls only and are not a security boundary.
+enum Role: String, Codable, Sendable, CaseIterable {
     case learner
     case instructor
-    case administrator
+    case admin
+}
+
+enum AuthenticationSessionKind: String, Codable, Sendable {
+    case guest
+    case apple
+    case demoAdministrator = "demo_administrator"
+}
+
+/// Sendable subset extracted from an Apple credential on the main actor.
+struct AppleSignInCredential: Sendable, Equatable {
+    let userIdentifier: String
+    let displayName: String?
+    let email: String?
+    let identityToken: Data?
+    let authorisationCode: Data?
+}
+
+enum AppleCredentialState: String, Sendable, Equatable {
+    case authorised
+    case revoked
+    case notFound
+    case transferred
+    case unknown
 }
 
 /// A learner's local-first progress for one course version.
@@ -194,8 +233,22 @@ struct CPRSensorMeasurement: Codable, Sendable, Equatable {
 /// Provides the current application authentication state.
 protocol AuthenticationService: Sendable {
     func currentUser() async -> AuthenticatedUser?
-    func signIn(userID: String) async throws -> AuthenticatedUser
-    func signOut() async
+    func restoreSession() async throws -> AuthenticatedUser?
+    func signInAsGuest(displayName: String?) async throws -> AuthenticatedUser
+    func signInWithApple(_ credential: AppleSignInCredential) async throws -> AuthenticatedUser
+    func signOut() async throws
+}
+
+/// Opaque storage boundary used by Keychain in production and memory stores in tests.
+protocol SessionStore: Sendable {
+    func data(for key: String) async throws -> Data?
+    func set(_ data: Data, for key: String) async throws
+    func removeValue(for key: String) async throws
+}
+
+/// Checks whether a previously issued Apple credential remains authorised.
+protocol AppleCredentialStateProviding: Sendable {
+    func credentialState(for userIdentifier: String) async -> AppleCredentialState
 }
 
 /// Reads and writes versioned course payloads.

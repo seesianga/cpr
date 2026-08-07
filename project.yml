@@ -43,6 +43,7 @@ targets:
       - package: RealityKitContent
     settings:
       base:
+        CODE_SIGN_ENTITLEMENTS: App/LifesaverVision.entitlements
         PRODUCT_BUNDLE_IDENTIFIER: com.lifesaver.vision
         PRODUCT_NAME: LifesaverVision
       configs:
