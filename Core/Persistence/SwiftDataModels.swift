@@ -477,3 +477,39 @@ final class ConsentRecord {
         self.revokedAt = revokedAt
     }
 }
+
+/// Persisted internal event used for xAPI-shaped and full-data exports.
+@Model
+final class LearningEventEntity {
+    @Attribute(.unique) var id: String
+    var actorAccountID: String
+    var verbRawValue: String
+    var activityID: String
+    var activityName: String
+    var resultJSON: String?
+    var contentVersion: String
+    var registrationID: String?
+    var timestamp: Date
+
+    init(
+        id: String = UUID().uuidString,
+        actorAccountID: String,
+        verbRawValue: String,
+        activityID: String,
+        activityName: String,
+        resultJSON: String? = nil,
+        contentVersion: String,
+        registrationID: String? = nil,
+        timestamp: Date = .now
+    ) {
+        self.id = id
+        self.actorAccountID = actorAccountID
+        self.verbRawValue = verbRawValue
+        self.activityID = activityID
+        self.activityName = activityName
+        self.resultJSON = resultJSON
+        self.contentVersion = contentVersion
+        self.registrationID = registrationID
+        self.timestamp = timestamp
+    }
+}

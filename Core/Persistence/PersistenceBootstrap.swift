@@ -19,7 +19,8 @@ enum LMSVersionedSchemaV1: VersionedSchema {
             PracticalSignOff.self,
             ContentVersionRecord.self,
             OfflineQueuedEvent.self,
-            ConsentRecord.self
+            ConsentRecord.self,
+            LearningEventEntity.self
         ]
     }
 }
