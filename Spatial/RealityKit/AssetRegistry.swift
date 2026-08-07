@@ -216,6 +216,18 @@ private extension AssetRegistry {
 
     private static let aedControls: [SemanticDescriptor] = [
         .init(
+            name: "aed_case",
+            label: "AED trainer case",
+            description: "Brand-neutral carrying case for the simulated AED trainer.",
+            collisionProxy: .box
+        ),
+        .init(
+            name: "aed_unit",
+            label: "AED trainer unit",
+            description: "Brand-neutral, non-functional AED unit for practice.",
+            collisionProxy: .box
+        ),
+        .init(
             name: "aed_power_button",
             label: "AED power button",
             description: "Training-only power control on the brand-neutral AED trainer.",
