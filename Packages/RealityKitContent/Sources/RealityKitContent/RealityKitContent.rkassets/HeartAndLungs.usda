@@ -1,0 +1,176 @@
+#usda 1.0
+(
+    defaultPrim = "cardiopulmonary_models"
+    documentation = "Original stylised, non-graphic heart and lungs learning model. Metres scale."
+    metersPerUnit = 1
+    upAxis = "Y"
+)
+
+def Xform "cardiopulmonary_models"
+{
+    def Scope "Materials"
+    {
+        def Material "HeartCrimson"
+        {
+            token outputs:surface.connect = </cardiopulmonary_models/Materials/HeartCrimson/PreviewSurface.outputs:surface>
+            def Shader "PreviewSurface"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.53, 0.04, 0.075)
+                float inputs:metallic = 0.02
+                float inputs:roughness = 0.58
+                token outputs:surface
+            }
+        }
+        def Material "HeartLight"
+        {
+            token outputs:surface.connect = </cardiopulmonary_models/Materials/HeartLight/PreviewSurface.outputs:surface>
+            def Shader "PreviewSurface"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.72, 0.12, 0.16)
+                float inputs:metallic = 0.01
+                float inputs:roughness = 0.62
+                token outputs:surface
+            }
+        }
+        def Material "LungBlue"
+        {
+            token outputs:surface.connect = </cardiopulmonary_models/Materials/LungBlue/PreviewSurface.outputs:surface>
+            def Shader "PreviewSurface"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.22, 0.54, 0.68)
+                float inputs:metallic = 0.02
+                float inputs:roughness = 0.62
+                float inputs:opacity = 0.88
+                token outputs:surface
+            }
+        }
+        def Material "Airway"
+        {
+            token outputs:surface.connect = </cardiopulmonary_models/Materials/Airway/PreviewSurface.outputs:surface>
+            def Shader "PreviewSurface"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.88, 0.76, 0.58)
+                float inputs:metallic = 0.01
+                float inputs:roughness = 0.68
+                token outputs:surface
+            }
+        }
+    }
+
+    def Xform "heart_model"
+    {
+        float3 xformOp:translate = (-0.24, 0.34, 0)
+        uniform token[] xformOpOrder = ["xformOp:translate"]
+        def Xform "heart_ra"
+        {
+            float3 xformOp:translate = (-0.055, 0.055, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate"]
+            def Sphere "heart_ra_surface" (
+                prepend apiSchemas = ["MaterialBindingAPI"]
+            )
+            {
+                rel material:binding = </cardiopulmonary_models/Materials/HeartLight>
+                double radius = 0.065
+                float3 xformOp:scale = (0.9, 1.05, 0.82)
+                uniform token[] xformOpOrder = ["xformOp:scale"]
+            }
+        }
+        def Xform "heart_rv"
+        {
+            float3 xformOp:translate = (-0.045, -0.07, 0.012)
+            uniform token[] xformOpOrder = ["xformOp:translate"]
+            def Sphere "heart_rv_surface" (
+                prepend apiSchemas = ["MaterialBindingAPI"]
+            )
+            {
+                rel material:binding = </cardiopulmonary_models/Materials/HeartCrimson>
+                double radius = 0.078
+                float3 xformOp:scale = (0.9, 1.25, 0.82)
+                uniform token[] xformOpOrder = ["xformOp:scale"]
+            }
+        }
+        def Xform "heart_la"
+        {
+            float3 xformOp:translate = (0.055, 0.055, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate"]
+            def Sphere "heart_la_surface" (
+                prepend apiSchemas = ["MaterialBindingAPI"]
+            )
+            {
+                rel material:binding = </cardiopulmonary_models/Materials/HeartLight>
+                double radius = 0.062
+                float3 xformOp:scale = (0.88, 1.02, 0.8)
+                uniform token[] xformOpOrder = ["xformOp:scale"]
+            }
+        }
+        def Xform "heart_lv"
+        {
+            float3 xformOp:translate = (0.05, -0.075, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate"]
+            def Sphere "heart_lv_surface" (
+                prepend apiSchemas = ["MaterialBindingAPI"]
+            )
+            {
+                rel material:binding = </cardiopulmonary_models/Materials/HeartCrimson>
+                double radius = 0.085
+                float3 xformOp:scale = (0.92, 1.35, 0.84)
+                uniform token[] xformOpOrder = ["xformOp:scale"]
+            }
+        }
+    }
+
+    def Xform "lungs_model"
+    {
+        float3 xformOp:translate = (0.26, 0.36, 0)
+        uniform token[] xformOpOrder = ["xformOp:translate"]
+        def Xform "lungs_left"
+        {
+            float3 xformOp:translate = (-0.10, -0.02, 0)
+            float xformOp:rotateZ = -7
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ"]
+            def Capsule "lungs_left_surface" (
+                prepend apiSchemas = ["MaterialBindingAPI"]
+            )
+            {
+                rel material:binding = </cardiopulmonary_models/Materials/LungBlue>
+                uniform token axis = "Y"
+                double height = 0.22
+                double radius = 0.09
+                float3 xformOp:scale = (0.82, 1, 0.62)
+                uniform token[] xformOpOrder = ["xformOp:scale"]
+            }
+        }
+        def Xform "lungs_right"
+        {
+            float3 xformOp:translate = (0.10, -0.02, 0)
+            float xformOp:rotateZ = 7
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ"]
+            def Capsule "lungs_right_surface" (
+                prepend apiSchemas = ["MaterialBindingAPI"]
+            )
+            {
+                rel material:binding = </cardiopulmonary_models/Materials/LungBlue>
+                uniform token axis = "Y"
+                double height = 0.24
+                double radius = 0.095
+                float3 xformOp:scale = (0.86, 1, 0.64)
+                uniform token[] xformOpOrder = ["xformOp:scale"]
+            }
+        }
+        def Capsule "trachea" (
+            prepend apiSchemas = ["MaterialBindingAPI"]
+        )
+        {
+            rel material:binding = </cardiopulmonary_models/Materials/Airway>
+            uniform token axis = "Y"
+            double height = 0.16
+            double radius = 0.022
+            float3 xformOp:translate = (0, 0.19, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate"]
+        }
+    }
+}

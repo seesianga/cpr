@@ -1,0 +1,201 @@
+#usda 1.0
+(
+    defaultPrim = "training_manikin"
+    documentation = "Original, non-graphic training manikin. Supine; head toward -Z; anatomical right is -X. Metres scale."
+    metersPerUnit = 1
+    upAxis = "Y"
+)
+
+def Xform "training_manikin"
+{
+    def Scope "Materials"
+    {
+        def Material "ManikinShell"
+        {
+            token outputs:surface.connect = </training_manikin/Materials/ManikinShell/PreviewSurface.outputs:surface>
+            def Shader "PreviewSurface"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.82, 0.79, 0.72)
+                float inputs:metallic = 0.02
+                float inputs:roughness = 0.72
+                token outputs:surface
+            }
+        }
+        def Material "ClinicalBlue"
+        {
+            token outputs:surface.connect = </training_manikin/Materials/ClinicalBlue/PreviewSurface.outputs:surface>
+            def Shader "PreviewSurface"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.08, 0.38, 0.62)
+                color3f inputs:emissiveColor = (0.004, 0.018, 0.03)
+                float inputs:metallic = 0.08
+                float inputs:roughness = 0.48
+                token outputs:surface
+            }
+        }
+        def Material "AvoidCrimson"
+        {
+            token outputs:surface.connect = </training_manikin/Materials/AvoidCrimson/PreviewSurface.outputs:surface>
+            def Shader "PreviewSurface"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.56, 0.055, 0.09)
+                color3f inputs:emissiveColor = (0.025, 0.002, 0.004)
+                float inputs:metallic = 0.02
+                float inputs:roughness = 0.55
+                token outputs:surface
+            }
+        }
+        def Material "PadZone"
+        {
+            token outputs:surface.connect = </training_manikin/Materials/PadZone/PreviewSurface.outputs:surface>
+            def Shader "PreviewSurface"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.92, 0.68, 0.18)
+                color3f inputs:emissiveColor = (0.035, 0.02, 0.002)
+                float inputs:metallic = 0.05
+                float inputs:roughness = 0.5
+                float inputs:opacity = 0.84
+                token outputs:surface
+            }
+        }
+        def Material "Charcoal"
+        {
+            token outputs:surface.connect = </training_manikin/Materials/Charcoal/PreviewSurface.outputs:surface>
+            def Shader "PreviewSurface"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.08, 0.085, 0.095)
+                float inputs:metallic = 0.04
+                float inputs:roughness = 0.78
+                token outputs:surface
+            }
+        }
+    }
+
+    def Cube "torso_shell" (
+        prepend apiSchemas = ["MaterialBindingAPI"]
+    )
+    {
+        rel material:binding = </training_manikin/Materials/ManikinShell>
+        double size = 1
+        float3 xformOp:translate = (0, 0.12, 0)
+        float3 xformOp:scale = (0.46, 0.18, 0.72)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+    }
+
+    def Sphere "head" (
+        prepend apiSchemas = ["MaterialBindingAPI"]
+    )
+    {
+        rel material:binding = </training_manikin/Materials/ManikinShell>
+        double radius = 0.14
+        float3 xformOp:translate = (0, 0.14, -0.54)
+        float3 xformOp:scale = (0.86, 0.72, 1)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+    }
+
+    def Capsule "right_arm" (
+        prepend apiSchemas = ["MaterialBindingAPI"]
+    )
+    {
+        rel material:binding = </training_manikin/Materials/ManikinShell>
+        uniform token axis = "Z"
+        double height = 0.55
+        double radius = 0.055
+        float3 xformOp:translate = (-0.31, 0.095, 0.02)
+        uniform token[] xformOpOrder = ["xformOp:translate"]
+    }
+
+    def Capsule "left_arm" (
+        prepend apiSchemas = ["MaterialBindingAPI"]
+    )
+    {
+        rel material:binding = </training_manikin/Materials/ManikinShell>
+        uniform token axis = "Z"
+        double height = 0.55
+        double radius = 0.055
+        float3 xformOp:translate = (0.31, 0.095, 0.02)
+        uniform token[] xformOpOrder = ["xformOp:translate"]
+    }
+
+    # Lower half of the sternum training target. This is a visual/interaction zone,
+    # not a physical compression-depth or force sensor.
+    def Xform "sternum_target"
+    {
+        float3 xformOp:translate = (0, 0.225, 0.095)
+        uniform token[] xformOpOrder = ["xformOp:translate"]
+        def Cube "sternum_target_surface" (
+            prepend apiSchemas = ["MaterialBindingAPI"]
+        )
+        {
+            rel material:binding = </training_manikin/Materials/ClinicalBlue>
+            double size = 1
+            float3 xformOp:scale = (0.12, 0.025, 0.20)
+            uniform token[] xformOpOrder = ["xformOp:scale"]
+        }
+    }
+
+    def Xform "xiphoid_avoid_zone"
+    {
+        float3 xformOp:translate = (0, 0.23, 0.31)
+        uniform token[] xformOpOrder = ["xformOp:translate"]
+        def Sphere "xiphoid_avoid_surface" (
+            prepend apiSchemas = ["MaterialBindingAPI"]
+        )
+        {
+            rel material:binding = </training_manikin/Materials/AvoidCrimson>
+            double radius = 0.032
+            float3 xformOp:scale = (1.15, 0.45, 1)
+            uniform token[] xformOpOrder = ["xformOp:scale"]
+        }
+    }
+
+    # Casualty's anatomical right (-X): below the right collarbone.
+    def Xform "aed_right_pad_zone"
+    {
+        float3 xformOp:translate = (-0.145, 0.225, -0.17)
+        float xformOp:rotateY = -8
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateY"]
+        def Cube "aed_right_pad_zone_surface" (
+            prepend apiSchemas = ["MaterialBindingAPI"]
+        )
+        {
+            rel material:binding = </training_manikin/Materials/PadZone>
+            double size = 1
+            float3 xformOp:scale = (0.12, 0.018, 0.15)
+            uniform token[] xformOpOrder = ["xformOp:scale"]
+        }
+    }
+
+    # Casualty's anatomical left (+X): lateral chest below the armpit-nipple line.
+    def Xform "aed_left_pad_zone"
+    {
+        float3 xformOp:translate = (0.205, 0.225, 0.13)
+        float xformOp:rotateY = 16
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateY"]
+        def Cube "aed_left_pad_zone_surface" (
+            prepend apiSchemas = ["MaterialBindingAPI"]
+        )
+        {
+            rel material:binding = </training_manikin/Materials/PadZone>
+            double size = 1
+            float3 xformOp:scale = (0.11, 0.018, 0.15)
+            uniform token[] xformOpOrder = ["xformOp:scale"]
+        }
+    }
+
+    def Cube "base_mat" (
+        prepend apiSchemas = ["MaterialBindingAPI"]
+    )
+    {
+        rel material:binding = </training_manikin/Materials/Charcoal>
+        double size = 1
+        float3 xformOp:translate = (0, 0.018, 0)
+        float3 xformOp:scale = (0.78, 0.025, 1.18)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+    }
+}

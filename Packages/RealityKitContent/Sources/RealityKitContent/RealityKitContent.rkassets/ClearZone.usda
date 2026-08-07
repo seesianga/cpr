@@ -1,0 +1,40 @@
+#usda 1.0
+(
+    defaultPrim = "clear_zone"
+    documentation = "Original segmented floor ring for the simulated AED clear-zone interaction. Metres scale."
+    metersPerUnit = 1
+    upAxis = "Y"
+)
+
+def Xform "clear_zone"
+{
+    def Scope "Materials"
+    {
+        def Material "ClearBlue"
+        {
+            token outputs:surface.connect = </clear_zone/Materials/ClearBlue/PreviewSurface.outputs:surface>
+            def Shader "PreviewSurface"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.06, 0.44, 0.72)
+                color3f inputs:emissiveColor = (0.01, 0.055, 0.11)
+                float inputs:metallic = 0.1
+                float inputs:roughness = 0.38
+                float inputs:opacity = 0.72
+                token outputs:surface
+            }
+        }
+    }
+
+    def Torus "clear_zone_ring" (
+        prepend apiSchemas = ["MaterialBindingAPI"]
+    )
+    {
+        rel material:binding = </clear_zone/Materials/ClearBlue>
+        uniform token axis = "Y"
+        double majorRadius = 0.9
+        double minorRadius = 0.018
+        float3 xformOp:translate = (0, 0.022, 0)
+        uniform token[] xformOpOrder = ["xformOp:translate"]
+    }
+}

@@ -1,0 +1,106 @@
+#usda 1.0
+(
+    defaultPrim = "bystander_01"
+    documentation = "Original abstract bystander mannequin silhouette. Non-graphic and non-branded. Metres scale."
+    metersPerUnit = 1
+    upAxis = "Y"
+)
+
+def Xform "bystander_01"
+{
+    def Scope "Materials"
+    {
+        def Material "Silhouette"
+        {
+            token outputs:surface.connect = </bystander_01/Materials/Silhouette/PreviewSurface.outputs:surface>
+            def Shader "PreviewSurface"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.16, 0.22, 0.28)
+                float inputs:metallic = 0.04
+                float inputs:roughness = 0.76
+                token outputs:surface
+            }
+        }
+        def Material "Accent"
+        {
+            token outputs:surface.connect = </bystander_01/Materials/Accent/PreviewSurface.outputs:surface>
+            def Shader "PreviewSurface"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.17, 0.48, 0.68)
+                float inputs:metallic = 0.06
+                float inputs:roughness = 0.55
+                token outputs:surface
+            }
+        }
+    }
+
+    def Sphere "head" (
+        prepend apiSchemas = ["MaterialBindingAPI"]
+    )
+    {
+        rel material:binding = </bystander_01/Materials/Silhouette>
+        double radius = 0.105
+        float3 xformOp:translate = (0, 1.52, 0)
+        uniform token[] xformOpOrder = ["xformOp:translate"]
+    }
+    def Capsule "torso" (
+        prepend apiSchemas = ["MaterialBindingAPI"]
+    )
+    {
+        rel material:binding = </bystander_01/Materials/Accent>
+        uniform token axis = "Y"
+        double height = 0.48
+        double radius = 0.16
+        float3 xformOp:translate = (0, 1.12, 0)
+        float3 xformOp:scale = (1, 1, 0.58)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+    }
+    def Capsule "right_arm" (
+        prepend apiSchemas = ["MaterialBindingAPI"]
+    )
+    {
+        rel material:binding = </bystander_01/Materials/Silhouette>
+        uniform token axis = "Y"
+        double height = 0.52
+        double radius = 0.045
+        float3 xformOp:translate = (-0.22, 1.06, 0)
+        float xformOp:rotateZ = -7
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ"]
+    }
+    def Capsule "left_arm" (
+        prepend apiSchemas = ["MaterialBindingAPI"]
+    )
+    {
+        rel material:binding = </bystander_01/Materials/Silhouette>
+        uniform token axis = "Y"
+        double height = 0.52
+        double radius = 0.045
+        float3 xformOp:translate = (0.22, 1.06, 0)
+        float xformOp:rotateZ = 7
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ"]
+    }
+    def Capsule "right_leg" (
+        prepend apiSchemas = ["MaterialBindingAPI"]
+    )
+    {
+        rel material:binding = </bystander_01/Materials/Silhouette>
+        uniform token axis = "Y"
+        double height = 0.66
+        double radius = 0.065
+        float3 xformOp:translate = (-0.10, 0.45, 0)
+        uniform token[] xformOpOrder = ["xformOp:translate"]
+    }
+    def Capsule "left_leg" (
+        prepend apiSchemas = ["MaterialBindingAPI"]
+    )
+    {
+        rel material:binding = </bystander_01/Materials/Silhouette>
+        uniform token axis = "Y"
+        double height = 0.66
+        double radius = 0.065
+        float3 xformOp:translate = (0.10, 0.45, 0)
+        uniform token[] xformOpOrder = ["xformOp:translate"]
+    }
+}
