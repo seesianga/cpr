@@ -92,6 +92,9 @@ enum AEDPracticeEvent: Codable, Equatable, Sendable {
     case coachedResumeWindowExpired
     case resumeCompressions
     case finish
+    /// Starts another trainer analysis while the correctly placed pads remain attached.
+    /// This is only accepted after the preceding decision has led back to compressions.
+    case beginNextAnalysisCycle
 }
 
 enum AEDPracticeCorrectionCode: String, Codable, Sendable {
@@ -336,6 +339,13 @@ struct AEDStateMachine: EventSourcedStateMachine {
 
         case (.resumeCompressions, .finish):
             state = .complete
+            outcome = .accepted(to: state, remediation: nil)
+
+        case (.complete, .beginNextAnalysisCycle):
+            clearCheckCompleted = false
+            resumeWindowHasExpired = false
+            analysisOutcome = nil
+            state = .padsCorrect
             outcome = .accepted(to: state, remediation: nil)
 
         default:

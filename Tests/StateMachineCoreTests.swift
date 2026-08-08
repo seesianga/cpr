@@ -752,6 +752,48 @@ final class StateMachineCoreTests: XCTestCase {
         XCTAssertEqual(noShockMachine.state, .resumeCompressions)
     }
 
+    func testAEDRepeatedAnalysisCycleRetainsPadsAndReappliesEverySafetyGate() {
+        var machine = aedAtPadsCorrect()
+        machine.handle(
+            .interactiveAnalysisClearCheck(
+                clearZoneActivated: true,
+                bystandersConfirmedClear: true,
+                anyoneTouching: false
+            )
+        )
+        machine.handle(.receiveAnalysisOutcome(.noShock, anyoneTouching: false))
+        machine.handle(.resumeCompressions)
+        machine.handle(.finish)
+        XCTAssertEqual(machine.state, .complete)
+
+        let restart = machine.handle(.beginNextAnalysisCycle)
+        XCTAssertTrue(restart.wasAccepted)
+        XCTAssertEqual(machine.state, .padsCorrect)
+        XCTAssertTrue(machine.preparation.isReadyForPads)
+
+        let outcomeWithoutClear = machine.handle(
+            .receiveAnalysisOutcome(.shock, anyoneTouching: false)
+        )
+        XCTAssertFalse(outcomeWithoutClear.wasAccepted)
+        XCTAssertEqual(machine.state, .padsCorrect)
+
+        machine.handle(
+            .interactiveAnalysisClearCheck(
+                clearZoneActivated: true,
+                bystandersConfirmedClear: true,
+                anyoneTouching: false
+            )
+        )
+        machine.handle(.receiveAnalysisOutcome(.shock, anyoneTouching: false))
+        machine.handle(.beginCharging(anyoneTouching: false))
+        machine.handle(.chargingComplete(anyoneTouching: false))
+        let shockWithoutSecondClear = machine.handle(
+            .pressShockControl(anyoneTouching: false)
+        )
+        XCTAssertFalse(shockWithoutSecondClear.wasAccepted)
+        XCTAssertEqual(machine.state, .clearConfirmation)
+    }
+
     func testAEDFailureToResumeWithinCoachedWindowIsCritical() {
         for outcome in [AEDAnalysisOutcome.shock, .noShock] {
             var machine = aedAwaitingResume(after: outcome)

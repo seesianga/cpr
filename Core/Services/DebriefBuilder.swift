@@ -1,0 +1,224 @@
+import Foundation
+
+/// Builds the complete after-action review from the immutable unified event log only.
+/// It has no access to a live `ScenarioEngine`, selected definition, or mutable machine state.
+enum DebriefBuilder {
+    static func build(
+        from eventLog: [IntegratedScenarioEventRecord]
+    ) throws -> ScenarioDebrief {
+        for (expected, record) in eventLog.enumerated() where record.sequence != expected {
+            throw ScenarioEngineError.malformedEventLog(
+                expectedSequence: expected,
+                actualSequence: record.sequence
+            )
+        }
+        guard let first = eventLog.first,
+              case let .sessionStarted(scene, patternID, contentVersion, requiredActions) = first.event
+        else {
+            throw ScenarioEngineError.missingSessionStart
+        }
+        guard eventLog.allSatisfy({ $0.scenarioID == first.scenarioID }) else {
+            throw ScenarioEngineError.inconsistentScenarioID
+        }
+
+        let completedActionIDs = Set(eventLog.compactMap { record -> String? in
+            guard record.wasAccepted, record.affectsScore,
+                  case let .requiredActionCompleted(actionID, _) = record.event
+            else { return nil }
+            return actionID
+        })
+
+        let cprBranchWasEntered = eventLog.contains { record in
+            if case .cpr = record.event { return true }
+            return false
+        }
+        let aedBranchWasEntered = eventLog.contains { record in
+            if case .aed = record.event { return true }
+            return false
+        }
+        let applicableActions = requiredActions.filter { action in
+            if action.isAlwaysRequired { return true }
+            switch action.dimension {
+            case .cprSequenceAndRhythm:
+                return cprBranchWasEntered
+            case .aedPreparationAndPlacement:
+                return aedBranchWasEntered
+            default:
+                // Optional authored time/monitoring actions are informative until the
+                // event contract carries a direct, source-backed measurement for them.
+                return false
+            }
+        }
+
+        var dimensionScores: [ScoringDimension: Double] = [:]
+        for dimension in ScoringDimension.allCases {
+            let dimensionActions = applicableActions.filter { $0.dimension == dimension }
+            if dimensionActions.isEmpty {
+                // No authored evidence in a category is neutral, never a fabricated failure.
+                dimensionScores[dimension] = 1
+            } else {
+                let completed = dimensionActions.filter {
+                    completedActionIDs.contains($0.id)
+                }.count
+                dimensionScores[dimension] = Double(completed) /
+                    Double(dimensionActions.count)
+            }
+        }
+
+        var debriefFeedback: [ScenarioDebriefFeedback] = []
+        var criticalErrors: [CriticalError] = []
+        var seenErrorIDs: Set<String> = []
+        for record in eventLog {
+            guard case let .criticalError(errorID, code, title, _) = record.event,
+                  let dimension = record.scoringDimension,
+                  let remediation = record.remediation,
+                  let replayAnchor = record.replayAnchor
+            else { continue }
+            if seenErrorIDs.insert(errorID).inserted {
+                criticalErrors.append(
+                    CriticalError(id: errorID, code: code, remediation: remediation)
+                )
+            }
+            debriefFeedback.append(
+                ScenarioDebriefFeedback(
+                    id: "\(errorID)-\(record.sequence)",
+                    code: code,
+                    title: title,
+                    remediation: remediation,
+                    dimension: dimension,
+                    sourceReferences: record.sourceReferences,
+                    replayAnchor: replayAnchor
+                )
+            )
+        }
+
+        let scoreOutcome = try ScoringEngine().evaluate(
+            ScenarioScoreInput(
+                attemptID: "\(first.scenarioID)-event-log",
+                contentVersion: contentVersion,
+                dimensionScores: dimensionScores,
+                criticalErrors: criticalErrors
+            )
+        )
+        let timeline = eventLog.map(Self.timelineItem)
+        let replayAnchors = debriefFeedback
+            .map(\.replayAnchor)
+            .reduce(into: [ScenarioReplayAnchor]()) { result, anchor in
+                guard !result.contains(where: { $0.sequence == anchor.sequence }) else { return }
+                result.append(anchor)
+            }
+        // Scenario attempts use the same fixed safe-attempt award surfaced by
+        // GamificationEngine and the dashboard; percentages remain score feedback.
+        let recommendedXP = scoreOutcome.xpEligible ? 100 : 0
+
+        return ScenarioDebrief(
+            scenarioID: first.scenarioID,
+            scene: scene,
+            selectedPatternID: patternID,
+            scoreOutcome: scoreOutcome,
+            timeline: timeline,
+            feedback: debriefFeedback,
+            replayAnchors: replayAnchors,
+            recommendedXP: recommendedXP,
+            practiceRecommendation: recommendation(
+                score: scoreOutcome,
+                feedback: debriefFeedback
+            )
+        )
+    }
+
+    private static func timelineItem(
+        _ record: IntegratedScenarioEventRecord
+    ) -> ScenarioDebriefTimelineItem {
+        let title: String
+        let detail: String
+        let safetyCritical: Bool
+        switch record.event {
+        case let .sessionStarted(scene, patternID, _, _):
+            title = "Scenario started"
+            detail = "\(scene.rawValue), approved pattern \(patternID)"
+            safetyCritical = false
+        case let .branchSelected(nodeID, conditionID):
+            title = "Branch selected"
+            detail = "\(nodeID): \(conditionID)"
+            safetyCritical = false
+        case let .requiredActionCompleted(actionID, method):
+            title = record.wasAccepted ? "Required action completed" : "Action already recorded"
+            detail = "\(actionID) using \(method.rawValue)"
+            safetyCritical = false
+        case let .bystanderAssigned(bystanderID, assignment, method):
+            title = "Bystander task assigned"
+            detail = "\(bystanderID): \(assignment.displayName) using \(method.rawValue)"
+            safetyCritical = false
+        case let .distractionPresented(id, accessibilitySupportUsed):
+            title = "Contextual distraction"
+            detail = accessibilitySupportUsed
+                ? "\(id); accessibility support used without penalty"
+                : id
+            safetyCritical = false
+        case let .analysisOutcome(index, outcome):
+            title = "AED analysis \(index + 1)"
+            detail = outcome.rawValue
+            safetyCritical = true
+        case .drsabc:
+            title = "DRSABC event"
+            detail = "\(record.stateBefore) → \(record.stateAfter)"
+            safetyCritical = record.remediation != nil
+        case .cpr:
+            title = "CPR event"
+            detail = "\(record.stateBefore) → \(record.stateAfter)"
+            safetyCritical = record.remediation != nil
+        case .aed:
+            title = "AED event"
+            detail = "\(record.stateBefore) → \(record.stateAfter)"
+            safetyCritical = record.remediation != nil
+        case let .criticalError(_, code, titleValue, _):
+            title = titleValue
+            detail = record.remediation ?? code
+            safetyCritical = true
+        case .correctionAcknowledged:
+            title = "Guided retry started"
+            detail = "The source-backed correction remains in the event record."
+            safetyCritical = true
+        case .sessionCompleted:
+            title = "Scenario completed"
+            detail = "After-action review is available."
+            safetyCritical = false
+        }
+        return ScenarioDebriefTimelineItem(
+            sequence: record.sequence,
+            title: title,
+            detail: detail,
+            wasAccepted: record.wasAccepted,
+            isSafetyCritical: safetyCritical
+        )
+    }
+
+    private static func recommendation(
+        score: ScenarioScoreOutcome,
+        feedback: [ScenarioDebriefFeedback]
+    ) -> ScenarioPracticeRecommendation {
+        if let firstSafetyError = feedback.first {
+            return ScenarioPracticeRecommendation(
+                daysUntilNextPractice: 1,
+                reason: "Revisit \(firstSafetyError.dimension.displayName.lowercased()) with the guided correction."
+            )
+        }
+        if !score.passed {
+            return ScenarioPracticeRecommendation(
+                daysUntilNextPractice: 3,
+                reason: "Repeat the integrated sequence while the source-backed steps are fresh."
+            )
+        }
+        if score.percentage < 90 {
+            return ScenarioPracticeRecommendation(
+                daysUntilNextPractice: 7,
+                reason: "A one-week review will reinforce the least-complete category."
+            )
+        }
+        return ScenarioPracticeRecommendation(
+            daysUntilNextPractice: 14,
+            reason: "Maintain mastery with a calm two-week refresher."
+        )
+    }
+}
