@@ -47,6 +47,14 @@ struct SpatialAssetPlacement: Decodable, Equatable, Sendable {
     let semanticName: String
 }
 
+struct SpatialEntityAccessibilityContract: Equatable, Sendable {
+    let name: String
+    let label: String
+    let actionHint: String?
+
+    var isActionable: Bool { actionHint != nil }
+}
+
 private struct SpatialAssetManifest: Decodable, Sendable {
     struct Scene: Decodable, Sendable {
         let sceneName: String
@@ -75,6 +83,21 @@ final class AssetRegistry {
         let label: LocalizedStringResource
         let description: LocalizedStringResource
         let collisionProxy: CollisionProxy
+        let activationHint: LocalizedStringResource?
+
+        init(
+            name: String,
+            label: LocalizedStringResource,
+            description: LocalizedStringResource,
+            collisionProxy: CollisionProxy,
+            activationHint: LocalizedStringResource? = nil
+        ) {
+            self.name = name
+            self.label = label
+            self.description = description
+            self.collisionProxy = collisionProxy
+            self.activationHint = activationHint
+        }
     }
 
     private let sceneBundle: Bundle
@@ -228,6 +251,47 @@ final class AssetRegistry {
         Self.descriptors(for: scene).map(\.name)
     }
 
+    func accessibilityContracts(
+        for scene: SpatialSceneName
+    ) -> [SpatialEntityAccessibilityContract] {
+        Self.descriptors(for: scene).map(Self.accessibilityContract)
+    }
+
+    /// Decorates the independently loadable AED trainer without requiring a manikin room.
+    /// The laboratory uses the same controls and preparation props as the immersive AED rooms.
+    @discardableResult
+    func decorateAEDTrainerEntities(in root: Entity) throws -> [String] {
+        let descriptors = Self.enablingActivationForAll(
+            Self.aedControls + Self.preparationProps,
+            action: "Select this component in the AED explorer."
+        )
+        let resolved = try descriptors.map { descriptor in
+            guard let entity = firstEntity(named: descriptor.name, in: root) else {
+                throw AssetRegistryError.semanticEntityMissing(
+                    scene: "AEDTrainer",
+                    name: descriptor.name
+                )
+            }
+            return (descriptor, entity)
+        }
+
+        for (descriptor, entity) in resolved {
+            decorate(entity, with: descriptor)
+        }
+        return resolved.map { $0.0.name }
+    }
+
+    func aedTrainerEntityNames() -> [String] {
+        (Self.aedControls + Self.preparationProps).map(\.name)
+    }
+
+    func aedTrainerAccessibilityContracts() -> [SpatialEntityAccessibilityContract] {
+        Self.enablingActivationForAll(
+            Self.aedControls + Self.preparationProps,
+            action: "Select this component in the AED explorer."
+        ).map(Self.accessibilityContract)
+    }
+
     private func looseAssetURL(named name: String) throws -> URL {
         let loadedManifest = try manifest()
         guard loadedManifest.resources.contains(name) else {
@@ -338,13 +402,27 @@ final class AssetRegistry {
         var accessibility = AccessibilityComponent()
         accessibility.isAccessibilityElement = true
         accessibility.label = descriptor.label
-        accessibility.customContent = [
+        accessibility.value = descriptor.activationHint == nil
+            ? "Spatial learning object"
+            : "Interactive spatial control"
+        var customContent = [
             AccessibilityComponent.CustomContent(
                 label: "Description",
                 value: descriptor.description,
                 importance: .default
             )
         ]
+        if let activationHint = descriptor.activationHint {
+            accessibility.systemActions = .activate
+            customContent.append(
+                AccessibilityComponent.CustomContent(
+                    label: "Action",
+                    value: activationHint,
+                    importance: .high
+                )
+            )
+        }
+        accessibility.customContent = customContent
         entity.components.set(accessibility)
     }
 }
@@ -454,14 +532,52 @@ private extension AssetRegistry {
         .init(name: "clear_zone", label: "Clear zone", description: "Practice boundary used during the simulated AED sequence.", collisionProxy: .box)
     ]
 
+    private static func enablingActivation(
+        _ descriptors: [SemanticDescriptor],
+        actionsByName: [String: String]
+    ) -> [SemanticDescriptor] {
+        descriptors.map { descriptor in
+            guard let action = actionsByName[descriptor.name] else { return descriptor }
+            return SemanticDescriptor(
+                name: descriptor.name,
+                label: descriptor.label,
+                description: descriptor.description,
+                collisionProxy: descriptor.collisionProxy,
+                activationHint: LocalizedStringResource(stringLiteral: action)
+            )
+        }
+    }
+
+    private static func enablingActivationForAll(
+        _ descriptors: [SemanticDescriptor],
+        action: String
+    ) -> [SemanticDescriptor] {
+        enablingActivation(
+            descriptors,
+            actionsByName: Dictionary(
+                uniqueKeysWithValues: descriptors.map { ($0.name, action) }
+            )
+        )
+    }
+
+    private static func accessibilityContract(
+        _ descriptor: SemanticDescriptor
+    ) -> SpatialEntityAccessibilityContract {
+        SpatialEntityAccessibilityContract(
+            name: descriptor.name,
+            label: String(localized: descriptor.label),
+            actionHint: descriptor.activationHint.map { String(localized: $0) }
+        )
+    }
+
     private static func descriptors(for scene: SpatialSceneName) -> [SemanticDescriptor] {
         switch scene {
         case .academyLobby:
             return (1...11).map { index in
                 SemanticDescriptor(
                     name: String(format: "portal_m%02d", index),
-                    label: "Learning module portal",
-                    description: "Opens a Lifesaver Vision learning module.",
+                    label: "Module \(index) portal",
+                    description: "Spatial marker for Lifesaver Vision module \(index).",
                     collisionProxy: .box
                 )
             } + [
@@ -469,7 +585,7 @@ private extension AssetRegistry {
                 .init(name: "control_panel", label: "Academy control panel", description: "Shared-space academy controls.", collisionProxy: .box)
             ]
         case .heartAndLungsVolume:
-            return [
+            return enablingActivation([
                 .init(name: "heart_model", label: "Heart model", description: "Stylised, non-graphic heart learning model.", collisionProxy: .capsule),
                 .init(name: "heart_ra", label: "Right atrium", description: "Selectable chamber in the stylised heart model.", collisionProxy: .capsule),
                 .init(name: "heart_rv", label: "Right ventricle", description: "Selectable chamber in the stylised heart model.", collisionProxy: .capsule),
@@ -478,44 +594,81 @@ private extension AssetRegistry {
                 .init(name: "lungs_model", label: "Lungs model", description: "Stylised, non-graphic lungs learning model.", collisionProxy: .box),
                 .init(name: "lungs_left", label: "Left lung", description: "Selectable left lung in the stylised model.", collisionProxy: .capsule),
                 .init(name: "lungs_right", label: "Right lung", description: "Selectable right lung in the stylised model.", collisionProxy: .capsule)
-            ]
+            ], actionsByName: [
+                "heart_ra": "Select the right atrium orientation label.",
+                "heart_rv": "Select the right ventricle orientation label.",
+                "heart_la": "Select the left atrium orientation label.",
+                "heart_lv": "Select the left ventricle orientation label.",
+                "lungs_left": "Select the left lung orientation label.",
+                "lungs_right": "Select the right lung orientation label."
+            ])
         case .chainOfSurvivalVolume:
-            return (1...7).map { index in
+            return enablingActivationForAll((1...7).map { index in
                 SemanticDescriptor(
                     name: "chain_ring_\(index)",
-                    label: "Chain of Survival step",
-                    description: "Placeholder for an SME-reviewed Chain of Survival learning step.",
+                    label: "Chain of Survival ring \(index)",
+                    description: "Review-gated ring \(index) in the unscored Chain of Survival activity.",
                     collisionProxy: .capsule
                 )
-            }
+            }, action: "Select or move this ring in the unscored ordering activity.")
         case .drsabcTrainingRoom:
-            return manikinTargets + [
+            return enablingActivation(manikinTargets + [
                 .init(name: "safety_hazards", label: "Scene hazards", description: "Training hazards for the danger-check step.", collisionProxy: .box),
                 .init(name: "bystander_01", label: "Bystander", description: "Abstract, non-graphic training bystander.", collisionProxy: .capsule)
-            ]
+            ], actionsByName: [
+                "safety_hazards": "Inspect the training scene for danger.",
+                "training_manikin": "Check the training manikin for responsiveness.",
+                "bystander_01": "Activate help through the training bystander."
+            ])
         case .cprPracticeRoom:
-            return manikinTargets + clearZone + [
+            return enablingActivation(manikinTargets + clearZone + [
                 .init(name: "control_panel", label: "Practice control panel", description: "Controls for the CPR practice session.", collisionProxy: .box)
-            ]
+            ], actionsByName: [
+                "sternum_target": "Select the hand-placement practice target.",
+                "xiphoid_avoid_zone": "Report the avoidance-area selection for guided correction.",
+                "control_panel": "Record an accessible fallback compression."
+            ])
         case .aedPreparationRoom:
-            return manikinTargets + aedControls + preparationProps
+            return enablingActivation(
+                manikinTargets + aedControls + preparationProps,
+                actionsByName: [
+                    "training_razor": "Complete the presented training-razor preparation action.",
+                    "prep_cloth": "Complete the presented drying-cloth preparation action."
+                ]
+            )
         case .aedPlacementRoom:
-            return manikinTargets + padPlacementTargets + aedControls + scenarioPeople + clearZone
+            return enablingActivation(
+                manikinTargets + padPlacementTargets + aedControls + scenarioPeople + clearZone,
+                actionsByName: [
+                    "aed_shock_button": "Activate the simulated shock control when the clear check permits it.",
+                    "bystander_01": "Confirm that bystander one is clear.",
+                    "bystander_02": "Confirm that bystander two is clear.",
+                    "clear_zone": "Activate the visual clear-zone sweep."
+                ]
+            )
         case .scenarioHome, .scenarioShoppingCentre, .scenarioWorkplace, .scenarioCommunityFacility:
-            return manikinTargets + padPlacementTargets + aedControls + scenarioPeople + clearZone
+            return enablingActivation(
+                manikinTargets + padPlacementTargets + aedControls + scenarioPeople + clearZone,
+                actionsByName: [
+                    "bystander_01": "Assign the selected simulated task to bystander one.",
+                    "bystander_02": "Assign the selected simulated task to bystander two.",
+                    "sternum_target": "Perform the current simulated CPR action at the placement target.",
+                    "xiphoid_avoid_zone": "Report the unsafe placement selection for immediate guided correction."
+                ]
+            )
         case .achievementGallery:
             let badges = (1...14).map { index in
                 SemanticDescriptor(
                     name: String(format: "badge_m%02d", index),
-                    label: "Internal achievement badge",
-                    description: "An internal learning achievement, not an SRFAC certification.",
+                    label: "Module \(index) internal achievement badge",
+                    description: "Internal module \(index) learning achievement; not an SRFAC certification.",
                     collisionProxy: .capsule
                 )
             }
             let stars = (1...7).map { index in
                 SemanticDescriptor(
                     name: String(format: "constellation_star_%02d", index),
-                    label: "Mastery constellation star",
+                    label: "Mastery constellation star \(index)",
                     description: "A visual marker in the internal learning mastery map.",
                     collisionProxy: .capsule
                 )

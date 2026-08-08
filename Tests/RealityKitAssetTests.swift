@@ -88,11 +88,16 @@ final class RealityKitAssetTests: XCTestCase {
                 }
 
                 let requiredNames = registry.semanticEntityNames(for: scene)
+                let accessibilityContracts = registry.accessibilityContracts(for: scene)
+                let accessibilityByName = Dictionary(
+                    uniqueKeysWithValues: accessibilityContracts.map { ($0.name, $0) }
+                )
                 XCTAssertEqual(
                     Set(requiredNames).count,
                     requiredNames.count,
                     "\(scene.rawValue) must not declare duplicate semantic targets"
                 )
+                XCTAssertEqual(accessibilityContracts.map(\.name), requiredNames)
 
                 let missingNames = requiredNames.filter {
                     registry.firstEntity(named: $0, in: root) == nil
@@ -130,10 +135,21 @@ final class RealityKitAssetTests: XCTestCase {
                         entity.components[HoverEffectComponent.self],
                         "\(scene.rawValue)/\(name) is missing HoverEffectComponent"
                     )
-                    XCTAssertNotNil(
-                        entity.components[AccessibilityComponent.self],
-                        "\(scene.rawValue)/\(name) is missing AccessibilityComponent"
-                    )
+                    if let accessibility = entity.components[AccessibilityComponent.self],
+                       let contract = accessibilityByName[name] {
+                        XCTAssertEqual(
+                            accessibility.systemActions,
+                            contract.isActionable ? .activate : [],
+                            "\(scene.rawValue)/\(name) has inaccurate activation semantics"
+                        )
+                        XCTAssertEqual(
+                            accessibility.customContent.count,
+                            contract.isActionable ? 2 : 1,
+                            "\(scene.rawValue)/\(name) has an inaccurate action hint"
+                        )
+                    } else {
+                        XCTFail("\(scene.rawValue)/\(name) is missing AccessibilityComponent")
+                    }
                 }
 
                 // This separately maintained list protects the authored clinical-model
@@ -249,6 +265,158 @@ final class RealityKitAssetTests: XCTestCase {
         XCTAssertTrue(
             placements.allSatisfy { Self.deliveryAssetNames.contains($0.resourceName) }
         )
+    }
+
+    func testHeartAndLungsLaboratoryUsesApprovedScopeAndReducedMotionPolicy() throws {
+        let model = try SpatialLaboratoryContent.loadBundled().heartAndLungs
+
+        XCTAssertEqual(
+            model.parts.map(\.id),
+            ["heart_ra", "heart_rv", "heart_la", "heart_lv", "lungs_left", "lungs_right"]
+        )
+        XCTAssertTrue(model.parts.allSatisfy { $0.excerpt.blockID == "M1-B8" })
+        XCTAssertTrue(
+            model.parts.allSatisfy { $0.excerpt.narrationCue?.rawValue == "nar.M1-B8" }
+        )
+        XCTAssertEqual(model.excerpt(for: .simplifiedVF).blockID, "M1-B4")
+        XCTAssertEqual(
+            model.excerpt(for: .simplifiedVF).narrationCue?.rawValue,
+            "nar.M1-B4"
+        )
+
+        let normalMotion = model.visualPresentation(for: .normal, reduceMotion: false)
+        XCTAssertEqual(normalMotion.motionStyle, .calmPulse)
+        XCTAssertTrue(normalMotion.isAnimated)
+
+        let reducedNormal = model.visualPresentation(for: .normal, reduceMotion: true)
+        XCTAssertEqual(reducedNormal.motionStyle, .staticNormal)
+        XCTAssertFalse(reducedNormal.isAnimated)
+        XCTAssertEqual(reducedNormal.heartScale(at: 3), 1)
+
+        let reducedVF = model.visualPresentation(for: .simplifiedVF, reduceMotion: true)
+        XCTAssertEqual(reducedVF.motionStyle, .staticVF)
+        XCTAssertFalse(reducedVF.isAnimated)
+        XCTAssertTrue(reducedVF.statusText.contains("Static simplified-VF"))
+    }
+
+    func testSevenRingLaboratoryIsUnscoredReviewGatedAndUsesOneReorderPath() throws {
+        var model = try SpatialLaboratoryContent.loadBundled().chainOfSurvival
+
+        XCTAssertFalse(ChainOfSurvivalLaboratoryModel.isScored)
+        XCTAssertEqual(model.rings.count, 7)
+        XCTAssertEqual(Set(model.rings.map(\.id)).count, 7)
+        XCTAssertEqual(model.reviewExcerpt.reviewStatus, .clinicalReviewRequired)
+        XCTAssertNil(model.reviewExcerpt.narrationCue)
+        XCTAssertEqual(model.purposeExcerpt.narrationCue?.rawValue, "nar.M2-B2")
+        XCTAssertEqual(
+            model.rings.sorted { $0.correctIndex < $1.correctIndex }.map(\.title),
+            [
+                "Prevention",
+                "Early Activation and AED Access",
+                "Early CPR",
+                "Early Defibrillation",
+                "Emergency Medical Services (Ambulance)",
+                "Advanced Cardiac Life Support",
+                "Recovery"
+            ]
+        )
+        XCTAssertEqual(model.rings.first?.purpose, "healthy lifestyle and regular check-ups reduce risk")
+        XCTAssertEqual(
+            model.rings.last?.purpose,
+            "community and medical rehabilitation support after survival"
+        )
+        XCTAssertNotEqual(model.orderedRingIDs, model.correctRingIDs)
+        XCTAssertTrue(model.rings.allSatisfy { !$0.purpose.isEmpty })
+        XCTAssertTrue(model.rings.allSatisfy { !$0.orderSources.isEmpty })
+        XCTAssertTrue(model.rings.allSatisfy { !$0.purposeSources.isEmpty })
+
+        XCTAssertEqual(model.check(), .orderAndPurposeNeedReview)
+        for (index, ringID) in model.correctRingIDs.enumerated() {
+            _ = model.move(ringID: ringID, to: index)
+            model.assignPurpose(ringID, to: ringID)
+        }
+
+        XCTAssertEqual(model.orderedRingIDs, model.correctRingIDs)
+        XCTAssertEqual(model.check(), .complete)
+        XCTAssertTrue(model.lastCheck?.message.contains("unscored") == true)
+    }
+
+    func testAEDExplorerMapsEveryTrainerTargetToSourceCheckedCourseText() throws {
+        let content = try SpatialLaboratoryContent.loadBundled().aedExplorer
+        let registryNames = AssetRegistry().aedTrainerEntityNames()
+
+        XCTAssertEqual(content.components.count, 13)
+        XCTAssertEqual(Set(content.components.map(\.id)), Set(registryNames))
+        XCTAssertTrue(content.components.allSatisfy {
+            $0.excerpt.reviewStatus == .sourceChecked &&
+                !$0.excerpt.sourceReferences.isEmpty &&
+                $0.excerpt.narrationCue != nil
+        })
+        XCTAssertEqual(content.component(named: "training_razor")?.excerpt.blockID, "M5-B6")
+        XCTAssertEqual(content.component(named: "prep_cloth")?.excerpt.blockID, "M5-B10")
+        XCTAssertEqual(
+            content.preparationCallouts.map(\.blockID),
+            ["M5-B5", "M5-B6", "M5-B7", "M5-B8", "M5-B9", "M5-B10"]
+        )
+        XCTAssertTrue(content.preparationCallouts.allSatisfy {
+            !$0.sourceReferences.isEmpty && $0.narrationCue != nil
+        })
+    }
+
+    func testSpatialAccessibilityLabelsAreDistinctAndOnlyRealActionsActivate() {
+        let registry = AssetRegistry()
+        let lobby = registry.accessibilityContracts(for: .academyLobby)
+        let rings = registry.accessibilityContracts(for: .chainOfSurvivalVolume)
+        let gallery = registry.accessibilityContracts(for: .achievementGallery)
+        let cpr = registry.accessibilityContracts(for: .cprPracticeRoom)
+        let aedPlacement = registry.accessibilityContracts(for: .aedPlacementRoom)
+        let scenario = registry.accessibilityContracts(for: .scenarioHome)
+
+        let portals = lobby.filter { $0.name.hasPrefix("portal_m") }
+        XCTAssertEqual(Set(portals.map(\.label)).count, portals.count)
+        XCTAssertTrue(portals.allSatisfy { !$0.isActionable })
+
+        XCTAssertEqual(Set(rings.map(\.label)).count, 7)
+        XCTAssertTrue(rings.allSatisfy(\.isActionable))
+
+        let badges = gallery.filter { $0.name.hasPrefix("badge_m") }
+        XCTAssertEqual(Set(badges.map(\.label)).count, 14)
+        XCTAssertTrue(badges.allSatisfy { !$0.isActionable })
+
+        XCTAssertEqual(
+            Set(cpr.filter(\.isActionable).map(\.name)),
+            ["sternum_target", "xiphoid_avoid_zone", "control_panel"]
+        )
+        XCTAssertEqual(
+            Set(aedPlacement.filter(\.isActionable).map(\.name)),
+            ["aed_shock_button", "bystander_01", "bystander_02", "clear_zone"]
+        )
+        XCTAssertEqual(
+            Set(scenario.filter(\.isActionable).map(\.name)),
+            ["bystander_01", "bystander_02", "sternum_target", "xiphoid_avoid_zone"]
+        )
+        XCTAssertTrue(registry.aedTrainerAccessibilityContracts().allSatisfy(\.isActionable))
+    }
+
+    func testStandaloneAEDTrainerDecoratesWithoutAManikinRoom() async throws {
+        let registry = AssetRegistry()
+        let root = try await registry.loadEntity(named: "AEDTrainer")
+        let decorated = try registry.decorateAEDTrainerEntities(in: root)
+
+        XCTAssertEqual(decorated, registry.aedTrainerEntityNames())
+        let contracts = Dictionary(uniqueKeysWithValues:
+            registry.aedTrainerAccessibilityContracts().map { ($0.name, $0) }
+        )
+        for name in decorated {
+            let entity = try XCTUnwrap(registry.firstEntity(named: name, in: root))
+            XCTAssertNotNil(entity.components[InputTargetComponent.self])
+            XCTAssertNotNil(entity.components[CollisionComponent.self])
+            XCTAssertNotNil(entity.components[HoverEffectComponent.self])
+            let accessibility = try XCTUnwrap(entity.components[AccessibilityComponent.self])
+            XCTAssertTrue(contracts[name]?.isActionable == true)
+            XCTAssertEqual(accessibility.systemActions, .activate)
+            XCTAssertEqual(accessibility.customContent.count, 2)
+        }
     }
 }
 
