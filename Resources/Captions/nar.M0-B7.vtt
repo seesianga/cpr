@@ -1,0 +1,13 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:01.301
+Hand-data handling.
+
+00:00:01.301 --> 00:00:03.833
+Hand-tracking permission is optional.
+
+00:00:03.833 --> 00:00:15.676
+When a supported practice activity requests it, hand position and motion are processed on the device; the declared hand-tracking purpose states that this data is not stored.
+
+00:00:15.676 --> 00:00:21.084
+The current permission service alone does not provide CPR-quality measurements.

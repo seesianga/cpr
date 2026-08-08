@@ -17,7 +17,7 @@ enum CPRPracticeSessionLoadState: Sendable, Equatable {
 final class CPRPracticeSessionModel {
     private let handTracking: any HandTrackingServicing
     private let sensorProvider: any CPRSensorProvider
-    private let audioDirector: any AudioDirector
+    private var audioDirector: any AudioDirector
     private let bundle: Bundle
     private let badgeRuleLoader: (Bundle) throws -> [BadgeRule]
     private var machine: CPRPracticeStateMachine?
@@ -69,6 +69,10 @@ final class CPRPracticeSessionModel {
         content?.cprPolicy.preferredCompressionsPerCycle ?? 100
     }
     var handTrackingFallbackExplanation: String? { handTrackingState.fallbackExplanation }
+
+    func setAudioDirector(_ audioDirector: any AudioDirector) {
+        self.audioDirector = audioDirector
+    }
 
     var guidanceTitle: String {
         switch machine?.state {
@@ -377,7 +381,14 @@ final class CPRPracticeSessionModel {
                 guard let self else { return }
                 guard !self.isPaused else { continue }
                 self.visualMetronomePulse.toggle()
-                await audioDirector.play(AudioCue(rawValue: "sfx.metronome"))
+                _ = await audioDirector.play(
+                    AudioPlaybackRequest(
+                        cue: AudioCue(rawValue: "sfx.metronome"),
+                        channel: .soundEffects,
+                        context: .immersive,
+                        autoplay: true
+                    )
+                )
             }
         }
     }

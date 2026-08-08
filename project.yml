@@ -42,9 +42,18 @@ targets:
       - path: Core
       - path: Features
       - path: Spatial
-      # Phase 5A links only the audio boundary. Phase 6 audio and caption media remain
-      # excluded until their dedicated Phase 5B/6B manifest and resource wiring lands.
       - path: Audio/AudioDirector.swift
+      - path: Audio/AudioPreferences.swift
+      - path: Audio/CaptionSupport.swift
+      - path: Audio/SpatialAudioManager.swift
+      - path: Audio/ELEVENLABS_AUDIO_MANIFEST.json
+        buildPhase: resources
+      - path: Audio/Delivery
+        buildPhase: resources
+      - path: Resources/Captions
+        excludes:
+          - .gitkeep
+        buildPhase: resources
       - path: Resources/Courses
         buildPhase: resources
       - path: Resources/Questions

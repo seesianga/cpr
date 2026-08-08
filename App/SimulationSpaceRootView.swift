@@ -11,6 +11,7 @@ struct SimulationSpaceRootView: View {
     @State private var loadErrorMessage: String?
     @State private var loadedScene: SpatialSceneName?
     @State private var assetRegistry = AssetRegistry()
+    @State private var spatialAudioManager = SpatialAudioManager()
     @State private var cprSession = CPRPracticeSessionModel()
     @State private var aedSession = AEDPracticeSessionModel()
     @State private var drsabcSession = DRSABCPracticeSessionModel()
@@ -36,6 +37,10 @@ struct SimulationSpaceRootView: View {
                 try assetRegistry.decorateSemanticEntities(in: scene, for: selectedScene)
                 scene.isEnabled = !appModel.isSimulationPaused
                 content.add(scene)
+                spatialAudioManager.configure(
+                    in: scene,
+                    sceneIsActive: scenePhase == .active && appModel.immersionState == .open
+                )
                 loadedScene = selectedScene
                 isLoading = false
                 loadErrorMessage = nil
@@ -66,6 +71,7 @@ struct SimulationSpaceRootView: View {
                 VStack(spacing: 14) {
                     safetyControls
                     practicePanel
+                    AudioCaptionOverlay(audioDirector: appModel.audioDirector)
                 }
             }
         }
@@ -73,6 +79,8 @@ struct SimulationSpaceRootView: View {
         .gesture(spatialTapGesture)
         .simultaneousGesture(padDragGesture)
         .task(id: appModel.selectedPracticeExperience) {
+            cprSession.setAudioDirector(appModel.audioDirector)
+            aedSession.setAudioDirector(appModel.audioDirector)
             switch appModel.selectedPracticeExperience {
             case .cpr:
                 await cprSession.prepare()
@@ -89,8 +97,17 @@ struct SimulationSpaceRootView: View {
         }
         .onChange(of: scenePhase, initial: true) { _, newPhase in
             appModel.handleScenePhase(newPhase)
+            spatialAudioManager.setSceneActive(
+                newPhase == .active && appModel.immersionState == .open
+            )
+        }
+        .onChange(of: aedSession.state) { _, newState in
+            Task { @MainActor in
+                await playSpatialAEDCue(for: newState)
+            }
         }
         .onDisappear {
+            spatialAudioManager.stopAll()
             assetRegistry.releaseAllScenes()
             loadedScene = nil
             aedSession.stop()
@@ -321,6 +338,22 @@ struct SimulationSpaceRootView: View {
         assetRegistry.releaseAllScenes()
         loadedScene = nil
         await appModel.dismissSimulation(using: dismissImmersiveSpace)
+    }
+
+    @MainActor
+    private func playSpatialAEDCue(for state: AEDPracticeState?) async {
+        let cueID: String? = switch state {
+        case .analysing: "sfx.aed_analysis"
+        case .charging: "sfx.aed_charging"
+        case .clearConfirmation: "sfx.clear_cue"
+        default: nil
+        }
+        guard let cueID else { return }
+        _ = try? await spatialAudioManager.play(
+            AudioCue(rawValue: cueID),
+            route: .aedUnit
+        )
+        await appModel.audioDirector.presentVisualCue(AudioCue(rawValue: cueID))
     }
 
     private static func semanticAncestor(

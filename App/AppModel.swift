@@ -34,6 +34,8 @@ final class AppModel {
     static let learningLabWindowID = "LearningLab"
     static let simulationSpaceID = "SimulationSpace"
 
+    let audioDirector: SystemAudioDirector
+
     enum ImmersionState: Equatable {
         case closed
         case opening
@@ -48,6 +50,10 @@ final class AppModel {
     var immersionNotice: String?
     private(set) var selectedPracticeExperience: SpatialPracticeExperience = .cpr
     var selectedSimulationScene: SpatialSceneName = .cprPracticeRoom
+
+    init(audioDirector: SystemAudioDirector = SystemAudioDirector()) {
+        self.audioDirector = audioDirector
+    }
 
     /// Selects a practice without opening immersion. This lets the shared-space launch view
     /// explain the exact mode before the learner opts in.
@@ -69,6 +75,13 @@ final class AppModel {
     /// Records application lifecycle changes without making assumptions about learner progress.
     func handleScenePhase(_ newPhase: ScenePhase) {
         scenePhase = newPhase
+
+        Task {
+            await audioDirector.setImmersiveScene(
+                active: newPhase == .active,
+                isOpen: immersionState == .open
+            )
+        }
 
         if newPhase != .active, immersionState == .open {
             isSimulationPaused = true
@@ -92,15 +105,22 @@ final class AppModel {
         case .opened:
             immersionState = .open
             isSimulationPaused = false
+            await audioDirector.setImmersiveScene(
+                active: scenePhase == .active,
+                isOpen: true
+            )
         case .userCancelled:
             immersionState = .closed
             immersionNotice = "Simulation entry was cancelled."
+            await audioDirector.setImmersiveScene(active: false, isOpen: false)
         case .error:
             immersionState = .closed
             immersionNotice = "The simulation could not be opened. Please try again."
+            await audioDirector.setImmersiveScene(active: false, isOpen: false)
         @unknown default:
             immersionState = .closed
             immersionNotice = "The simulation returned an unsupported result."
+            await audioDirector.setImmersiveScene(active: false, isOpen: false)
         }
     }
 
@@ -110,6 +130,7 @@ final class AppModel {
 
         immersionState = .dismissing
         await dismissImmersiveSpace()
+        await audioDirector.setImmersiveScene(active: false, isOpen: false)
         immersionState = .closed
         isSimulationPaused = false
         immersionNotice = nil
@@ -126,5 +147,8 @@ final class AppModel {
     func simulationSpaceDidDisappear() {
         immersionState = .closed
         isSimulationPaused = false
+        Task {
+            await audioDirector.setImmersiveScene(active: false, isOpen: false)
+        }
     }
 }

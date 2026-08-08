@@ -24,6 +24,7 @@ final class AEDPracticeSessionModel {
     static let defaultResumeCoachingDelay: Duration = .seconds(4)
 
     private let resumeCoachingDelay: Duration
+    private var audioDirector: any AudioDirector
     private var machine: AEDStateMachine?
     private var content: PracticeMachineContentContract?
     private var rightPadCorrect: Bool?
@@ -39,8 +40,16 @@ final class AEDPracticeSessionModel {
     ]
     private(set) var isPaused = false
 
-    init(resumeCoachingDelay: Duration = defaultResumeCoachingDelay) {
+    init(
+        resumeCoachingDelay: Duration = defaultResumeCoachingDelay,
+        audioDirector: any AudioDirector = NoOpAudioDirector()
+    ) {
         self.resumeCoachingDelay = resumeCoachingDelay
+        self.audioDirector = audioDirector
+    }
+
+    func setAudioDirector(_ audioDirector: any AudioDirector) {
+        self.audioDirector = audioDirector
     }
 
     var state: AEDPracticeState? { machine?.state }
@@ -371,6 +380,44 @@ final class AEDPracticeSessionModel {
         case let .rejected(_, remediation):
             latestFeedback = remediation.message
         }
+        updateAudioSafety(for: entry)
         return entry
+    }
+
+    private func updateAudioSafety(
+        for entry: StateMachineEventLogEntry<
+            AEDPracticeState,
+            AEDPracticeEvent,
+            AEDPracticeRejectionReason,
+            AEDPracticeRemediation
+        >
+    ) {
+        let director = audioDirector
+        let safetyState: AEDAudioSafetyState = switch state {
+        case .analysing: .analysing
+        case .charging: .charging
+        case .clearConfirmation: .clearConfirmation
+        case .simulatedShock: .simulatedShock
+        default: .normal
+        }
+        let correctionActive: Bool
+        switch entry.outcome {
+        case let .accepted(_, remediation): correctionActive = remediation != nil
+        case .rejected: correctionActive = true
+        }
+        Task {
+            await director.setAEDSafetyState(safetyState)
+            await director.setSafetyCriticalCorrectionActive(correctionActive)
+            if correctionActive {
+                _ = await director.play(
+                    AudioPlaybackRequest(
+                        cue: AudioCue(rawValue: "sfx.safety_warning"),
+                        channel: .soundEffects,
+                        context: .immersive,
+                        autoplay: true
+                    )
+                )
+            }
+        }
     }
 }
