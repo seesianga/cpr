@@ -1,4 +1,5 @@
 import Foundation
+import SwiftData
 import XCTest
 @testable import LifesaverVision
 
@@ -247,6 +248,151 @@ final class LessonPlayerTests: XCTestCase {
             resolver.resolve(activity(type: "future-unreviewed-activity")).destination,
             .unavailable
         )
+    }
+
+    func testFinishLessonPreservesExistingIDsAndWritesLastLessonForExactVersion() async throws {
+        let container = try PersistenceBootstrap.makeModelContainer(inMemory: true)
+        let context = ModelContext(container)
+        let originalTimestamp = Date(timeIntervalSince1970: 1_700_000_000)
+        context.insert(
+            ProgressRecord(
+                id: "existing-progress-id",
+                learnerID: "learner-progress",
+                courseID: "course-progress",
+                contentVersion: "2.0.0",
+                completedLessonIDs: ["lesson-prior", "legacy-unknown"],
+                lastLessonID: "lesson-prior",
+                completionFraction: 0.25,
+                updatedAt: originalTimestamp
+            )
+        )
+        try context.save()
+        let writer = SwiftDataLessonProgressWriter(modelContainer: container)
+        let completionTimestamp = originalTimestamp.addingTimeInterval(60)
+
+        let outcome = try await writer.finishLesson(
+            LessonCompletionRequest(
+                scope: LessonProgressScope(
+                    learnerID: "learner-progress",
+                    courseID: "course-progress",
+                    contentVersion: "2.0.0"
+                ),
+                lessonID: "lesson-current",
+                moduleLessonIDs: ["lesson-current"],
+                courseLessonIDs: ["lesson-prior", "lesson-current", "lesson-future"],
+                completedAt: completionTimestamp
+            )
+        )
+
+        XCTAssertEqual(
+            outcome.completedLessonIDs,
+            ["lesson-prior", "lesson-current", "legacy-unknown"]
+        )
+        XCTAssertEqual(outcome.lastLessonID, "lesson-current")
+        XCTAssertEqual(outcome.completionFraction, 2.0 / 3.0, accuracy: 0.000_001)
+        XCTAssertTrue(outcome.didAddLesson)
+        XCTAssertTrue(outcome.isModuleComplete)
+
+        let stored = try XCTUnwrap(
+            try ModelContext(container).fetch(FetchDescriptor<ProgressRecord>()).first
+        )
+        XCTAssertEqual(stored.id, "existing-progress-id")
+        XCTAssertEqual(
+            Set(stored.completedLessonIDs),
+            ["lesson-prior", "lesson-current", "legacy-unknown"]
+        )
+        XCTAssertEqual(stored.lastLessonID, "lesson-current")
+        XCTAssertEqual(stored.completionFraction, 2.0 / 3.0, accuracy: 0.000_001)
+        XCTAssertEqual(stored.updatedAt, completionTimestamp)
+    }
+
+    func testFinishLessonCreatesSeparateProgressRecordForNewContentVersion() async throws {
+        let container = try PersistenceBootstrap.makeModelContainer(inMemory: true)
+        let context = ModelContext(container)
+        context.insert(
+            ProgressRecord(
+                id: "learner-version#course-version#1.0.0",
+                learnerID: "learner-version",
+                courseID: "course-version",
+                contentVersion: "1.0.0",
+                completedLessonIDs: ["old-lesson"],
+                lastLessonID: "old-lesson",
+                completionFraction: 1
+            )
+        )
+        try context.save()
+        let writer = SwiftDataLessonProgressWriter(modelContainer: container)
+
+        _ = try await writer.finishLesson(
+            LessonCompletionRequest(
+                scope: LessonProgressScope(
+                    learnerID: "learner-version",
+                    courseID: "course-version",
+                    contentVersion: "2.0.0"
+                ),
+                lessonID: "new-lesson",
+                moduleLessonIDs: ["new-lesson"],
+                courseLessonIDs: ["new-lesson", "next-lesson"],
+                completedAt: Date(timeIntervalSince1970: 1_800_000_000)
+            )
+        )
+
+        let records = try ModelContext(container).fetch(FetchDescriptor<ProgressRecord>())
+        XCTAssertEqual(records.count, 2)
+        let oldVersion = try XCTUnwrap(records.first { $0.contentVersion == "1.0.0" })
+        let newVersion = try XCTUnwrap(records.first { $0.contentVersion == "2.0.0" })
+        XCTAssertEqual(oldVersion.completedLessonIDs, ["old-lesson"])
+        XCTAssertEqual(oldVersion.lastLessonID, "old-lesson")
+        XCTAssertEqual(newVersion.completedLessonIDs, ["new-lesson"])
+        XCTAssertEqual(newVersion.lastLessonID, "new-lesson")
+        XCTAssertEqual(newVersion.completionFraction, 0.5, accuracy: 0.000_001)
+    }
+
+    func testSessionFinishPersistsAndEmitsModuleCompleteCueOnlyOnce() async throws {
+        let container = try PersistenceBootstrap.makeModelContainer(inMemory: true)
+        let writer = SwiftDataLessonProgressWriter(modelContainer: container)
+        let course = try CourseContentCodec.loadCourse(named: "course_v1")
+        let module = try XCTUnwrap(course.modules.first { $0.id == "M0" })
+        let finalBlock = try XCTUnwrap(module.lessons.first?.contentBlocks.last)
+        let route = try authorisedRoute(
+            learnerID: "learner-finish",
+            course: course,
+            module: module
+        )
+        let audio = MissingLessonAudioDirector()
+        let model = LessonPlayerSessionModel(
+            route: route,
+            audioDirector: audio,
+            assessmentProvider: AvailableLessonAssessmentProvider()
+        )
+        await model.move(toBlockID: finalBlock.id)
+        XCTAssertTrue(model.isAtEndOfCurrentLesson)
+
+        await model.finishCurrentLesson(
+            using: writer,
+            completedAt: Date(timeIntervalSince1970: 1_800_000_100)
+        )
+        await model.finishCurrentLesson(
+            using: writer,
+            completedAt: Date(timeIntervalSince1970: 1_800_000_200)
+        )
+        let requests = await audio.receivedRequests()
+
+        XCTAssertTrue(model.isCurrentLessonComplete)
+        XCTAssertFalse(model.completionSaveFailed)
+        XCTAssertTrue(model.completionNotice?.contains("already recorded") == true)
+        XCTAssertEqual(
+            requests.filter { $0.cue == AudioCue(rawValue: "sfx.module_complete") }.count,
+            1
+        )
+
+        let restored = LessonPlayerSessionModel(
+            route: route,
+            audioDirector: audio,
+            assessmentProvider: AvailableLessonAssessmentProvider()
+        )
+        await restored.prepare(progressWriter: writer)
+        XCTAssertTrue(restored.isCurrentLessonComplete)
     }
 
     private func block(

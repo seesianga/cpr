@@ -399,15 +399,7 @@ final class ScenarioEngineTests: XCTestCase {
         model.assignSelectedTask(to: "bystander_02", method: .gazeAndPinch)
         model.chooseAEDDistance(.near)
         model.assessBreathing(.absentOrAbnormal)
-        model.performCPR(unsafeXiphoidPlacement: false, timestampSeconds: 0)
-        model.performCPR(
-            unsafeXiphoidPlacement: false,
-            timestampSeconds: 60.0 / 110.0
-        )
-        model.performCPR(
-            unsafeXiphoidPlacement: false,
-            timestampSeconds: 120.0 / 110.0
-        )
+        performSupportedCPRCycle(model)
         model.prepareAndApplyAED()
 
         XCTAssertEqual(model.stage, .aedAnalysisClear)
@@ -447,7 +439,13 @@ final class ScenarioEngineTests: XCTestCase {
         XCTAssertEqual(model.analysisRound, 3)
         XCTAssertEqual(model.aedState, .complete)
         XCTAssertEqual(model.stage, .debrief)
-        XCTAssertNotNil(model.debrief)
+        let debrief = try XCTUnwrap(model.debrief)
+        XCTAssertEqual(debrief.cprCadenceAccuracy ?? -1, 1, accuracy: 0.000_001)
+        XCTAssertEqual(
+            debrief.longestCompressionGapSeconds ?? -1,
+            60.0 / 110.0,
+            accuracy: 0.000_001
+        )
         XCTAssertNil(model.correction)
         XCTAssertNil(model.errorMessage)
 
@@ -543,6 +541,41 @@ final class ScenarioEngineTests: XCTestCase {
     }
 
     @MainActor
+    func testRepeatedCriticalErrorCreatesFreshCorrectionWithoutDoubleScoring() throws {
+        let model = IntegratedScenarioSessionModel()
+        model.prepare(
+            scenarioID: "scenario-a-home",
+            patternID: "S-N-N",
+            audioDirector: NoOpAudioDirector()
+        )
+
+        model.assessScene(unsafeEntry: true)
+        XCTAssertEqual(model.stage, .correction)
+        model.acknowledgeCorrection()
+        XCTAssertEqual(model.stage, .sceneSafety)
+
+        model.assessScene(unsafeEntry: true)
+
+        XCTAssertEqual(model.stage, .correction)
+        XCTAssertEqual(
+            model.correction?.code,
+            DRSABCCriticalFailure.unsafeSceneEntry.rawValue
+        )
+        let occurrences = model.eventLog.filter { record in
+            guard case let .criticalError(_, code, _, _) = record.event else {
+                return false
+            }
+            return code == DRSABCCriticalFailure.unsafeSceneEntry.rawValue
+        }
+        XCTAssertEqual(occurrences.count, 2)
+        XCTAssertEqual(occurrences.filter(\.affectsScore).count, 1)
+
+        model.acknowledgeCorrection()
+        model.assessScene(unsafeEntry: false)
+        XCTAssertEqual(model.stage, .response)
+    }
+
+    @MainActor
     func testOutOfStageSpatialEquivalentActionsCannotAdvanceClinicalSession() {
         let model = IntegratedScenarioSessionModel()
         model.prepare(
@@ -614,14 +647,140 @@ final class ScenarioEngineTests: XCTestCase {
             timestampSeconds: 120.0 / 110.0
         )
         XCTAssertEqual(model.cprCompressionCount, 3)
+        XCTAssertEqual(model.stage, .cpr)
+
+        for index in 3..<model.requiredCompressionCount {
+            model.performCPR(
+                unsafeXiphoidPlacement: false,
+                timestampSeconds: Double(index) * 60.0 / 110.0
+            )
+        }
+        XCTAssertEqual(model.cprCompressionCount, model.requiredCompressionCount)
         XCTAssertEqual(model.stage, .aedPreparation)
 
         let compressionRecords = model.eventLog.filter { record in
             if case .cpr(.compressionDetected) = record.event { return true }
             return false
         }
-        XCTAssertEqual(compressionRecords.count, 5)
-        XCTAssertEqual(compressionRecords.filter(\.wasAccepted).count, 3)
+        XCTAssertEqual(compressionRecords.count, model.requiredCompressionCount + 2)
+        XCTAssertEqual(
+            compressionRecords.filter(\.wasAccepted).count,
+            model.requiredCompressionCount
+        )
+    }
+
+    @MainActor
+    func testOutOfBandAcceptedCompressionsCannotEarnSafeCPRScoreOrXP() throws {
+        let model = IntegratedScenarioSessionModel()
+        model.prepare(
+            scenarioID: "scenario-a-home",
+            patternID: "N-N-N",
+            audioDirector: NoOpAudioDirector()
+        )
+        model.assessScene(unsafeEntry: false)
+        model.checkResponse()
+        model.chooseResponderAvailability(bystanderAvailable: true)
+        model.selectedBystanderAssignment = .callSimulated995
+        model.assignSelectedTask(to: "bystander_01", method: .accessibleControl)
+        model.selectedBystanderAssignment = .getAED
+        model.assignSelectedTask(to: "bystander_02", method: .accessibleControl)
+        model.chooseAEDDistance(.near)
+        model.assessBreathing(.absentOrAbnormal)
+
+        for index in 0..<model.requiredCompressionCount {
+            model.performCPR(
+                unsafeXiphoidPlacement: false,
+                timestampSeconds: Double(index) * 1.5
+            )
+        }
+
+        XCTAssertEqual(model.stage, .aedPreparation)
+        let debrief = try DebriefBuilder.build(from: model.eventLog)
+        let cpr = try XCTUnwrap(
+            debrief.scoreOutcome.contributions.first {
+                $0.dimension == .cprSequenceAndRhythm
+            }
+        )
+        XCTAssertEqual(debrief.cprCadenceAccuracy, 0)
+        XCTAssertEqual(cpr.normalisedScore, 0)
+        XCTAssertTrue(debrief.scoreOutcome.hasUnsafeCompletion)
+        XCTAssertFalse(debrief.scoreOutcome.xpEligible)
+        XCTAssertEqual(debrief.recommendedXP, 0)
+    }
+
+    @MainActor
+    func testFarAEDBranchRecordsSupportedDelayMinimisationEvidence() throws {
+        let model = IntegratedScenarioSessionModel()
+        model.prepare(
+            scenarioID: "scenario-a-home",
+            patternID: "N-N-N",
+            audioDirector: NoOpAudioDirector()
+        )
+        model.assessScene(unsafeEntry: false)
+        model.checkResponse()
+        model.chooseResponderAvailability(bystanderAvailable: false)
+        model.chooseAEDDistance(.far)
+
+        let farBranchActions = model.eventLog.flatMap { record -> [ScenarioRequiredActionSnapshot] in
+            guard case let .branchSelected(_, conditionID, actions) = record.event,
+                  conditionID.contains("condition-far")
+            else { return [] }
+            return actions
+        }
+        XCTAssertTrue(farBranchActions.contains {
+            $0.id.hasSuffix("action-minimise-delay") && $0.dimension == .time
+        })
+        XCTAssertTrue(model.eventLog.contains { record in
+            guard record.wasAccepted, record.affectsScore,
+                  case let .requiredActionCompleted(actionID, _) = record.event
+            else { return false }
+            return actionID.hasSuffix("action-minimise-delay")
+        })
+        let debrief = try DebriefBuilder.build(from: model.eventLog)
+        XCTAssertEqual(
+            debrief.scoreOutcome.contributions.first { $0.dimension == .time }?.normalisedScore,
+            1
+        )
+    }
+
+    @MainActor
+    func testXiphoidCompressionAfterRhythmBeginsGetsGuidedCorrectionAndRecovery() {
+        let model = IntegratedScenarioSessionModel()
+        model.prepare(
+            scenarioID: "scenario-a-home",
+            patternID: "N-N-N",
+            audioDirector: NoOpAudioDirector()
+        )
+        model.assessScene(unsafeEntry: false)
+        model.checkResponse()
+        model.chooseResponderAvailability(bystanderAvailable: true)
+        model.selectedBystanderAssignment = .callSimulated995
+        model.assignSelectedTask(to: "bystander_01", method: .accessibleControl)
+        model.selectedBystanderAssignment = .getAED
+        model.assignSelectedTask(to: "bystander_02", method: .accessibleControl)
+        model.chooseAEDDistance(.near)
+        model.assessBreathing(.absentOrAbnormal)
+
+        model.performCPR(unsafeXiphoidPlacement: false, timestampSeconds: 0)
+        model.performCPR(
+            unsafeXiphoidPlacement: true,
+            timestampSeconds: 60.0 / 110.0
+        )
+
+        XCTAssertEqual(model.cprCompressionCount, 1)
+        XCTAssertEqual(model.stage, .correction)
+        XCTAssertEqual(
+            model.correction?.code,
+            CPRPracticeCriticalFailure.compressionOnXiphoid.rawValue
+        )
+
+        model.acknowledgeCorrection()
+        model.performCPR(
+            unsafeXiphoidPlacement: false,
+            timestampSeconds: 120.0 / 110.0
+        )
+        XCTAssertEqual(model.stage, .cpr)
+        XCTAssertEqual(model.cprCompressionCount, 2)
     }
 
     @MainActor
@@ -652,13 +811,13 @@ final class ScenarioEngineTests: XCTestCase {
             return usedSupport && !record.affectsScore
         })
         XCTAssertTrue(model.eventLog.contains { record in
-            guard case let .branchSelected(_, conditionID) = record.event else {
+            guard case let .branchSelected(_, conditionID, _) = record.event else {
                 return false
             }
             return conditionID.contains("condition-alone")
         })
         XCTAssertTrue(model.eventLog.contains { record in
-            guard case let .branchSelected(_, conditionID) = record.event else {
+            guard case let .branchSelected(_, conditionID, _) = record.event else {
                 return false
             }
             return conditionID.contains("condition-far")
@@ -674,5 +833,17 @@ final class ScenarioEngineTests: XCTestCase {
             scenarioID: scenarioID,
             selector: DeterministicScenarioPatternSelector(patternID: "S-N-N")
         )
+    }
+
+    @MainActor
+    private func performSupportedCPRCycle(_ model: IntegratedScenarioSessionModel) {
+        for index in 0..<model.requiredCompressionCount {
+            model.performCPR(
+                unsafeXiphoidPlacement: false,
+                timestampSeconds: Double(index) * 60.0 / 110.0
+            )
+        }
+        XCTAssertEqual(model.cprCompressionCount, model.requiredCompressionCount)
+        XCTAssertEqual(model.stage, .aedPreparation)
     }
 }

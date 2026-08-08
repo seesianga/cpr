@@ -28,27 +28,15 @@ enum DebriefBuilder {
             return actionID
         })
 
-        let cprBranchWasEntered = eventLog.contains { record in
-            if case .cpr = record.event { return true }
-            return false
+        let branchRequiredActions = eventLog.flatMap { record -> [ScenarioRequiredActionSnapshot] in
+            guard case let .branchSelected(_, _, actions) = record.event else { return [] }
+            return actions
         }
-        let aedBranchWasEntered = eventLog.contains { record in
-            if case .aed = record.event { return true }
-            return false
-        }
-        let applicableActions = requiredActions.filter { action in
-            if action.isAlwaysRequired { return true }
-            switch action.dimension {
-            case .cprSequenceAndRhythm:
-                return cprBranchWasEntered
-            case .aedPreparationAndPlacement:
-                return aedBranchWasEntered
-            default:
-                // Optional authored time/monitoring actions are informative until the
-                // event contract carries a direct, source-backed measurement for them.
-                return false
+        let applicableActions = (requiredActions.filter(\.isAlwaysRequired) + branchRequiredActions)
+            .reduce(into: [String: ScenarioRequiredActionSnapshot]()) { result, action in
+                result[action.id] = action
             }
-        }
+            .values
 
         var dimensionScores: [ScoringDimension: Double] = [:]
         for dimension in ScoringDimension.allCases {
@@ -63,6 +51,15 @@ enum DebriefBuilder {
                 dimensionScores[dimension] = Double(completed) /
                     Double(dimensionActions.count)
             }
+        }
+
+        let cprEvidence = Self.cprEvidence(from: eventLog)
+        if let cadenceAccuracy = cprEvidence.cadenceAccuracy,
+           dimensionScores[.cprSequenceAndRhythm] != nil {
+            dimensionScores[.cprSequenceAndRhythm] = min(
+                dimensionScores[.cprSequenceAndRhythm] ?? 0,
+                cadenceAccuracy
+            )
         }
 
         var debriefFeedback: [ScenarioDebriefFeedback] = []
@@ -120,6 +117,8 @@ enum DebriefBuilder {
             feedback: debriefFeedback,
             replayAnchors: replayAnchors,
             recommendedXP: recommendedXP,
+            cprCadenceAccuracy: cprEvidence.cadenceAccuracy,
+            longestCompressionGapSeconds: cprEvidence.longestGap,
             practiceRecommendation: recommendation(
                 score: scoreOutcome,
                 feedback: debriefFeedback
@@ -138,9 +137,9 @@ enum DebriefBuilder {
             title = "Scenario started"
             detail = "\(scene.rawValue), approved pattern \(patternID)"
             safetyCritical = false
-        case let .branchSelected(nodeID, conditionID):
+        case let .branchSelected(nodeID, conditionID, requiredActions):
             title = "Branch selected"
-            detail = "\(nodeID): \(conditionID)"
+            detail = "\(nodeID): \(conditionID); \(requiredActions.count) authored actions apply"
             safetyCritical = false
         case let .requiredActionCompleted(actionID, method):
             title = record.wasAccepted ? "Required action completed" : "Action already recorded"
@@ -191,6 +190,32 @@ enum DebriefBuilder {
             detail: detail,
             wasAccepted: record.wasAccepted,
             isSafetyCritical: safetyCritical
+        )
+    }
+
+    private static func cprEvidence(
+        from eventLog: [IntegratedScenarioEventRecord]
+    ) -> (cadenceAccuracy: Double?, longestGap: Double?) {
+        let timestamps = eventLog.compactMap { record -> TimeInterval? in
+            guard record.wasAccepted,
+                  case let .cpr(.compressionDetected(timestamp, placement, _)) = record.event,
+                  placement == .sternumTarget
+            else { return nil }
+            return timestamp
+        }
+        guard timestamps.count >= 2 else { return (nil, nil) }
+        let gaps = zip(timestamps.dropFirst(), timestamps).compactMap { current, previous in
+            let gap = current - previous
+            return gap.isFinite && gap > 0 ? gap : nil
+        }
+        guard !gaps.isEmpty else { return (nil, nil) }
+        let inBand = gaps.filter { gap in
+            let cadence = 60 / gap
+            return CPRPracticePolicy.sourceBacked.contains(rate: cadence)
+        }.count
+        return (
+            Double(inBand) / Double(gaps.count),
+            gaps.max()
         )
     }
 

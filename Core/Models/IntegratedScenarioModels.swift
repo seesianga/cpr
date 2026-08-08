@@ -64,7 +64,11 @@ enum IntegratedScenarioEvent: Codable, Sendable, Equatable {
         contentVersion: String,
         requiredActions: [ScenarioRequiredActionSnapshot]
     )
-    case branchSelected(nodeID: String, conditionID: String)
+    case branchSelected(
+        nodeID: String,
+        conditionID: String,
+        requiredActions: [ScenarioRequiredActionSnapshot]
+    )
     case requiredActionCompleted(actionID: String, method: ScenarioInteractionMethod)
     case bystanderAssigned(
         bystanderID: String,
@@ -138,6 +142,8 @@ struct ScenarioDebrief: Codable, Sendable, Equatable {
     let feedback: [ScenarioDebriefFeedback]
     let replayAnchors: [ScenarioReplayAnchor]
     let recommendedXP: Int
+    let cprCadenceAccuracy: Double?
+    let longestCompressionGapSeconds: Double?
     let practiceRecommendation: ScenarioPracticeRecommendation
 }
 

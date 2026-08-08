@@ -46,6 +46,16 @@ enum AEDAudioSafetyState: String, CaseIterable, Sendable, Equatable {
     case simulatedShock
 
     var requiresMusicHardStop: Bool { self != .normal }
+
+    static func forPracticeState(_ state: AEDPracticeState?) -> AEDAudioSafetyState {
+        switch state {
+        case .analysing: .analysing
+        case .charging: .charging
+        case .clearConfirmation: .clearConfirmation
+        case .simulatedShock: .simulatedShock
+        default: .normal
+        }
+    }
 }
 
 enum AudioPlaybackBlockReason: Sendable, Equatable {
@@ -314,7 +324,9 @@ actor SystemAudioDirector: AudioDirector {
             players[channel] = player
             cues[channel] = request.cue
             latestChannel = channel
-            visualState = AudioVisualState.forCue(request.cue)
+            if let nextVisualState = AudioVisualState.forCue(request.cue) {
+                visualState = nextVisualState
+            }
             if channel.isSpeech {
                 mixPolicy.speechStarted(on: channel)
             }
@@ -388,6 +400,7 @@ actor SystemAudioDirector: AudioDirector {
         }
         latestChannel = nil
         visualState = nil
+        mixPolicy = AudioMixPolicy()
     }
 
     func refreshPreferences() async {
@@ -423,7 +436,7 @@ actor SystemAudioDirector: AudioDirector {
     }
 
     func playbackSnapshot() async -> AudioPlaybackSnapshot {
-        guard let channel = latestChannel,
+        guard let channel = snapshotChannel(),
               let player = players[channel],
               let cue = cues[channel]
         else {
@@ -452,6 +465,19 @@ actor SystemAudioDirector: AudioDirector {
             musicIsDucked: mixPolicy.musicIsDucked,
             musicIsSafetyStopped: mixPolicy.musicRequiresHardStop
         )
+    }
+
+    private func snapshotChannel() -> AudioChannel? {
+        // Captions follow active speech even when a simultaneous SFX or music cue was
+        // started later. Dialogue takes precedence for immediate safety guidance.
+        for speechChannel in [AudioChannel.dialogue, .narration]
+        where players[speechChannel] != nil {
+            return speechChannel
+        }
+        if let latestChannel, players[latestChannel] != nil {
+            return latestChannel
+        }
+        return AudioChannel.allCases.first { players[$0] != nil }
     }
 
     private func scheduleCompletion(

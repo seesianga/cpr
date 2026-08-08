@@ -175,7 +175,9 @@ struct SpatialSpeechCaptionOverlay: View {
                     .accessibilityLabel("Caption: \(text)")
             }
         }
-        .task(id: playback?.cue.rawValue) {
+        .task(id: playback.map {
+            "\($0.cue.rawValue)#\($0.startedAt.timeIntervalSinceReferenceDate)#\($0.rate)"
+        }) {
             guard let playback else {
                 track = nil
                 currentTime = 0

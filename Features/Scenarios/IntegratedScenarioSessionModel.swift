@@ -54,10 +54,12 @@ final class IntegratedScenarioSessionModel {
     private(set) var isPaused = false
     private(set) var isLoneRescuer = false
     private(set) var cprCompressionCount = 0
+    let requiredCompressionCount = CPRPracticePolicy.sourceBacked.preferredCompressionsPerCycle
     var selectedBystanderAssignment: ScenarioBystanderAssignment = .getAED
 
     private var stageBeforeCorrection: IntegratedScenarioStage = .sceneSafety
     private var cprPositioningComplete = false
+    private var cprLandmarkConfirmed = false
     private var cprStartedAtUptime: TimeInterval?
     private var isAEDCycleReadyForAnalysis = false
     private var audioDirector: (any AudioDirector)?
@@ -91,6 +93,7 @@ final class IntegratedScenarioSessionModel {
             aedRetrievalAssigned = false
             isLoneRescuer = false
             cprPositioningComplete = false
+            cprLandmarkConfirmed = false
             cprCompressionCount = 0
             cprStartedAtUptime = nil
             isAEDCycleReadyForAnalysis = false
@@ -257,6 +260,12 @@ final class IntegratedScenarioSessionModel {
                 try completeAction(suffix: "action-manage-aed-retrieval", in: &engine)
                 aedRetrievalAssigned = true
             }
+            if distance == .far {
+                // The far branch's authored delay-minimisation evidence is earned only
+                // after the reducer accepts the responder/delegation choice. This does
+                // not alter the near/far clinical policy or allow a lone rescuer to leave.
+                try completeAction(suffix: "action-minimise-delay", in: &engine)
+            }
             self.engine = engine
             stage = .breathing
             errorMessage = nil
@@ -357,19 +366,37 @@ final class IntegratedScenarioSessionModel {
             cprPositioningComplete = true
         }
         if unsafeXiphoidPlacement {
-            let placement = engine.submit(
-                CPRPracticeEvent.classifyHandPlacement(.xiphoidAvoidZone)
-            )
+            let placement: IntegratedScenarioEventRecord
+            if cprLandmarkConfirmed {
+                let now = ProcessInfo.processInfo.systemUptime
+                if cprStartedAtUptime == nil { cprStartedAtUptime = now }
+                let elapsed = timestampSeconds ?? max(
+                    0,
+                    now - (cprStartedAtUptime ?? now)
+                )
+                placement = engine.submit(
+                    CPRPracticeEvent.compressionDetected(
+                        timestampSeconds: elapsed,
+                        placement: .xiphoidAvoidZone,
+                        handStacking: .likelyStacked
+                    )
+                )
+            } else {
+                placement = engine.submit(
+                    CPRPracticeEvent.classifyHandPlacement(.xiphoidAvoidZone)
+                )
+            }
             self.engine = engine
             guard placement.wasAccepted else {
-                failAction()
+                detectCorrection(returningTo: .cpr)
+                if correction == nil { failAction() }
                 return
             }
             detectCorrection(returningTo: .cpr)
             return
         }
 
-        if cprCompressionCount == 0 {
+        if !cprLandmarkConfirmed {
             let placement = engine.submit(
                 CPRPracticeEvent.classifyHandPlacement(.sternumTarget)
             )
@@ -378,6 +405,7 @@ final class IntegratedScenarioSessionModel {
                 failAction()
                 return
             }
+            cprLandmarkConfirmed = true
         }
         let now = ProcessInfo.processInfo.systemUptime
         if cprStartedAtUptime == nil { cprStartedAtUptime = now }
@@ -397,7 +425,7 @@ final class IntegratedScenarioSessionModel {
         }
         cprCompressionCount += 1
         self.engine = engine
-        guard cprCompressionCount >= 3 else { return }
+        guard cprCompressionCount >= requiredCompressionCount else { return }
 
         do {
             if let position = actionID(suffix: "action-position-for-cpr", in: engine) {
@@ -611,6 +639,7 @@ final class IntegratedScenarioSessionModel {
                 try requireAccepted(engine.submit(DRSABCEvent.acknowledgeCorrection))
             case .cpr:
                 try requireAccepted(engine.submit(CPRPracticeEvent.acknowledgeCorrection))
+                cprLandmarkConfirmed = false
             case .aed:
                 break
             }
@@ -751,6 +780,7 @@ enum BreathingPresentation: String, Sendable, CaseIterable, Identifiable {
 
 struct IntegratedScenarioImmersivePanel: View {
     let model: IntegratedScenarioSessionModel
+    let awardState: DebriefAwardPersistenceState
 
     var body: some View {
         VStack(alignment: .leading, spacing: 13) {
@@ -869,8 +899,10 @@ struct IntegratedScenarioImmersivePanel: View {
         case .cpr:
             Text("Confirm the source-backed hand-placement zone and begin hands-only CPR. Depth and force are Not physically assessed.")
             Label(
-                "Recorded rhythm beats: \(model.cprCompressionCount) of 3",
-                systemImage: model.cprCompressionCount >= 3 ? "checkmark.circle.fill" : "metronome"
+                "Recorded compressions: \(model.cprCompressionCount) of \(model.requiredCompressionCount)",
+                systemImage: model.cprCompressionCount >= model.requiredCompressionCount
+                    ? "checkmark.circle.fill"
+                    : "metronome"
             )
             buttonGrid([
                 ("Record a sternum compression beat", "heart.fill", { model.performCPR(unsafeXiphoidPlacement: false) }),
@@ -975,7 +1007,7 @@ struct IntegratedScenarioImmersivePanel: View {
 
         case .debrief:
             if let debrief = model.debrief {
-                DebriefView(debrief: debrief)
+                DebriefView(debrief: debrief, awardState: awardState)
                     .frame(maxHeight: 560)
             }
         }

@@ -1,8 +1,16 @@
 import SwiftUI
 
+enum DebriefAwardPersistenceState: Sendable, Equatable {
+    case pending
+    case saving
+    case saved(xp: Int)
+    case failed
+}
+
 /// Calm, evidence-first after-action review. All values were derived from the event log.
 struct DebriefView: View {
     let debrief: ScenarioDebrief
+    let awardState: DebriefAwardPersistenceState
 
     var body: some View {
         ScrollView {
@@ -32,10 +40,23 @@ struct DebriefView: View {
                                         : "arrow.clockwise.circle"
                                 )
                                 Spacer()
-                                Text(contribution.normalisedScore, format: .percent)
-                                    .monospacedDigit()
+                                VStack(alignment: .trailing, spacing: 2) {
+                                    Text(contribution.normalisedScore, format: .percent)
+                                        .monospacedDigit()
+                                    Text("Weight \(contribution.weight, format: .percent)")
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                    Text(
+                                        "Contribution \(contribution.weightedScore, format: .percent)"
+                                    )
+                                    .font(.caption.monospacedDigit())
+                                    .foregroundStyle(.secondary)
+                                }
                             }
                             .accessibilityElement(children: .combine)
+                            .accessibilityLabel(
+                                "\(contribution.dimension.displayName): score \(contribution.normalisedScore.formatted(.percent)), weight \(contribution.weight.formatted(.percent)), weighted contribution \(contribution.weightedScore.formatted(.percent))"
+                            )
                         }
                     }
                 }
@@ -84,12 +105,30 @@ struct DebriefView: View {
                         .font(.headline)
                     Text(debrief.practiceRecommendation.reason)
                         .foregroundStyle(.secondary)
-                    Text("Recommended XP: \(debrief.recommendedXP)")
-                        .font(.subheadline.monospacedDigit())
+                    awardStatus
                 }
             }
             .padding(24)
         }
         .navigationTitle("Debrief")
+    }
+
+    @ViewBuilder
+    private var awardStatus: some View {
+        switch awardState {
+        case .pending, .saving:
+            Label("Saving internal completion record…", systemImage: "arrow.triangle.2.circlepath")
+                .font(.subheadline)
+        case let .saved(xp):
+            Label("XP added to this learner record: \(xp)", systemImage: "checkmark.seal.fill")
+                .font(.subheadline.monospacedDigit())
+        case .failed:
+            Label(
+                "The completion record could not be saved. No XP was added.",
+                systemImage: "exclamationmark.triangle.fill"
+            )
+            .font(.subheadline)
+            .foregroundStyle(.orange)
+        }
     }
 }

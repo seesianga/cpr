@@ -1,3 +1,4 @@
+import SwiftData
 import SwiftUI
 
 /// Shared-space LMS shell with role-scoped navigation.
@@ -137,15 +138,43 @@ private struct LearningLabLaunchView: View {
     @Environment(\.openWindow) private var openWindow
     @Environment(\.openImmersiveSpace) private var openImmersiveSpace
     @Environment(AppModel.self) private var appModel
+    @Environment(AuthenticationModel.self) private var authenticationModel
+    @Environment(\.modelContext) private var modelContext
+    @State private var presentationModel: ModulePresentationModel?
+    @State private var accessErrorMessage: String?
+
+    private var lockedModuleIDs: [String] {
+        SpatialLaboratoryAccessPolicy.lockedModuleIDs(
+            in: presentationModel?.modules ?? []
+        )
+    }
+
+    private var authorisedModes: Set<SpatialLaboratoryMode> {
+        SpatialLaboratoryAccessPolicy.authorisedModes(
+            in: presentationModel?.modules ?? []
+        )
+    }
 
     var body: some View {
         @Bindable var appModel = appModel
 
         Form {
             Section("Volumetric Learning") {
-                Text("Open a separate learning laboratory volume. Interactive clinical models arrive in a later phase.")
+                Text("Explore the source-backed heart and lungs, seven-ring Chain of Survival, and AED trainer components in a separate volume.")
                 Button("Open Learning Lab", systemImage: "cube.transparent") {
                     openWindow(id: AppModel.learningLabWindowID)
+                }
+                .disabled(presentationModel == nil || authorisedModes.isEmpty)
+                if !lockedModuleIDs.isEmpty, presentationModel != nil {
+                    Label(
+                        "Unavailable laboratory modes remain locked by \(lockedModuleIDs.joined(separator: ", ")).",
+                        systemImage: "lock.fill"
+                    )
+                    .foregroundStyle(.secondary)
+                }
+                if let accessErrorMessage {
+                    Label(accessErrorMessage, systemImage: "exclamationmark.triangle")
+                        .foregroundStyle(.orange)
                 }
             }
 
@@ -174,5 +203,28 @@ private struct LearningLabLaunchView: View {
             }
         }
         .navigationTitle("Learning Lab")
+        .task(id: authenticationModel.currentUser?.id) {
+            await loadAccess()
+        }
+    }
+
+    @MainActor
+    private func loadAccess() async {
+        guard let learnerID = authenticationModel.currentUser?.id else {
+            accessErrorMessage = "Sign in before opening module-linked laboratory content."
+            return
+        }
+        do {
+            let model = try ModulePresentationModel.production(
+                modelContainer: modelContext.container
+            )
+            presentationModel = model
+            await model.load(learnerID: learnerID)
+            if case .failed = model.state {
+                accessErrorMessage = "Course access could not be verified."
+            }
+        } catch {
+            accessErrorMessage = "Course access could not be verified."
+        }
     }
 }

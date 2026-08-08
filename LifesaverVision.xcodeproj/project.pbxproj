@@ -31,6 +31,7 @@
 		0EC7FE349E30E50CC2BD7216 /* nar.M4-B9.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 345D76290181BCF3DA1751EB /* nar.M4-B9.m4a */; };
 		0ED9B0118911AF304BC4ED8D /* nar.M1-B2.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 5B934C01D167311E4EE35BE1 /* nar.M1-B2.m4a */; };
 		0EEAE57E8571123C396C728D /* nar.M5-B5.vtt in Resources */ = {isa = PBXBuildFile; fileRef = 406810C0EDD90C980933E5E0 /* nar.M5-B5.vtt */; };
+		0F7625126D5D2898FB8EF3B3 /* DebriefView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CDBCD8AFD3F228351DD17E6 /* DebriefView.swift */; };
 		1033B22648ECA1C7F0258089 /* nar.M0.intro.vtt in Resources */ = {isa = PBXBuildFile; fileRef = 171DD359B87FE9F91157BFB3 /* nar.M0.intro.vtt */; };
 		1149FF73868950AE8C2B8707 /* nar.M3-B2.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 93FC498045CE1ECFA0251A15 /* nar.M3-B2.m4a */; };
 		11B7B7F26E4B2ADF114A7BE5 /* portal_m08.usdz in CopyFiles */ = {isa = PBXBuildFile; fileRef = AE743265CCCE9DB45DC7CEC4 /* portal_m08.usdz */; };
@@ -40,6 +41,7 @@
 		14B8188F6AD841751980CE1B /* LifesaverVisionUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 088100D062186324E946AF5F /* LifesaverVisionUITests.swift */; };
 		14E04FAF3053B31970E66A0F /* nar.M1.intro.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 36D85C46DABCFA3A990B10CF /* nar.M1.intro.m4a */; };
 		1533473584727879930F4D8C /* sys.scenario-a-home-feedback-normal-breathing.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 41B071DC66E999468402753E /* sys.scenario-a-home-feedback-normal-breathing.m4a */; };
+		15FBE6BE351E9A88F27D9031 /* AchievementGalleryRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6759D8EE41CF11FEF0A7440 /* AchievementGalleryRootView.swift */; };
 		160379B9FD3B795D2DA90ACD /* AEDPracticeImmersivePanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1112316E758BA2E569867E09 /* AEDPracticeImmersivePanel.swift */; };
 		16062163C0EB6E52276146AB /* nar.M5-B1.vtt in Resources */ = {isa = PBXBuildFile; fileRef = 94FA7059077DCA062427617D /* nar.M5-B1.vtt */; };
 		160B2F2C9ADE7632E096F59F /* PrivacyOperationsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19877746B26D84DB5595FE69 /* PrivacyOperationsService.swift */; };
@@ -101,9 +103,11 @@
 		3ADD1BBB39196738198D20E8 /* CPRPracticeImmersivePanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63A122AAF6CF6CFA28B3CF8E /* CPRPracticeImmersivePanel.swift */; };
 		3AE188A975F800134166D6A6 /* nar.M4-B3.vtt in Resources */ = {isa = PBXBuildFile; fileRef = 51E7C6C4CC37FBAF6CD062E6 /* nar.M4-B3.vtt */; };
 		3B3B592B2F1EFECA1B2DF4EC /* CourseCatalogueView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC7A5D70E5C28C746F8B6EC8 /* CourseCatalogueView.swift */; };
+		3C0C08A20425A4C09ECC9109 /* IntegratedScenarioBriefingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 491D1C08DDE297D4C08F9575 /* IntegratedScenarioBriefingView.swift */; };
 		3C0E13ECCDCA8FBDD4137C30 /* sfx.aed_charging.m4a in Resources */ = {isa = PBXBuildFile; fileRef = B64776BCBBB698A80612C1AC /* sfx.aed_charging.m4a */; };
 		3CA9E6A195F7F4CF9A1C19CA /* nar.M8-B7.vtt in Resources */ = {isa = PBXBuildFile; fileRef = 96443BC893B413502DD4E0A0 /* nar.M8-B7.vtt */; };
 		3D8BF8C183614A72C524E327 /* nar.M9-B2.m4a in Resources */ = {isa = PBXBuildFile; fileRef = A9CB08AF75A39945FCD7F814 /* nar.M9-B2.m4a */; };
+		3E973480ADC7DA99957DFF72 /* IntegratedScenarioModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8474787A3C84CBF3BB98697A /* IntegratedScenarioModels.swift */; };
 		3EDF0F69E1EC6CFCAF3C5044 /* nar.M8-B5.m4a in Resources */ = {isa = PBXBuildFile; fileRef = EC2075A3B991B10D2695DF1A /* nar.M8-B5.m4a */; };
 		3FC7BAFD141FD7BCC79A810C /* sfx.aed_analysis.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 4AAC74F84FEC888B69EB9F3C /* sfx.aed_analysis.m4a */; };
 		40F36F523BC5D910D0AFBCA9 /* sfx.focus_confirm.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 1067280AF73FFFE5B1898F1F /* sfx.focus_confirm.m4a */; };
@@ -126,6 +130,7 @@
 		4D0C4B048551D5D58293FF62 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 2C165DDD143CB188C78CE1C7 /* PrivacyInfo.xcprivacy */; };
 		4D838A0C4B9473D246E16DF7 /* nar.M2-B3.vtt in Resources */ = {isa = PBXBuildFile; fileRef = 0AB588941797E6CE6DF53AF3 /* nar.M2-B3.vtt */; };
 		4EB1B75496E6CEAD059D2DFA /* nar.M5-B1.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 118FEF80BE7D1D1058F7D8FE /* nar.M5-B1.m4a */; };
+		504AA24B9246A0A232CE5825 /* ScenarioEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AF8697C103B36207E1B1372 /* ScenarioEngine.swift */; };
 		505DF9290C93533424D131AB /* Phase3BSchemaTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98267160BB6426E0ED88E1E7 /* Phase3BSchemaTests.swift */; };
 		5195890E7D6C74E082769F0F /* sys.scenario-d-community-facility-feedback-aed-safety.vtt in Resources */ = {isa = PBXBuildFile; fileRef = C5BF60E4FF8A5306C54F85CA /* sys.scenario-d-community-facility-feedback-aed-safety.vtt */; };
 		51A916AC0E3B1AFA8716C737 /* portal_m10.usdz in CopyFiles */ = {isa = PBXBuildFile; fileRef = 48C36747C53B434BB3EEF034 /* portal_m10.usdz */; };
@@ -134,12 +139,14 @@
 		55F54844E539B713CB9D405A /* CourseContentValidationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97CE72015BC303A436C9AEAE /* CourseContentValidationTests.swift */; };
 		5B83ACC53D2B79CAB7658103 /* nar.M8-B5.vtt in Resources */ = {isa = PBXBuildFile; fileRef = 2F6D0BF92ACEEC1460EEF52E /* nar.M8-B5.vtt */; };
 		5C99B3EC96F63B034C6447E6 /* nar.M8-B2.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 191DD9B8F655BE124FB0C479 /* nar.M8-B2.m4a */; };
+		5CE4E847360BF6890064ABD4 /* LessonPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E36EEF71157A89A66EE320A /* LessonPlayerView.swift */; };
 		5D0745867940E2457AC29EE0 /* sfx.answer_correct.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 8E96365FA698FB4A5CA07FFA /* sfx.answer_correct.m4a */; };
 		5DF3F158BC7FBCC0434883E2 /* sys.scenario-c-workplace-feedback-normal-breathing.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 0A4F5FFD853073C1E8C22700 /* sys.scenario-c-workplace-feedback-normal-breathing.m4a */; };
 		5E2AC697B07D0A98C90CB0C9 /* SpatialRealityKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB1547039F983C313AA2675E /* SpatialRealityKit.swift */; };
 		5EBA81E0055A7257C66834AB /* ModulePresentationModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE5FE75A095D5D1B72B2C6F3 /* ModulePresentationModelTests.swift */; };
 		5EEC07059F94EEE3B289D215 /* badge_m02.usdz in CopyFiles */ = {isa = PBXBuildFile; fileRef = D340CF4DB172C5FBBB51CC5A /* badge_m02.usdz */; };
 		605CB90DF5AA1729A5F9E84F /* music.anatomy_lesson.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 80732BD730167D6F36824780 /* music.anatomy_lesson.m4a */; };
+		60BD736B7D74434B9A58C038 /* ScenarioEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04735E7DF396D39660549FEF /* ScenarioEngineTests.swift */; };
 		614FCA649CEFAA311AC3E444 /* sys.scenario-d-community-facility-feedback-sequence.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 23460AEF69F1BC836A645685 /* sys.scenario-d-community-facility-feedback-sequence.m4a */; };
 		6344665CC8768E7C7E8E6A6F /* achievement-vault-environment.usdz in CopyFiles */ = {isa = PBXBuildFile; fileRef = 00E766E08ED7FE94AE693981 /* achievement-vault-environment.usdz */; };
 		646032CC9D55AF071B15E4A6 /* nar.M1-B6.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 6B663BF3CF8BBBDA32B03765 /* nar.M1-B6.m4a */; };
@@ -151,6 +158,7 @@
 		6649B101C10D65CE14EC0358 /* SimulatedHandInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 637F9DE711EB0481788FF8A3 /* SimulatedHandInput.swift */; };
 		66727961FCADD16E8DCD0FCE /* AdministrationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4288F4CE5F165813FEE282B1 /* AdministrationView.swift */; };
 		66CE4F4F0DDFE58C254B8A93 /* nar.M1-B3.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 9D022F861A68E9C3F745476E /* nar.M1-B3.m4a */; };
+		6731179DF98F06ACF21A802C /* LessonPlayerModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27EF7DCEC7919918149A854C /* LessonPlayerModels.swift */; };
 		6748D64518E4C67295087FE5 /* AssetRegistry+HandTrackingTargets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46DD3EFA951686E5546DCBF7 /* AssetRegistry+HandTrackingTargets.swift */; };
 		67651DBFFA041440042D1829 /* QuizSessionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60B2074500AA47F88C3F143E /* QuizSessionView.swift */; };
 		68420673AE0D4F164C8F1102 /* sys.scenario-d-community-facility-feedback-resume.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 347694B6C80D249A3DCADB2A /* sys.scenario-d-community-facility-feedback-resume.m4a */; };
@@ -175,6 +183,7 @@
 		77483DC7793DCF2275594B50 /* AudioPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E2F1D9CF552625E371CD68C /* AudioPreferences.swift */; };
 		774DD27572F0A2B35B971BBD /* nar.M4-B1.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 3594AE37717436ADCC532F9C /* nar.M4-B1.m4a */; };
 		77D57FE79BB96BC4D35792A9 /* music.academy_hub.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 9E3629E9A7D638E787913A57 /* music.academy_hub.m4a */; };
+		78F246F325F1FBF4635B6773 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 716E94E5BB18EF201F19A56F /* OnboardingView.swift */; };
 		799D9A260F97E253B11048B0 /* nar.M9-B6.m4a in Resources */ = {isa = PBXBuildFile; fileRef = E4199F2EA0BC14BBE12CFD97 /* nar.M9-B6.m4a */; };
 		7A7D59D5D212352FDFFF002C /* theory_questions_v1.json in Resources */ = {isa = PBXBuildFile; fileRef = EEF77B06DFCFF1E1B8CAD828 /* theory_questions_v1.json */; };
 		7C40A3B18AD091DF5F2B8DC1 /* nar.M1-B4.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 6AF0CF695A68E3AF895A1069 /* nar.M1-B4.m4a */; };
@@ -216,6 +225,7 @@
 		9552FA0E8426A2CD66A7F4D9 /* test_traceability_generator.py in Resources */ = {isa = PBXBuildFile; fileRef = 1CFD2BFF9AF0F7F90B7911D9 /* test_traceability_generator.py */; };
 		95996CFFCDC029CC169256A6 /* nar.M8.intro.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 5EA7C8501C08F87E3D7A9547 /* nar.M8.intro.m4a */; };
 		975AF113B0743F2C25EA59BC /* nar.M1.intro.vtt in Resources */ = {isa = PBXBuildFile; fileRef = 8A7FD4D3F8739BE2F13B30BB /* nar.M1.intro.vtt */; };
+		98631A592C5ED8CCFADA99E7 /* LessonPlayerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09B2727DDBFA417FE5887075 /* LessonPlayerTests.swift */; };
 		9B59607E727C4E7BB8E7AE53 /* sys.scenario-b-shopping-centre-feedback-resume.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 0D2AB538AFC2E0E409E650B4 /* sys.scenario-b-shopping-centre-feedback-resume.m4a */; };
 		9BADAC105E03C5B2AD55D98D /* nar.M10-B3.m4a in Resources */ = {isa = PBXBuildFile; fileRef = ABAF45EE6E3D8E1DBCEB0E44 /* nar.M10-B3.m4a */; };
 		9C3EE94B7CB5D4F465112D80 /* sys.scenario-c-workplace-feedback-aed-safety.m4a in Resources */ = {isa = PBXBuildFile; fileRef = BCBA033213D399C53A6B6BE0 /* sys.scenario-c-workplace-feedback-aed-safety.m4a */; };
@@ -244,6 +254,7 @@
 		AFB1DDA923EE930C8DA546D3 /* nar.M8-B4.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 120982AB7541177D34BA2EBD /* nar.M8-B4.m4a */; };
 		AFC82F233B3E122B7FEA48F8 /* PrivacyModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24C263828A3A8EBF2DAEB664 /* PrivacyModels.swift */; };
 		AFF03048BB35D9490863D65E /* KeychainStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55C2483F4B9D5E2A0546A72F /* KeychainStore.swift */; };
+		B284BFF6B439ED4EA08D50EE /* OnboardingGamificationComfortTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B8FD13FAC252A8D7CFC45A6 /* OnboardingGamificationComfortTests.swift */; };
 		B44A0791971545943F837DC6 /* scenarios_v1.json in Resources */ = {isa = PBXBuildFile; fileRef = D2D474372E0E4AC940131C54 /* scenarios_v1.json */; };
 		B5F6FE2361569C27B09FEFE4 /* nar.M3-B1.m4a in Resources */ = {isa = PBXBuildFile; fileRef = C476295B284EEFFEF5CC038F /* nar.M3-B1.m4a */; };
 		B629B6D72F0419BF48541F7E /* ScoringModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99909D20EFD397C60F85B357 /* ScoringModels.swift */; };
@@ -268,6 +279,7 @@
 		C36CF4F94D643BBBFC7F1D6B /* nar.M6-B3.vtt in Resources */ = {isa = PBXBuildFile; fileRef = B69ED12C06A8054B619EFADD /* nar.M6-B3.vtt */; };
 		C3ABBE1F8A77B172707C8090 /* accessibility-switch-puck.usdz in CopyFiles */ = {isa = PBXBuildFile; fileRef = 0694581CDDC98A836FB0BE35 /* accessibility-switch-puck.usdz */; };
 		C42E818F34B88F4893354CB3 /* nar.M2-B2.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 631923104732DCA66A5C073F /* nar.M2-B2.m4a */; };
+		C456EC2B1DBA2B0B55537D79 /* GamificationPresentationModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BA9E4440A70F02FAD1ACCC8 /* GamificationPresentationModels.swift */; };
 		C49B9CA123EA670BF0629C76 /* badge_m03.usdz in CopyFiles */ = {isa = PBXBuildFile; fileRef = A870587E55E2FE0BA3AD126F /* badge_m03.usdz */; };
 		C6013B4452A4D8D25EDBAB72 /* sys.scenario-a-home-feedback-sequence.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 90990209DD953B7896E458FA /* sys.scenario-a-home-feedback-sequence.m4a */; };
 		C6F8CFCA4D52B891FC3192BA /* nar.M3-B10.vtt in Resources */ = {isa = PBXBuildFile; fileRef = 1FE3037B1CB2BE84BE821703 /* nar.M3-B10.vtt */; };
@@ -345,10 +357,12 @@
 		F665A37F2AE9049D643D717A /* nar.M3-B6.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 9085121D5842A0B9E5AC1A1F /* nar.M3-B6.m4a */; };
 		F742DDD0196E827A50C26909 /* nar.M5-B6.vtt in Resources */ = {isa = PBXBuildFile; fileRef = CD26E7C307FD49A6BDADF6F8 /* nar.M5-B6.vtt */; };
 		F75D9D11528B3A62D504D167 /* nar.M4-B5.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 98A687622BAC9A09C3E96E66 /* nar.M4-B5.m4a */; };
+		F8DA088EE22C021213EE1999 /* DebriefBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = F47A3178F3D36D9187D633F4 /* DebriefBuilder.swift */; };
 		F8DD81182730FBEA22C745D0 /* badge_m01.usdz in CopyFiles */ = {isa = PBXBuildFile; fileRef = 2C89CBF2E90A016DFE5849A4 /* badge_m01.usdz */; };
 		F8E39F31A759349A19E2052F /* badge_m10.usdz in CopyFiles */ = {isa = PBXBuildFile; fileRef = C6D64CF3E809FBB3887BD87E /* badge_m10.usdz */; };
 		FA383616B0850B35480F635F /* sys.scenario-c-workplace-feedback-normal-breathing.vtt in Resources */ = {isa = PBXBuildFile; fileRef = BB6004ADB1D1CEA951DCC7D8 /* sys.scenario-c-workplace-feedback-normal-breathing.vtt */; };
 		FB0AFD567A8CE71B358749C9 /* badge_m11.usdz in CopyFiles */ = {isa = PBXBuildFile; fileRef = B4F680F5D664A55D48376198 /* badge_m11.usdz */; };
+		FB33AA4FEE3B5D02699E7AE9 /* IntegratedScenarioSessionModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BE64231B08500A84D4AEBF1 /* IntegratedScenarioSessionModel.swift */; };
 		FB54CC3AA9336C0CEED13F8E /* InstructorDashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F54BAD8AA4DF74871D356B /* InstructorDashboardView.swift */; };
 		FBC50F12E137A5F0BAA80369 /* course_v1.json in Resources */ = {isa = PBXBuildFile; fileRef = 379E0D7AB5D65014DC6EE94E /* course_v1.json */; };
 		FBDF69AD2DDB4C503FF8C902 /* nar.M5-B5.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 10525D9EAD3C1CF9C32BB5CC /* nar.M5-B5.m4a */; };
@@ -442,10 +456,12 @@
 		00E766E08ED7FE94AE693981 /* achievement-vault-environment.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "achievement-vault-environment.usdz"; sourceTree = "<group>"; };
 		017BBB73F1C10A390B2F165B /* nar.M1-B1.m4a */ = {isa = PBXFileReference; path = "nar.M1-B1.m4a"; sourceTree = "<group>"; };
 		0197C71B9FC9335FACB534D4 /* nar.M8-B1.m4a */ = {isa = PBXFileReference; path = "nar.M8-B1.m4a"; sourceTree = "<group>"; };
+		04735E7DF396D39660549FEF /* ScenarioEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScenarioEngineTests.swift; sourceTree = "<group>"; };
 		05FE4974ED8B8C4D14D6AF6D /* HandSignalDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HandSignalDetector.swift; sourceTree = "<group>"; };
 		0694581CDDC98A836FB0BE35 /* accessibility-switch-puck.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "accessibility-switch-puck.usdz"; sourceTree = "<group>"; };
 		0719E97B18BAFDC3E37E429D /* StateMachineCoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StateMachineCoreTests.swift; sourceTree = "<group>"; };
 		088100D062186324E946AF5F /* LifesaverVisionUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LifesaverVisionUITests.swift; sourceTree = "<group>"; };
+		09B2727DDBFA417FE5887075 /* LessonPlayerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LessonPlayerTests.swift; sourceTree = "<group>"; };
 		09E3DE65241A278B4935FB43 /* GamificationModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GamificationModels.swift; sourceTree = "<group>"; };
 		0A4F5FFD853073C1E8C22700 /* sys.scenario-c-workplace-feedback-normal-breathing.m4a */ = {isa = PBXFileReference; path = "sys.scenario-c-workplace-feedback-normal-breathing.m4a"; sourceTree = "<group>"; };
 		0AAC8115B00289A83349F795 /* sys.scenario-b-shopping-centre-feedback-sequence.vtt */ = {isa = PBXFileReference; path = "sys.scenario-b-shopping-centre-feedback-sequence.vtt"; sourceTree = "<group>"; };
@@ -478,7 +494,9 @@
 		1A65F750DAA62C3E14ECACAE /* nar.M5-B11.m4a */ = {isa = PBXFileReference; path = "nar.M5-B11.m4a"; sourceTree = "<group>"; };
 		1B770020D8E1403CB17F6052 /* nar.M10-B8.vtt */ = {isa = PBXFileReference; path = "nar.M10-B8.vtt"; sourceTree = "<group>"; };
 		1B80330B316C610B9D0D074C /* SwiftDataModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftDataModels.swift; sourceTree = "<group>"; };
+		1B8FD13FAC252A8D7CFC45A6 /* OnboardingGamificationComfortTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingGamificationComfortTests.swift; sourceTree = "<group>"; };
 		1C6D24B90E75602D2F983287 /* nar.M3-B5.vtt */ = {isa = PBXFileReference; path = "nar.M3-B5.vtt"; sourceTree = "<group>"; };
+		1CDBCD8AFD3F228351DD17E6 /* DebriefView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebriefView.swift; sourceTree = "<group>"; };
 		1CFD2BFF9AF0F7F90B7911D9 /* test_traceability_generator.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = test_traceability_generator.py; sourceTree = "<group>"; };
 		1EB228FFBDB47E78EB7185CF /* sys.scenario-d-community-facility-feedback-normal-breathing.m4a */ = {isa = PBXFileReference; path = "sys.scenario-d-community-facility-feedback-normal-breathing.m4a"; sourceTree = "<group>"; };
 		1FA6375F75B8550D8CEDB024 /* nar.M6-B8.vtt */ = {isa = PBXFileReference; path = "nar.M6-B8.vtt"; sourceTree = "<group>"; };
@@ -495,6 +513,7 @@
 		24D4C90B4B23F040FB3F2DD4 /* portal_m02.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = portal_m02.usdz; sourceTree = "<group>"; };
 		252A06BBC531386D696A0CCB /* PrivacyOperationsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivacyOperationsTests.swift; sourceTree = "<group>"; };
 		261E99EAE3C8058CD5529511 /* nar.M4-B8.m4a */ = {isa = PBXFileReference; path = "nar.M4-B8.m4a"; sourceTree = "<group>"; };
+		27EF7DCEC7919918149A854C /* LessonPlayerModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LessonPlayerModels.swift; sourceTree = "<group>"; };
 		280E54F355B90A53A501AEBA /* nar.M6.intro.vtt */ = {isa = PBXFileReference; path = nar.M6.intro.vtt; sourceTree = "<group>"; };
 		28B50165CA642EBCEB0CEE5A /* nar.M4-B4.vtt */ = {isa = PBXFileReference; path = "nar.M4-B4.vtt"; sourceTree = "<group>"; };
 		2A9F389724F7BEBCE394D68C /* sys.scenario-a-home-feedback-normal-breathing.vtt */ = {isa = PBXFileReference; path = "sys.scenario-a-home-feedback-normal-breathing.vtt"; sourceTree = "<group>"; };
@@ -502,6 +521,7 @@
 		2C165DDD143CB188C78CE1C7 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		2C49E5952EB4D31B07826293 /* headband.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = headband.usdz; sourceTree = "<group>"; };
 		2C89CBF2E90A016DFE5849A4 /* badge_m01.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = badge_m01.usdz; sourceTree = "<group>"; };
+		2E36EEF71157A89A66EE320A /* LessonPlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LessonPlayerView.swift; sourceTree = "<group>"; };
 		2ECAAFC811C2D87B16477170 /* nar.M1-B3.vtt */ = {isa = PBXFileReference; path = "nar.M1-B3.vtt"; sourceTree = "<group>"; };
 		2F6D0BF92ACEEC1460EEF52E /* nar.M8-B5.vtt */ = {isa = PBXFileReference; path = "nar.M8-B5.vtt"; sourceTree = "<group>"; };
 		3045BAED360BD7CCA675BBEC /* nar.M6-B1.vtt */ = {isa = PBXFileReference; path = "nar.M6-B1.vtt"; sourceTree = "<group>"; };
@@ -547,8 +567,11 @@
 		485EC33251720F743FA78A97 /* LifesaverVisionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LifesaverVisionTests.swift; sourceTree = "<group>"; };
 		487DF98DA3D322EF22A8F5AC /* sys.scenario-a-home-feedback-resume.vtt */ = {isa = PBXFileReference; path = "sys.scenario-a-home-feedback-resume.vtt"; sourceTree = "<group>"; };
 		48C36747C53B434BB3EEF034 /* portal_m10.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = portal_m10.usdz; sourceTree = "<group>"; };
+		491D1C08DDE297D4C08F9575 /* IntegratedScenarioBriefingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntegratedScenarioBriefingView.swift; sourceTree = "<group>"; };
 		49932FBBE8EBE2B21E9DE69D /* sfx.aed_case_open.m4a */ = {isa = PBXFileReference; path = sfx.aed_case_open.m4a; sourceTree = "<group>"; };
 		4AAC74F84FEC888B69EB9F3C /* sfx.aed_analysis.m4a */ = {isa = PBXFileReference; path = sfx.aed_analysis.m4a; sourceTree = "<group>"; };
+		4AF8697C103B36207E1B1372 /* ScenarioEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScenarioEngine.swift; sourceTree = "<group>"; };
+		4BE64231B08500A84D4AEBF1 /* IntegratedScenarioSessionModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntegratedScenarioSessionModel.swift; sourceTree = "<group>"; };
 		4CEC9CC1BB7E32287F1918D8 /* portal_m03.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = portal_m03.usdz; sourceTree = "<group>"; };
 		4E25577CD11456085CA5FC06 /* CourseModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CourseModels.swift; sourceTree = "<group>"; };
 		508127EED3172A0D03AD2283 /* .gitkeep */ = {isa = PBXFileReference; path = .gitkeep; sourceTree = "<group>"; };
@@ -569,6 +592,7 @@
 		59E1B7A08D1EFA95A04C4E3C /* nar.M9-B2.vtt */ = {isa = PBXFileReference; path = "nar.M9-B2.vtt"; sourceTree = "<group>"; };
 		5B934C01D167311E4EE35BE1 /* nar.M1-B2.m4a */ = {isa = PBXFileReference; path = "nar.M1-B2.m4a"; sourceTree = "<group>"; };
 		5BA1E9AC6A63FD12AC30D825 /* sfx.connector_insert.m4a */ = {isa = PBXFileReference; path = sfx.connector_insert.m4a; sourceTree = "<group>"; };
+		5BA9E4440A70F02FAD1ACCC8 /* GamificationPresentationModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GamificationPresentationModels.swift; sourceTree = "<group>"; };
 		5C3C68ED17B439C0D9234906 /* nar.M0-B4.vtt */ = {isa = PBXFileReference; path = "nar.M0-B4.vtt"; sourceTree = "<group>"; };
 		5DDBD4AFC87AA6D056BBF533 /* CPRPracticeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CPRPracticeView.swift; sourceTree = "<group>"; };
 		5EA7C8501C08F87E3D7A9547 /* nar.M8.intro.m4a */ = {isa = PBXFileReference; path = nar.M8.intro.m4a; sourceTree = "<group>"; };
@@ -608,6 +632,7 @@
 		6FEBD1BA6AB4487E14CC4033 /* nar.M3.intro.vtt */ = {isa = PBXFileReference; path = nar.M3.intro.vtt; sourceTree = "<group>"; };
 		7056CA941A13445678B6D87C /* nar.M3-B8.vtt */ = {isa = PBXFileReference; path = "nar.M3-B8.vtt"; sourceTree = "<group>"; };
 		70DEDB05A8DA8B61FC789E85 /* nar.M5-B9.m4a */ = {isa = PBXFileReference; path = "nar.M5-B9.m4a"; sourceTree = "<group>"; };
+		716E94E5BB18EF201F19A56F /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		71D5BDBABCC18ADDCE23D262 /* InMemoryRepositories.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InMemoryRepositories.swift; sourceTree = "<group>"; };
 		72821286361F6A4D114AE385 /* headset-mockup.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "headset-mockup.usdz"; sourceTree = "<group>"; };
 		739881DB3EE75C9910599D54 /* badge_m08.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = badge_m08.usdz; sourceTree = "<group>"; };
@@ -628,6 +653,7 @@
 		7FCAE7B9F3C70C6F8FCD16F3 /* AuthenticationAndReportTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationAndReportTests.swift; sourceTree = "<group>"; };
 		80732BD730167D6F36824780 /* music.anatomy_lesson.m4a */ = {isa = PBXFileReference; path = music.anatomy_lesson.m4a; sourceTree = "<group>"; };
 		80F49591654C43E80DB7F320 /* LearningLabRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LearningLabRootView.swift; sourceTree = "<group>"; };
+		8474787A3C84CBF3BB98697A /* IntegratedScenarioModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntegratedScenarioModels.swift; sourceTree = "<group>"; };
 		84C7C5D4BF061AE518210DAA /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
 		880DE86005D81F3487E740FD /* nar.M5-B10.m4a */ = {isa = PBXFileReference; path = "nar.M5-B10.m4a"; sourceTree = "<group>"; };
 		88BC455B5AAABC94FFE10C71 /* AEDStateMachine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AEDStateMachine.swift; sourceTree = "<group>"; };
@@ -675,6 +701,7 @@
 		A44FC842D2D24BEB72E9AEEE /* nar.M9-B7.vtt */ = {isa = PBXFileReference; path = "nar.M9-B7.vtt"; sourceTree = "<group>"; };
 		A4DD16F7E7CEEDCE796D8010 /* nar.M6.intro.m4a */ = {isa = PBXFileReference; path = nar.M6.intro.m4a; sourceTree = "<group>"; };
 		A513F63C1F8921CB6657CCD7 /* nar.M4-B9.vtt */ = {isa = PBXFileReference; path = "nar.M4-B9.vtt"; sourceTree = "<group>"; };
+		A6759D8EE41CF11FEF0A7440 /* AchievementGalleryRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AchievementGalleryRootView.swift; sourceTree = "<group>"; };
 		A6B653E1EC7B0D66601AD658 /* nar.M8-B6.m4a */ = {isa = PBXFileReference; path = "nar.M8-B6.m4a"; sourceTree = "<group>"; };
 		A75B557DE09FD3DBDC1E12D4 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		A870587E55E2FE0BA3AD126F /* badge_m03.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = badge_m03.usdz; sourceTree = "<group>"; };
@@ -782,6 +809,7 @@
 		F3528BDD94D2143F8CB99F69 /* AppleCredentialStateProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleCredentialStateProvider.swift; sourceTree = "<group>"; };
 		F4096E33EEA85FA3A5E8C96B /* CourseEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CourseEngine.swift; sourceTree = "<group>"; };
 		F44747A7BFA5A4EF516BFA22 /* nar.M0-B6.vtt */ = {isa = PBXFileReference; path = "nar.M0-B6.vtt"; sourceTree = "<group>"; };
+		F47A3178F3D36D9187D633F4 /* DebriefBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebriefBuilder.swift; sourceTree = "<group>"; };
 		F69F1BA2EDAC8DEA2DEC5726 /* CPRPracticeSessionModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CPRPracticeSessionModelTests.swift; sourceTree = "<group>"; };
 		F85ABE6A7E2017ED45665739 /* nar.M0-B3.vtt */ = {isa = PBXFileReference; path = "nar.M0-B3.vtt"; sourceTree = "<group>"; };
 		F934385EDC002111071C149B /* nar.M3-B3.vtt */ = {isa = PBXFileReference; path = "nar.M3-B3.vtt"; sourceTree = "<group>"; };
@@ -911,6 +939,15 @@
 			path = sfx;
 			sourceTree = "<group>";
 		};
+		295042B5A41B6B9EE09BE2BF /* LessonPlayer */ = {
+			isa = PBXGroup;
+			children = (
+				27EF7DCEC7919918149A854C /* LessonPlayerModels.swift */,
+				2E36EEF71157A89A66EE320A /* LessonPlayerView.swift */,
+			);
+			path = LessonPlayer;
+			sourceTree = "<group>";
+		};
 		2EBE78D25E112033792C36B9 /* narration */ = {
 			isa = PBXGroup;
 			children = (
@@ -1007,15 +1044,25 @@
 				9FD4D21E092ACBB990924248 /* ContentVersionService.swift */,
 				F4096E33EEA85FA3A5E8C96B /* CourseEngine.swift */,
 				DC9AD5D9A6FE98BCF6D46DD4 /* CPRPracticeStateMachine.swift */,
+				F47A3178F3D36D9187D633F4 /* DebriefBuilder.swift */,
 				18575A461F6F15257C008FC2 /* DRSABCStateMachine.swift */,
 				AF2CECDD36F556E590240A07 /* GamificationEngine.swift */,
 				3257BD2BFF71A1E38D75449D /* PracticeMachineContentContract.swift */,
 				19877746B26D84DB5595FE69 /* PrivacyOperationsService.swift */,
+				4AF8697C103B36207E1B1372 /* ScenarioEngine.swift */,
 				9AAEC527E57ED3C59CEFECE2 /* ScoringEngine.swift */,
 				E0A042FEC11CA0175D95B99E /* UnavailableCPRSensorProvider.swift */,
 				50D56EC87959163B49E1C980 /* XAPIExportService.swift */,
 			);
 			path = Services;
+			sourceTree = "<group>";
+		};
+		403155B3D0ED095E1D3DB5AF /* Debrief */ = {
+			isa = PBXGroup;
+			children = (
+				1CDBCD8AFD3F228351DD17E6 /* DebriefView.swift */,
+			);
+			path = Debrief;
 			sourceTree = "<group>";
 		};
 		415E14ED18F7F42B8EFF0249 /* Spatial */ = {
@@ -1044,6 +1091,7 @@
 		42DB68DD5563584E7ED3812E /* App */ = {
 			isa = PBXGroup;
 			children = (
+				A6759D8EE41CF11FEF0A7440 /* AchievementGalleryRootView.swift */,
 				AA008142D9428529D8C9B406 /* AppModel.swift */,
 				5242B8035CE0851ED08BC8E2 /* DashboardRootView.swift */,
 				44416E61353A4435D27E7259 /* Info.plist */,
@@ -1196,6 +1244,14 @@
 			path = Resources/Captions;
 			sourceTree = "<group>";
 		};
+		532A87643EB0297963D928DD /* Onboarding */ = {
+			isa = PBXGroup;
+			children = (
+				716E94E5BB18EF201F19A56F /* OnboardingView.swift */,
+			);
+			path = Onboarding;
+			sourceTree = "<group>";
+		};
 		64261A136F474488B227A30C /* Tests */ = {
 			isa = PBXGroup;
 			children = (
@@ -1208,12 +1264,15 @@
 				F69F1BA2EDAC8DEA2DEC5726 /* CPRPracticeSessionModelTests.swift */,
 				E5C15D8E97AB0A1174FD2A4C /* DRSABCPracticeSessionModelTests.swift */,
 				B60CF26E226FA9076209F80F /* HandTrackingTests.swift */,
+				09B2727DDBFA417FE5887075 /* LessonPlayerTests.swift */,
 				485EC33251720F743FA78A97 /* LifesaverVisionTests.swift */,
 				9F81AEC93B7E92D3235F5F6B /* ModulePresentationAccessTests.swift */,
 				BE5FE75A095D5D1B72B2C6F3 /* ModulePresentationModelTests.swift */,
+				1B8FD13FAC252A8D7CFC45A6 /* OnboardingGamificationComfortTests.swift */,
 				98267160BB6426E0ED88E1E7 /* Phase3BSchemaTests.swift */,
 				252A06BBC531386D696A0CCB /* PrivacyOperationsTests.swift */,
 				FB730BB4FFA4A509C7852563 /* RealityKitAssetTests.swift */,
+				04735E7DF396D39660549FEF /* ScenarioEngineTests.swift */,
 				5376DB64FAF7B8041BB452BE /* ScoringAndGamificationTests.swift */,
 				0719E97B18BAFDC3E37E429D /* StateMachineCoreTests.swift */,
 				0CC4C141810AE13647635AE6 /* SwiftDataRepositoryTests.swift */,
@@ -1260,8 +1319,11 @@
 				920F32B75E2BB4F303DFCF86 /* CourseCatalogue */,
 				A984AAAFC2FC0F65A762A115 /* CPRPractice */,
 				6A594DC8CCBF053822AD08FE /* Dashboard */,
+				403155B3D0ED095E1D3DB5AF /* Debrief */,
 				F84E1B491F102F53F765074A /* Gamification */,
 				F61AC3C088535A218E6F81AE /* Instructor */,
+				295042B5A41B6B9EE09BE2BF /* LessonPlayer */,
+				532A87643EB0297963D928DD /* Onboarding */,
 				F9C713E81FAF1CF0E85DCFD5 /* Scenarios */,
 				F94508641E0DFF0BB0915EEC /* Settings */,
 				158897EBFF67ED856819AD76 /* SpatialLaboratory */,
@@ -1302,6 +1364,8 @@
 				412F10989BC2B1E1186ADE8C /* ClinicalContentModels.swift */,
 				4E25577CD11456085CA5FC06 /* CourseModels.swift */,
 				09E3DE65241A278B4935FB43 /* GamificationModels.swift */,
+				5BA9E4440A70F02FAD1ACCC8 /* GamificationPresentationModels.swift */,
+				8474787A3C84CBF3BB98697A /* IntegratedScenarioModels.swift */,
 				A0DA25F32967757121DF6A50 /* LearningEventModels.swift */,
 				8AC16D6AB24D8BEE3468E55D /* Phase3BContentModels.swift */,
 				24C263828A3A8EBF2DAEB664 /* PrivacyModels.swift */,
@@ -1533,6 +1597,8 @@
 			children = (
 				778BAEC5E459410141053401 /* DRSABCPracticeImmersivePanel.swift */,
 				FBEBE6085876D3F992ABD5A2 /* DRSABCPracticeSessionModel.swift */,
+				491D1C08DDE297D4C08F9575 /* IntegratedScenarioBriefingView.swift */,
+				4BE64231B08500A84D4AEBF1 /* IntegratedScenarioSessionModel.swift */,
 				8B7788B494A1474F6109D2E0 /* ScenariosView.swift */,
 			);
 			path = Scenarios;
@@ -1890,6 +1956,7 @@
 				0EC24315B3C1BBAEE744D4EE /* AEDPracticeSessionModel.swift in Sources */,
 				80470F2BE3E7E02110AC9AE2 /* AEDPracticeView.swift in Sources */,
 				CAE209E72F730D059622A4EE /* AEDStateMachine.swift in Sources */,
+				15FBE6BE351E9A88F27D9031 /* AchievementGalleryRootView.swift in Sources */,
 				66727961FCADD16E8DCD0FCE /* AdministrationView.swift in Sources */,
 				BBE811FE446E1AB7EDF5848A /* AppModel.swift in Sources */,
 				A7023ABF38CEC51E560B0F6D /* AppleCredentialStateProvider.swift in Sources */,
@@ -1918,30 +1985,40 @@
 				456E10A1D3D6327FF9BF948D /* DRSABCStateMachine.swift in Sources */,
 				BE7AF60656B0432F667F75B0 /* DashboardRootView.swift in Sources */,
 				D585502CA819241FB38649A3 /* DashboardView.swift in Sources */,
+				F8DA088EE22C021213EE1999 /* DebriefBuilder.swift in Sources */,
+				0F7625126D5D2898FB8EF3B3 /* DebriefView.swift in Sources */,
 				DB5726BF44AD2337ED9B7B94 /* EventSourcedStateMachine.swift in Sources */,
 				AE47F6695CB5AC73BF5D6031 /* GamificationEngine.swift in Sources */,
 				A1CC684DBDA6ED7DCE94AEE3 /* GamificationModels.swift in Sources */,
+				C456EC2B1DBA2B0B55537D79 /* GamificationPresentationModels.swift in Sources */,
 				74C6876CEE0B238317F4286C /* GamificationView.swift in Sources */,
 				2BBB67E39148B8B1D95E1DD2 /* HandSignalDetector.swift in Sources */,
 				EDF1392B22811817BF1CAAF4 /* HandTrackingModels.swift in Sources */,
 				BFDFC3D2C7F42382E07C8FAD /* HandTrackingService.swift in Sources */,
 				F26B71208E2C08B006762FB3 /* InMemoryRepositories.swift in Sources */,
 				FB54CC3AA9336C0CEED13F8E /* InstructorDashboardView.swift in Sources */,
+				3C0C08A20425A4C09ECC9109 /* IntegratedScenarioBriefingView.swift in Sources */,
+				3E973480ADC7DA99957DFF72 /* IntegratedScenarioModels.swift in Sources */,
+				FB33AA4FEE3B5D02699E7AE9 /* IntegratedScenarioSessionModel.swift in Sources */,
 				EF516A2309B8622C7201D308 /* Interactions.swift in Sources */,
 				AFF03048BB35D9490863D65E /* KeychainStore.swift in Sources */,
 				BBA818EF65FC6B2C4EB5D1FC /* LMSExportDocument.swift in Sources */,
 				21133F968EE8435B7D66D722 /* LearningEventModels.swift in Sources */,
 				F0F06BFCECB26ECF6ED5053E /* LearningLabRootView.swift in Sources */,
+				6731179DF98F06ACF21A802C /* LessonPlayerModels.swift in Sources */,
+				5CE4E847360BF6890064ABD4 /* LessonPlayerView.swift in Sources */,
 				DF85D43B3D24671C10922DF4 /* LifesaverVisionApp.swift in Sources */,
 				A1F1526A7F1EDBC8344A04B6 /* LocalAuthenticationService.swift in Sources */,
 				88E3026EEEC7BBE5D7F35722 /* ModulePresentationModel.swift in Sources */,
 				C95E563C97CB50F0AAB93400 /* OfflineFirstSyncService.swift in Sources */,
+				78F246F325F1FBF4635B6773 /* OnboardingView.swift in Sources */,
 				2CD8857302B9E609DCFBB356 /* PersistenceBootstrap.swift in Sources */,
 				BD75CE08005441F44FD239B4 /* Phase3BContentModels.swift in Sources */,
 				D4DFE65E77183303DB507009 /* PracticeMachineContentContract.swift in Sources */,
 				AFC82F233B3E122B7FEA48F8 /* PrivacyModels.swift in Sources */,
 				160B2F2C9ADE7632E096F59F /* PrivacyOperationsService.swift in Sources */,
 				67651DBFFA041440042D1829 /* QuizSessionView.swift in Sources */,
+				504AA24B9246A0A232CE5825 /* ScenarioEngine.swift in Sources */,
 				8D68767498262C9A01AA74A6 /* ScenariosView.swift in Sources */,
 				2689B063C77FD3438F4A1995 /* ScenePlacement.swift in Sources */,
 				91AFB7CC00E0D35B4427EB44 /* ScoringEngine.swift in Sources */,
@@ -1976,12 +2053,15 @@
 				55F54844E539B713CB9D405A /* CourseContentValidationTests.swift in Sources */,
 				E84C8175EC02BE3C05480946 /* DRSABCPracticeSessionModelTests.swift in Sources */,
 				FFF32A00F806449751C7DA87 /* HandTrackingTests.swift in Sources */,
+				98631A592C5ED8CCFADA99E7 /* LessonPlayerTests.swift in Sources */,
 				F47929C9FA6E10B78A66F6F3 /* LifesaverVisionTests.swift in Sources */,
 				E8EF0E01D5068356283B85B5 /* ModulePresentationAccessTests.swift in Sources */,
 				5EBA81E0055A7257C66834AB /* ModulePresentationModelTests.swift in Sources */,
+				B284BFF6B439ED4EA08D50EE /* OnboardingGamificationComfortTests.swift in Sources */,
 				505DF9290C93533424D131AB /* Phase3BSchemaTests.swift in Sources */,
 				329A16FB9956C1AB206E861E /* PrivacyOperationsTests.swift in Sources */,
 				E78EF4E7D132349712AB38A3 /* RealityKitAssetTests.swift in Sources */,
+				60BD736B7D74434B9A58C038 /* ScenarioEngineTests.swift in Sources */,
 				D02C663BCD1B767798DD645C /* ScoringAndGamificationTests.swift in Sources */,
 				43015FD50AC39913C891FC54 /* StateMachineCoreTests.swift in Sources */,
 				44250EB882FD971F6F235D37 /* SwiftDataRepositoryTests.swift in Sources */,

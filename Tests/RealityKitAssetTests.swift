@@ -299,6 +299,43 @@ final class RealityKitAssetTests: XCTestCase {
         XCTAssertTrue(reducedVF.statusText.contains("Static simplified-VF"))
     }
 
+    func testLaboratoryRequiresAuthoritativePresentationForEveryLinkedModule() throws {
+        let course = try CourseContentCodec.loadCourse(named: "course_v1")
+        let linkedModules = course.modules
+            .filter { SpatialLaboratoryAccessPolicy.requiredModuleIDs.contains($0.id) }
+            .map {
+                PresentedCourseModule(module: $0, isPresentable: true, lockReasons: [])
+            }
+        XCTAssertEqual(
+            SpatialLaboratoryAccessPolicy.authorisedModes(in: linkedModules),
+            Set(SpatialLaboratoryMode.allCases)
+        )
+
+        let withoutM5 = linkedModules.filter { $0.id != "M5" }
+        XCTAssertEqual(
+            SpatialLaboratoryAccessPolicy.authorisedModes(in: withoutM5),
+            [.heartAndLungs, .chainOfSurvival]
+        )
+        XCTAssertEqual(
+            SpatialLaboratoryAccessPolicy.lockedModuleIDs(in: withoutM5),
+            ["M5"]
+        )
+
+        let explicitlyLocked = linkedModules.map { item in
+            item.id == "M2"
+                ? PresentedCourseModule(
+                    module: item.module,
+                    isPresentable: false,
+                    lockReasons: [.unavailable]
+                )
+                : item
+        }
+        XCTAssertEqual(
+            SpatialLaboratoryAccessPolicy.lockedModuleIDs(in: explicitlyLocked),
+            ["M2"]
+        )
+    }
+
     func testSevenRingLaboratoryIsUnscoredReviewGatedAndUsesOneReorderPath() throws {
         var model = try SpatialLaboratoryContent.loadBundled().chainOfSurvival
 

@@ -24,7 +24,11 @@ struct SimulationSpaceRootView: View {
     @State private var draggedPadName: String?
     @State private var draggedPadOffset = SIMD3<Float>.zero
     @State private var comfortSession = ImmersionComfortSession()
+    @State private var persistedCPRAttemptID: String?
+    @State private var persistedAEDAttemptID: String?
+    @State private var persistedDRSABCAttemptID: String?
     @State private var persistedScenarioAttemptID: String?
+    @State private var debriefAwardState: DebriefAwardPersistenceState = .pending
     @State private var spatialSpeechCaption: SpatialSpeechCaptionPlayback?
     @State private var spatialAudioSceneStarted: SpatialSceneName?
 
@@ -100,6 +104,11 @@ struct SimulationSpaceRootView: View {
                     : 1.0
                 sternum.scale = SIMD3<Float>(repeating: pulseScale)
             }
+
+            if appModel.selectedPracticeExperience == .integratedScenario,
+               let scene = content.entities.first(where: { $0.name == sceneName }) {
+                updateRecordedEventReplayMarker(in: scene)
+            }
         } attachments: {
             Attachment(id: "simulation-interface") {
                 VStack(spacing: 14) {
@@ -125,10 +134,15 @@ struct SimulationSpaceRootView: View {
             case .onboarding:
                 break
             case .cpr:
+                persistedCPRAttemptID = nil
                 await cprSession.prepare()
             case .aed:
-                aedSession.prepare()
+                if aedSession.state == nil {
+                    persistedAEDAttemptID = nil
+                }
+                aedSession.prepareIfNeeded()
             case .drsabc:
+                persistedDRSABCAttemptID = nil
                 drsabcSession.prepare()
             case .integratedScenario:
                 guard let scenarioID = appModel.selectedIntegratedScenarioID,
@@ -138,6 +152,7 @@ struct SimulationSpaceRootView: View {
                 // completed session instead of preparing (and erasing) it again.
                 guard integratedScenarioSession.debrief == nil else { break }
                 persistedScenarioAttemptID = nil
+                debriefAwardState = .pending
                 integratedScenarioSession.prepare(
                     scenarioID: scenarioID,
                     patternID: patternID,
@@ -146,7 +161,7 @@ struct SimulationSpaceRootView: View {
             }
         }
         .task {
-            comfortSession.start()
+            comfortSession.startIfNeeded()
             while !Task.isCancelled {
                 try? await Task.sleep(for: .seconds(1))
                 comfortSession.update()
@@ -165,6 +180,12 @@ struct SimulationSpaceRootView: View {
                         await appModel.audioDirector.resume(channel)
                     }
                 }
+                if !paused,
+                   scenePhase == .active,
+                   appModel.immersionState == .open,
+                   let loadedScene {
+                    await startSpatialSceneAudio(for: loadedScene)
+                }
             }
         }
         .onChange(of: scenePhase, initial: true) { _, newPhase in
@@ -175,6 +196,11 @@ struct SimulationSpaceRootView: View {
             if newPhase != .active { spatialAudioSceneStarted = nil }
             if newPhase == .active {
                 comfortSession.resume()
+                if !appModel.isSimulationPaused, let loadedScene {
+                    Task { @MainActor in
+                        await startSpatialSceneAudio(for: loadedScene)
+                    }
+                }
             } else {
                 comfortSession.suspend()
             }
@@ -192,6 +218,19 @@ struct SimulationSpaceRootView: View {
             Task { @MainActor in
                 await playSpatialAEDCue(for: newState)
             }
+            if newState == .complete {
+                persistStandaloneAttempt(
+                    id: UUID().uuidString,
+                    persistedID: &persistedAEDAttemptID,
+                    activityID: "M5-aed-practice",
+                    attemptKind: "aed-practice",
+                    score: aedSession.criticalFailures.isEmpty ? 100 : 0,
+                    passed: aedSession.criticalFailures.isEmpty,
+                    criticalErrorCodes: aedSession.criticalFailures.map(\.rawValue),
+                    responseJSON: "{\"eventLogCount\":\(aedSession.eventLogCount)}",
+                    resultSummary: "Source-backed AED trainer completion"
+                )
+            }
         }
         .onChange(of: aedSession.spatialCueRequest) { _, request in
             guard let request else { return }
@@ -207,6 +246,24 @@ struct SimulationSpaceRootView: View {
             Task { @MainActor in
                 await playSpatialAEDCue(for: newState)
             }
+        }
+        .onChange(of: cprSession.summary) { _, summary in
+            guard let summary else { return }
+            persistCPRAttempt(summary)
+        }
+        .onChange(of: drsabcSession.state) { _, state in
+            guard state == .step(.complete) else { return }
+            persistStandaloneAttempt(
+                id: UUID().uuidString,
+                persistedID: &persistedDRSABCAttemptID,
+                activityID: "M3-drsabc-sequence-practice",
+                attemptKind: "drsabc-practice",
+                score: drsabcSession.criticalFailures.isEmpty ? 100 : 0,
+                passed: drsabcSession.criticalFailures.isEmpty,
+                criticalErrorCodes: drsabcSession.criticalFailures.map(\.rawValue),
+                responseJSON: "{\"eventLogCount\":\(drsabcSession.eventLogCount)}",
+                resultSummary: "Source-backed DRSABC sequence completion"
+            )
         }
         .onChange(of: integratedScenarioSession.debrief) { _, debrief in
             guard let debrief else { return }
@@ -276,7 +333,8 @@ struct SimulationSpaceRootView: View {
                 case .cpr:
                     CPRPracticeImmersivePanel(
                         model: cprSession,
-                        reduceMotion: effectiveReduceMotion
+                        reduceMotion: effectiveReduceMotion,
+                        learnerID: authenticationModel.currentUser?.id ?? ""
                     )
                 case .aed:
                     AEDPracticeImmersivePanel(
@@ -289,7 +347,10 @@ struct SimulationSpaceRootView: View {
                 case .drsabc:
                     DRSABCPracticeImmersivePanel(model: drsabcSession)
                 case .integratedScenario:
-                    IntegratedScenarioImmersivePanel(model: integratedScenarioSession)
+                    IntegratedScenarioImmersivePanel(
+                        model: integratedScenarioSession,
+                        awardState: debriefAwardState
+                    )
                 }
             }
         }
@@ -549,12 +610,38 @@ struct SimulationSpaceRootView: View {
     private func startSpatialSceneAudio(for scene: SpatialSceneName) async {
         guard scenePhase == .active,
               appModel.immersionState == .open,
+              !appModel.isSimulationPaused,
               loadedScene == scene,
               spatialAudioSceneStarted != scene
         else { return }
 
         spatialAudioSceneStarted = scene
         spatialSpeechCaption = nil
+        if appModel.selectedPracticeExperience == .integratedScenario,
+           integratedScenarioSession.debrief == nil {
+            let safetyState = AEDAudioSafetyState.forPracticeState(
+                integratedScenarioSession.aedState
+            )
+            let correctionActive = integratedScenarioSession.stage == .correction
+            await appModel.audioDirector.setAEDSafetyState(safetyState)
+            await appModel.audioDirector.setSafetyCriticalCorrectionActive(
+                correctionActive
+            )
+            _ = await appModel.audioDirector.play(
+                AudioPlaybackRequest(
+                    cue: AudioCue(rawValue: "music.scenario_bed"),
+                    context: .immersive,
+                    autoplay: true
+                )
+            )
+        } else if appModel.selectedPracticeExperience == .aed {
+            await appModel.audioDirector.setAEDSafetyState(
+                AEDAudioSafetyState.forPracticeState(aedSession.state)
+            )
+            await appModel.audioDirector.setSafetyCriticalCorrectionActive(
+                aedSession.hasActiveSafetyCorrection
+            )
+        }
         if scene == .academyLobby {
             _ = try? await spatialAudioManager.play(
                 AudioCue(rawValue: "music.academy_hub"),
@@ -623,14 +710,185 @@ struct SimulationSpaceRootView: View {
         return nil
     }
 
+    /// Reconstructs the event-log replay anchor as a static spatial highlight at the
+    /// relevant semantic entity. It stays visible until the learner acknowledges the
+    /// correction and never pulses when Reduce Motion is enabled.
+    private func updateRecordedEventReplayMarker(in scene: Entity) {
+        let markerName = "recorded_event_replay_marker"
+        scene.findEntity(named: markerName)?.removeFromParent()
+        guard let correction = integratedScenarioSession.correction else { return }
+
+        let targetName: String = switch correction.replayAnchor.domain {
+        case .drsabc:
+            if correction.code.contains("unsafe_scene") {
+                "safety_hazards"
+            } else if correction.code.contains("help_not_activated") {
+                "bystander_01"
+            } else {
+                "training_manikin"
+            }
+        case .cpr:
+            "xiphoid_avoid_zone"
+        case .aed:
+            correction.code.contains("clear") || correction.code.contains("touching")
+                ? "clear_zone"
+                : "aed_unit"
+        }
+
+        let marker = ModelEntity(
+            mesh: .generateSphere(radius: 0.055),
+            materials: [SimpleMaterial(color: .orange, isMetallic: false)]
+        )
+        marker.name = markerName
+        marker.components.set(OpacityComponent(opacity: 0.72))
+        if let target = assetRegistry.firstEntity(named: targetName, in: scene) {
+            marker.position = [0, 0.14, 0]
+            target.addChild(marker)
+        } else {
+            marker.position = [0, 1.25, -1.15]
+            scene.addChild(marker)
+        }
+    }
+
+    @MainActor
+    private func persistCPRAttempt(_ summary: CPRPracticeSessionSummary) {
+        let outcome = summary.scoreOutcome
+        guard persistedCPRAttemptID == nil,
+              let user = authenticationModel.currentUser,
+              !user.id.isEmpty,
+              let encoded = try? JSONEncoder().encode(summary),
+              let responseJSON = String(data: encoded, encoding: .utf8)
+        else { return }
+
+        persistedCPRAttemptID = outcome.attemptID
+        modelContext.insert(
+            AttemptRecord(
+                id: outcome.attemptID,
+                learnerID: user.id,
+                activityID: "M4-cpr-rhythm-practice",
+                courseID: "lifesaver-vision-cpr-aed-spatial-academy",
+                contentVersion: outcome.contentVersion,
+                attemptKind: "cpr-practice",
+                startedAt: .now,
+                completedAt: .now,
+                score: outcome.percentage,
+                passed: outcome.passed,
+                criticalErrorCodes: outcome.remediationCodes,
+                responseJSON: responseJSON,
+                resultSummary: summary.recordLabel
+            )
+        )
+
+        do {
+            let unlockedBadge = try persistNewCPRBadgeAwards(
+                learnerID: user.id,
+                contentVersion: outcome.contentVersion
+            )
+            try modelContext.save()
+            if unlockedBadge { playBadgeUnlockedCue() }
+        } catch {
+            modelContext.rollback()
+            persistedCPRAttemptID = nil
+        }
+    }
+
+    @MainActor
+    private func persistStandaloneAttempt(
+        id: String,
+        persistedID: inout String?,
+        activityID: String,
+        attemptKind: String,
+        score: Double,
+        passed: Bool,
+        criticalErrorCodes: [String],
+        responseJSON: String,
+        resultSummary: String
+    ) {
+        guard persistedID == nil,
+              let user = authenticationModel.currentUser,
+              !user.id.isEmpty
+        else { return }
+
+        persistedID = id
+        modelContext.insert(
+            AttemptRecord(
+                id: id,
+                learnerID: user.id,
+                activityID: activityID,
+                courseID: "lifesaver-vision-cpr-aed-spatial-academy",
+                contentVersion: "1.0.0",
+                attemptKind: attemptKind,
+                startedAt: .now,
+                completedAt: .now,
+                score: score,
+                passed: passed,
+                criticalErrorCodes: criticalErrorCodes,
+                responseJSON: responseJSON,
+                resultSummary: resultSummary
+            )
+        )
+        do {
+            try modelContext.save()
+        } catch {
+            modelContext.rollback()
+            persistedID = nil
+        }
+    }
+
+    @MainActor
+    private func persistNewCPRBadgeAwards(
+        learnerID: String,
+        contentVersion: String
+    ) throws -> Bool {
+        guard let decision = cprSession.gamificationDecision else { return false }
+        let descriptor = FetchDescriptor<BadgeAward>(
+            predicate: #Predicate { $0.learnerID == learnerID }
+        )
+        let existingBadgeIDs = Set(try modelContext.fetch(descriptor).map(\.badgeID))
+        let newAwards = decision.newBadgeAwards.filter {
+            !existingBadgeIDs.contains($0.badgeID)
+        }
+        for award in newAwards {
+            modelContext.insert(
+                BadgeAward(
+                    id: award.id,
+                    learnerID: award.learnerID,
+                    badgeID: award.badgeID,
+                    awardedAt: award.awardedAt,
+                    contentVersion: contentVersion,
+                    sourceAttemptID: award.sourceAttemptID,
+                    reason: "Source-backed CPR practice evidence"
+                )
+            )
+        }
+        return !newAwards.isEmpty
+    }
+
+    private func playBadgeUnlockedCue() {
+        Task {
+            _ = await appModel.audioDirector.play(
+                AudioPlaybackRequest(
+                    cue: AudioCue(rawValue: "sfx.badge_unlocked"),
+                    channel: .soundEffects,
+                    context: .immersive,
+                    autoplay: true
+                )
+            )
+        }
+    }
+
     @MainActor
     private func persistScenarioAttempt(_ debrief: ScenarioDebrief) {
+        debriefAwardState = .saving
         guard persistedScenarioAttemptID == nil,
               let user = authenticationModel.currentUser,
               !user.id.isEmpty,
               let encoded = try? JSONEncoder().encode(integratedScenarioSession.eventLog),
               let responseJSON = String(data: encoded, encoding: .utf8)
-        else { return }
+        else {
+            debriefAwardState = .failed
+            return
+        }
 
         let attemptID = UUID().uuidString
         persistedScenarioAttemptID = attemptID
@@ -652,14 +910,18 @@ struct SimulationSpaceRootView: View {
         modelContext.insert(attempt)
 
         do {
-            try awardScenarioBadges(
+            let unlockedBadge = try awardScenarioBadges(
                 attemptID: attemptID,
                 learnerID: user.id,
                 debrief: debrief
             )
             try modelContext.save()
+            debriefAwardState = .saved(xp: debrief.recommendedXP)
+            if unlockedBadge { playBadgeUnlockedCue() }
         } catch {
+            modelContext.rollback()
             persistedScenarioAttemptID = nil
+            debriefAwardState = .failed
         }
     }
 
@@ -668,7 +930,7 @@ struct SimulationSpaceRootView: View {
         attemptID: String,
         learnerID: String,
         debrief: ScenarioDebrief
-    ) throws {
+    ) throws -> Bool {
         let attemptsDescriptor = FetchDescriptor<AttemptRecord>(
             predicate: #Predicate { $0.learnerID == learnerID }
         )
@@ -693,21 +955,33 @@ struct SimulationSpaceRootView: View {
             else { return nil }
             return actionID
         })
-        let metrics = BadgeMetricSnapshot(values: [
+        var metricValues: [String: Double] = [
             "dangerChecks": actionIDs.contains(where: { $0.hasSuffix("action-assess-scene") }) ? 1 : 0,
             "activationChecks": actionIDs.contains(where: { $0.hasSuffix("action-activate-help") }) ? 1 : 0,
-            "rhythmAccuracy": contributionByDimension[.cprSequenceAndRhythm] ?? 0,
-            "longestInterruptionSeconds": debrief.feedback.contains(where: {
-                $0.code.contains("prolonged_compression_interruption")
-            }) ? 11 : 0,
-            "padPlacementAccuracy": contributionByDimension[.aedPreparationAndPlacement] ?? 0,
             "clearChecks": actionIDs.contains(where: { $0.hasSuffix("action-clear-for-aed") }) ? 1 : 0,
             "communicationScore": contributionByDimension[.communication] ?? 0,
             "successfulPracticeCount": Double(priorAttempts.count + (debrief.scoreOutcome.xpEligible ? 1 : 0)),
             "approvedSignOffCount": Double(signOffs.filter {
                 $0.statusRawValue == PracticalSignOffStatus.approved.rawValue
             }.count)
-        ])
+        ]
+        if let cadenceAccuracy = debrief.cprCadenceAccuracy {
+            metricValues["rhythmAccuracy"] = cadenceAccuracy
+        }
+        if let longestGap = debrief.longestCompressionGapSeconds {
+            metricValues["longestInterruptionSeconds"] = longestGap
+        }
+        let hasPadPlacementEvidence = integratedScenarioSession.eventLog.contains { record in
+            guard record.wasAccepted,
+                  case .aed(.placePads) = record.event
+            else { return false }
+            return true
+        }
+        if hasPadPlacementEvidence {
+            metricValues["padPlacementAccuracy"] =
+                contributionByDimension[.aedPreparationAndPlacement] ?? 0
+        }
+        let metrics = BadgeMetricSnapshot(values: metricValues)
         let existingAwards = storedAwards.map {
             BadgeAwardValue(
                 id: $0.id,
@@ -759,17 +1033,6 @@ struct SimulationSpaceRootView: View {
                 )
             )
         }
-        if !decision.newBadgeAwards.isEmpty {
-            Task {
-                _ = await appModel.audioDirector.play(
-                    AudioPlaybackRequest(
-                        cue: AudioCue(rawValue: "sfx.badge_unlocked"),
-                        channel: .soundEffects,
-                        context: .immersive,
-                        autoplay: true
-                    )
-                )
-            }
-        }
+        return !decision.newBadgeAwards.isEmpty
     }
 }

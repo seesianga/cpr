@@ -3,6 +3,37 @@ import XCTest
 
 @MainActor
 final class AEDPracticeSessionModelTests: XCTestCase {
+    func testAcceptedAEDInteractionsPublishSpatialCueSequence() throws {
+        let model = preparedModel()
+
+        XCTAssertEqual(model.spatialCueRequest?.cue.rawValue, "sfx.aed_case_open")
+
+        completePreparation(in: model)
+        XCTAssertEqual(
+            model.spatialCueRequest?.cue.rawValue,
+            "sfx.electrode_packet_open"
+        )
+
+        model.placePadUsingAccessibleControl(rightPad: true, inCorrectZone: true)
+        XCTAssertEqual(model.spatialCueRequest?.cue.rawValue, "sfx.pad_backing_peel")
+
+        model.placePadUsingAccessibleControl(rightPad: false, inCorrectZone: true)
+        XCTAssertEqual(model.state, .padsCorrect)
+        XCTAssertEqual(model.spatialCueRequest?.cue.rawValue, "sfx.connector_insert")
+    }
+
+    func testPlacementRoomTaskDoesNotResetAcceptedPreparation() {
+        let model = preparedModel()
+        completePreparation(in: model)
+        XCTAssertTrue(model.isPreparationComplete)
+
+        model.prepareIfNeeded()
+
+        XCTAssertTrue(model.isPreparationComplete)
+        XCTAssertEqual(model.state, .awaitingPads)
+        XCTAssertTrue(model.preparationItems.allSatisfy(\.isComplete))
+    }
+
     func testAllFiveSourceBackedPreparationItemsMustCompleteBeforePads() throws {
         let model = preparedModel()
 

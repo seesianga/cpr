@@ -42,6 +42,8 @@ struct LifesaverVisionApp: App {
         WindowGroup("Learning Lab", id: AppModel.learningLabWindowID) {
             LearningLabRootView()
                 .environment(appModel)
+                .environment(authenticationModel)
+                .modelContainer(modelContainer)
         }
         .windowStyle(.volumetric)
         .defaultSize(width: 1.0, height: 0.72, depth: 0.60, in: .meters)

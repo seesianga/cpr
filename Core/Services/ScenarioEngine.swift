@@ -113,6 +113,7 @@ struct ScenarioEngine: Sendable {
             throw ScenarioEngineError.missingInitialBranch(scenarioID)
         }
         let branchNodeIDs = Set(definition.branchingNodes.map(\.id))
+        let criticalActionIDs = Set(definition.criticalActions.map(\.id))
         guard branchNodeIDs.count == definition.branchingNodes.count else {
             throw ScenarioEngineError.duplicateBranchID(scenarioID)
         }
@@ -124,6 +125,11 @@ struct ScenarioEngine: Sendable {
                         nodeID: node.id,
                         nextNodeID: nextNodeID
                     )
+                }
+                if let unknownActionID = condition.requiredActionIDs.first(where: {
+                    !criticalActionIDs.contains($0)
+                }) {
+                    throw ScenarioEngineError.unknownCriticalAction(unknownActionID)
                 }
             }
         }
@@ -185,8 +191,22 @@ struct ScenarioEngine: Sendable {
         guard let condition = node.conditions.first(where: { $0.id == conditionID }) else {
             throw ScenarioEngineError.unknownBranchCondition(conditionID)
         }
+        let requiredActions = condition.requiredActionIDs.compactMap { actionID in
+            definition.criticalActions.first(where: { $0.id == actionID }).map {
+                ScenarioRequiredActionSnapshot(
+                    id: $0.id,
+                    title: $0.title,
+                    dimension: $0.scoringCategory,
+                    isAlwaysRequired: $0.isRequired
+                )
+            }
+        }
         append(
-            event: .branchSelected(nodeID: nodeID, conditionID: condition.id),
+            event: .branchSelected(
+                nodeID: nodeID,
+                conditionID: condition.id,
+                requiredActions: requiredActions
+            ),
             stateBefore: nodeID,
             stateAfter: condition.nextNodeID ?? "branchComplete",
             sourceReferences: condition.sourceReferences,
@@ -312,12 +332,26 @@ struct ScenarioEngine: Sendable {
             replayDomain: .drsabc,
             affectsScore: false
         )
-        registerNewFailures(
-            Set(drsabcMachine.criticalFailures.map(\.rawValue)).subtracting(failuresBefore),
+        let failuresAfter = Set(drsabcMachine.criticalFailures.map(\.rawValue))
+        let newFailures = failuresAfter.subtracting(failuresBefore)
+        registerFailures(
+            newFailures,
             fallbackRemediation: remediation?.message,
             fallbackFactIDs: remediation?.sourceFactIDs ?? [],
-            anchorRecord: record
+            anchorRecord: record,
+            affectsScore: true
         )
+        if newFailures.isEmpty,
+           let repeatedCode = Self.criticalCode(for: remediation),
+           failuresAfter.contains(repeatedCode) {
+            registerFailures(
+                [repeatedCode],
+                fallbackRemediation: remediation?.message,
+                fallbackFactIDs: remediation?.sourceFactIDs ?? [],
+                anchorRecord: record,
+                affectsScore: false
+            )
+        }
         return record
     }
 
@@ -338,12 +372,26 @@ struct ScenarioEngine: Sendable {
             replayDomain: .cpr,
             affectsScore: false
         )
-        registerNewFailures(
-            Set(cprMachine.criticalFailures.map(\.rawValue)).subtracting(failuresBefore),
+        let failuresAfter = Set(cprMachine.criticalFailures.map(\.rawValue))
+        let newFailures = failuresAfter.subtracting(failuresBefore)
+        registerFailures(
+            newFailures,
             fallbackRemediation: remediation?.message,
             fallbackFactIDs: remediation?.sourceFactIDs ?? [],
-            anchorRecord: record
+            anchorRecord: record,
+            affectsScore: true
         )
+        if newFailures.isEmpty,
+           let repeatedCode = Self.criticalCode(for: remediation),
+           failuresAfter.contains(repeatedCode) {
+            registerFailures(
+                [repeatedCode],
+                fallbackRemediation: remediation?.message,
+                fallbackFactIDs: remediation?.sourceFactIDs ?? [],
+                anchorRecord: record,
+                affectsScore: false
+            )
+        }
         return record
     }
 
@@ -364,12 +412,30 @@ struct ScenarioEngine: Sendable {
             replayDomain: .aed,
             affectsScore: false
         )
-        registerNewFailures(
-            Set(aedMachine.criticalFailures.map(\.rawValue)).subtracting(failuresBefore),
+        let failuresAfter = Set(aedMachine.criticalFailures.map(\.rawValue))
+        let newFailures = failuresAfter.subtracting(failuresBefore)
+        registerFailures(
+            newFailures,
             fallbackRemediation: remediation?.message,
             fallbackFactIDs: remediation?.sourceFactIDs ?? [],
-            anchorRecord: record
+            anchorRecord: record,
+            affectsScore: true
         )
+        if newFailures.isEmpty,
+           let repeatedCode = Self.criticalCode(
+               for: remediation,
+               stateBefore: entry.stateBefore,
+               event: event
+           ),
+           failuresAfter.contains(repeatedCode) {
+            registerFailures(
+                [repeatedCode],
+                fallbackRemediation: remediation?.message,
+                fallbackFactIDs: remediation?.sourceFactIDs ?? [],
+                anchorRecord: record,
+                affectsScore: false
+            )
+        }
         return record
     }
 
@@ -460,11 +526,12 @@ struct ScenarioEngine: Sendable {
         return record
     }
 
-    private mutating func registerNewFailures(
+    private mutating func registerFailures(
         _ codes: Set<String>,
         fallbackRemediation: String?,
         fallbackFactIDs: [String],
-        anchorRecord: IntegratedScenarioEventRecord
+        anchorRecord: IntegratedScenarioEventRecord,
+        affectsScore: Bool
     ) {
         guard let replayAnchor = anchorRecord.replayAnchor else { return }
         for code in codes.sorted() {
@@ -496,7 +563,7 @@ struct ScenarioEngine: Sendable {
                 remediation: correction.remediation,
                 sourceReferences: references,
                 replayAnchor: replayAnchor,
-                affectsScore: true
+                affectsScore: affectsScore
             )
         }
     }
@@ -527,6 +594,10 @@ struct ScenarioEngine: Sendable {
         let suffix: String
         if code.contains("not_resumed") {
             suffix = "resume"
+        } else if code.contains("lone_rescuer_left") {
+            // The correction is about preserving the response sequence and staying
+            // with the casualty, not an AED device-operation error.
+            suffix = "sequence"
         } else if code.contains("aed") || code.contains("shock") || code.contains("pad") {
             suffix = "aed-safety"
         } else if code.contains("gasping") || code.contains("normal_breathing") {
@@ -546,6 +617,69 @@ struct ScenarioEngine: Sendable {
             return .cprSequenceAndRhythm
         }
         return .recognitionAndActivation
+    }
+
+    /// Reducers intentionally de-duplicate their scored failure arrays. A repeated unsafe
+    /// action still needs a fresh voice/visual correction and guided retry, so map the
+    /// remediation occurrence back to its already-recorded scoring code.
+    private static func criticalCode(
+        for remediation: DRSABCRemediation?
+    ) -> String? {
+        switch remediation?.code {
+        case .unsafeSceneEntry:
+            DRSABCCriticalFailure.unsafeSceneEntry.rawValue
+        case .helpNotActivated:
+            DRSABCCriticalFailure.helpNotActivated.rawValue
+        case .loneRescuerMustStay:
+            DRSABCCriticalFailure.loneRescuerLeft.rawValue
+        case .gaspingIsNotNormalBreathing:
+            DRSABCCriticalFailure.gaspingTreatedAsNormal.rawValue
+        case .breathingCheckTooLong:
+            DRSABCCriticalFailure.breathingCheckExceededTenSeconds.rawValue
+        case .sceneRequiresMitigation, .callMustRemainSimulated, nil:
+            nil
+        }
+    }
+
+    private static func criticalCode(
+        for remediation: CPRPracticeRemediation?
+    ) -> String? {
+        switch remediation?.code {
+        case .xiphoidPlacement:
+            CPRPracticeCriticalFailure.compressionOnXiphoid.rawValue
+        case .prolongedInterruption:
+            CPRPracticeCriticalFailure.prolongedInterruption.rawValue
+        case .outsideSternumTarget, .placementUnavailable,
+             .restBeforeCycleBoundary, .invalidCadence, nil:
+            nil
+        }
+    }
+
+    private static func criticalCode(
+        for remediation: AEDPracticeRemediation?,
+        stateBefore: AEDPracticeState,
+        event: AEDPracticeEvent
+    ) -> String? {
+        switch remediation?.code {
+        case .handsOffRequired:
+            AEDPracticeCriticalFailure.contactDuringAnalysis.rawValue
+        case .bystanderStillTouching:
+            AEDPracticeCriticalFailure.contactDuringShock.rawValue
+        case .clearSweepRequired:
+            switch (stateBefore, event) {
+            case (.padsCorrect, .interactiveAnalysisClearCheck):
+                AEDPracticeCriticalFailure.contactDuringAnalysis.rawValue
+            case (.clearConfirmation, .pressShockControl):
+                AEDPracticeCriticalFailure.shockWithoutClearCheck.rawValue
+            default:
+                nil
+            }
+        case .resumeCompressionsImmediately:
+            AEDPracticeCriticalFailure.cprNotResumed.rawValue
+        case .preparationIncomplete, .preparationActionNotApplicable, .padsIncorrect,
+             .eventOutOfSequence, nil:
+            nil
+        }
     }
 
     private static func remediation(

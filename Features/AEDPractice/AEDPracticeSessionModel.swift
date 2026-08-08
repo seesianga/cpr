@@ -44,6 +44,7 @@ final class AEDPracticeSessionModel {
         "bystander_02": false
     ]
     private(set) var isPaused = false
+    private(set) var hasActiveSafetyCorrection = false
     private(set) var spatialCueRequest: AEDSpatialCueRequest?
 
     init(
@@ -144,6 +145,7 @@ final class AEDPracticeSessionModel {
             leftPadCorrect = nil
             resetClearSweep()
             latestFeedback = nil
+            hasActiveSafetyCorrection = false
             loadState = .ready
             requestSpatialCue("sfx.aed_case_open")
         } catch {
@@ -153,6 +155,13 @@ final class AEDPracticeSessionModel {
                 message: "The source-backed AED practice content could not be loaded. Practice is unavailable until the content is corrected."
             )
         }
+    }
+
+    /// RealityView room changes can recreate their task while this feature remains in
+    /// one continuous AED session. Preserve accepted preparation and pad state in that case.
+    func prepareIfNeeded(from bundle: Bundle = .main) {
+        guard machine == nil else { return }
+        prepare(from: bundle)
     }
 
     func setPaused(_ paused: Bool) {
@@ -411,18 +420,13 @@ final class AEDPracticeSessionModel {
         >
     ) {
         let director = audioDirector
-        let safetyState: AEDAudioSafetyState = switch state {
-        case .analysing: .analysing
-        case .charging: .charging
-        case .clearConfirmation: .clearConfirmation
-        case .simulatedShock: .simulatedShock
-        default: .normal
-        }
+        let safetyState = AEDAudioSafetyState.forPracticeState(state)
         let correctionActive: Bool
         switch entry.outcome {
         case let .accepted(_, remediation): correctionActive = remediation != nil
         case .rejected: correctionActive = true
         }
+        hasActiveSafetyCorrection = correctionActive
         Task {
             await director.setAEDSafetyState(safetyState)
             await director.setSafetyCriticalCorrectionActive(correctionActive)

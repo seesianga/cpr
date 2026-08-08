@@ -181,6 +181,23 @@ final class CPRPracticeSessionModelTests: XCTestCase {
         XCTAssertTrue(snapshot.cueIDs.contains("sfx.metronome"))
     }
 
+    func testInterruptionPresentationNeverReliesOnColourAlone() {
+        let inactive = CPRInterruptionPresentation(seconds: 0)
+        XCTAssertEqual(inactive.status, .inactive)
+        XCTAssertFalse(inactive.label.isEmpty)
+        XCTAssertFalse(inactive.systemImage.isEmpty)
+
+        let underway = CPRInterruptionPresentation(seconds: 10)
+        XCTAssertEqual(underway.status, .underway)
+        XCTAssertTrue(underway.label.contains("underway"))
+
+        let exceeded = CPRInterruptionPresentation(seconds: 10.1)
+        XCTAssertEqual(exceeded.status, .thresholdExceeded)
+        XCTAssertTrue(exceeded.isThresholdExceeded)
+        XCTAssertTrue(exceeded.label.contains("10-second"))
+        XCTAssertTrue(exceeded.systemImage.contains("exclamationmark"))
+    }
+
     private func prepare(
         _ model: CPRPracticeSessionModel,
         driver: SimulatedHandInput

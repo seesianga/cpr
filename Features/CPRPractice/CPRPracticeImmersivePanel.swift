@@ -43,6 +43,7 @@ struct CPRInterruptionPresentation: Sendable, Equatable {
 struct CPRPracticeImmersivePanel: View {
     let model: CPRPracticeSessionModel
     let reduceMotion: Bool
+    let learnerID: String
 
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
@@ -188,9 +189,15 @@ struct CPRPracticeImmersivePanel: View {
                     }
                     .buttonStyle(.bordered)
                     Button("End practice", systemImage: "stop.circle") {
-                        Task { await model.endSession() }
+                        Task { await model.endSession(learnerID: learnerID) }
                     }
                     .buttonStyle(.bordered)
+                    .disabled(learnerID.isEmpty)
+                    .accessibilityHint(
+                        learnerID.isEmpty
+                            ? "Sign in or continue as a guest before saving practice"
+                            : "Creates a learner-linked internal practice record after the full cycle"
+                    )
                 }
             }
 

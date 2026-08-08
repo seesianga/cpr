@@ -15,17 +15,26 @@ final class ImmersionComfortSession {
 
     private var activeSince: Date?
     private var accumulatedTime: TimeInterval = 0
+    private var hasStarted = false
 
     init(breakThreshold: TimeInterval = standardBreakThreshold) {
         self.breakThreshold = max(0, breakThreshold)
     }
 
     func start(at date: Date = .now) {
+        hasStarted = true
         accumulatedTime = 0
         elapsedImmersionTime = 0
         didSuggestBreak = false
         isBreakSuggestionVisible = false
         activeSince = date
+    }
+
+    /// Internal RealityView room replacement restarts SwiftUI tasks but remains the same
+    /// continuous immersive session, so its comfort clock must not be reset.
+    func startIfNeeded(at date: Date = .now) {
+        guard !hasStarted else { return }
+        start(at: date)
     }
 
     func suspend(at date: Date = .now) {
@@ -55,6 +64,7 @@ final class ImmersionComfortSession {
     }
 
     func reset() {
+        hasStarted = false
         activeSince = nil
         accumulatedTime = 0
         elapsedImmersionTime = 0

@@ -121,14 +121,20 @@ final class SpatialAudioManager {
         controller.gain = Self.decibels(
             for: Self.volume(for: channel, preferences: currentPreferences)
         )
-        if channel == .narration {
-            controller.speed = currentPreferences.narrationSpeed
-        }
+        let playbackSpeed = channel == .narration
+            ? currentPreferences.narrationSpeed
+            : 1
+        controller.speed = playbackSpeed
         controller.play()
         controllers[route] = controller
         if channel.isSpeech,
            let duration = captions.track(for: cue.rawValue)?.cues.last?.endTime {
-            duckRoomAmbience(for: duration)
+            duckRoomAmbience(
+                for: Self.wallClockDuration(
+                    mediaDuration: duration,
+                    playbackSpeed: playbackSpeed
+                )
+            )
         }
         return controller
     }
@@ -172,6 +178,13 @@ final class SpatialAudioManager {
     private static func decibels(for linearVolume: Double) -> Double {
         guard linearVolume > 0 else { return -96 }
         return max(-96, 20 * log10(min(1, linearVolume)))
+    }
+
+    nonisolated static func wallClockDuration(
+        mediaDuration: TimeInterval,
+        playbackSpeed: Double
+    ) -> TimeInterval {
+        max(0, mediaDuration) / max(0.1, playbackSpeed)
     }
 
     private func duckRoomAmbience(for duration: TimeInterval) {

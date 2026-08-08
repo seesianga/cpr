@@ -3,6 +3,45 @@ import XCTest
 @testable import LifesaverVision
 
 final class AudioIntegrationTests: XCTestCase {
+    func testEveryManifestDeliveryAssetResolvesFromApplicationBundle() throws {
+        let manifest = try loadApplicationManifest()
+        XCTAssertEqual(manifest.assets.count, 107)
+        let resolver = BundleAudioAssetResolver(bundle: .main)
+
+        for asset in manifest.assets {
+            let cue = AudioCue(rawValue: asset.assetID)
+            let channel = try XCTUnwrap(
+                AudioChannel.inferred(from: cue),
+                "Unknown channel for \(asset.assetID)"
+            )
+            let url = try XCTUnwrap(
+                resolver.url(for: cue, channel: channel),
+                "Missing bundled Delivery asset \(asset.assetID)"
+            )
+            XCTAssertEqual(url.pathExtension, "m4a")
+            XCTAssertTrue(FileManager.default.fileExists(atPath: url.path))
+        }
+    }
+
+    func testEveryNarrationAndSafetyVoiceHasBundledCaptionTrack() throws {
+        let manifest = try loadApplicationManifest()
+        let speech = manifest.assets.filter {
+            $0.assetID.hasPrefix("nar.") || $0.assetID.hasPrefix("sys.")
+        }
+        XCTAssertEqual(speech.count, 86)
+        let resolver = BundleCaptionResolver(bundle: .main)
+
+        for asset in speech {
+            XCTAssertNotNil(asset.captionFile, "Manifest caption path missing for \(asset.assetID)")
+            let track = try XCTUnwrap(
+                resolver.track(for: asset.assetID),
+                "Missing or invalid bundled VTT for \(asset.assetID)"
+            )
+            XCTAssertFalse(track.cues.isEmpty, "Empty VTT for \(asset.assetID)")
+            XCTAssertFalse(track.transcript.isEmpty, "Empty transcript for \(asset.assetID)")
+        }
+    }
+
     func testPreferencesPersistAllChannelsRateAndDefaultCaptions() throws {
         let suite = "AudioIntegrationTests.\(UUID().uuidString)"
         let defaults = try XCTUnwrap(UserDefaults(suiteName: suite))
@@ -70,6 +109,25 @@ final class AudioIntegrationTests: XCTestCase {
         XCTAssertEqual(policy.effectiveMusicVolume(preference: 0.5), 0.5)
     }
 
+    func testSpatialSpeechDuckDurationTracksNarrationSpeed() {
+        XCTAssertEqual(
+            SpatialAudioManager.wallClockDuration(
+                mediaDuration: 12,
+                playbackSpeed: 0.8
+            ),
+            15,
+            accuracy: 0.000_001
+        )
+        XCTAssertEqual(
+            SpatialAudioManager.wallClockDuration(
+                mediaDuration: 12,
+                playbackSpeed: 1.2
+            ),
+            10,
+            accuracy: 0.000_001
+        )
+    }
+
     func testEveryAEDCriticalStateAndSafetyCorrectionHardStopsMusic() {
         for state in AEDAudioSafetyState.allCases where state != .normal {
             var policy = AudioMixPolicy()
@@ -83,6 +141,18 @@ final class AudioIntegrationTests: XCTestCase {
         XCTAssertTrue(policy.musicRequiresHardStop)
         policy.setSafetyCriticalCorrectionActive(false)
         XCTAssertFalse(policy.musicRequiresHardStop)
+
+        XCTAssertEqual(AEDAudioSafetyState.forPracticeState(.analysing), .analysing)
+        XCTAssertEqual(AEDAudioSafetyState.forPracticeState(.charging), .charging)
+        XCTAssertEqual(
+            AEDAudioSafetyState.forPracticeState(.clearConfirmation),
+            .clearConfirmation
+        )
+        XCTAssertEqual(
+            AEDAudioSafetyState.forPracticeState(.simulatedShock),
+            .simulatedShock
+        )
+        XCTAssertEqual(AEDAudioSafetyState.forPracticeState(.complete), .normal)
     }
 
     func testInactiveImmersiveAutoplayAndMissingAssetsFailGracefully() async {
@@ -118,6 +188,38 @@ final class AudioIntegrationTests: XCTestCase {
         XCTAssertEqual(result, .blocked(.musicSafetyHardStop))
     }
 
+    func testSafetyAndPlaybackRequirementsDispatchThroughAudioDirectorExistential() async {
+        let director: any AudioDirector = SystemAudioDirector(
+            resolver: MissingAudioResolver()
+        )
+        await director.setAEDSafetyState(.analysing)
+        let result = await director.play(
+            AudioPlaybackRequest(cue: AudioCue(rawValue: "music.scenario_bed"))
+        )
+        let snapshot = await director.playbackSnapshot()
+
+        XCTAssertEqual(result, .blocked(.musicSafetyHardStop))
+        XCTAssertTrue(snapshot.musicIsSafetyStopped)
+    }
+
+    func testImmersiveTeardownClearsSafetyHardStopForNextSession() async {
+        let director = SystemAudioDirector(resolver: MissingAudioResolver())
+        await director.setAEDSafetyState(.charging)
+        await director.setSafetyCriticalCorrectionActive(true)
+        let stopped = await director.playbackSnapshot()
+        XCTAssertTrue(stopped.musicIsSafetyStopped)
+
+        await director.stopAll()
+
+        let reset = await director.playbackSnapshot()
+        XCTAssertFalse(reset.musicIsSafetyStopped)
+        XCTAssertFalse(reset.musicIsDucked)
+        let result = await director.play(
+            AudioPlaybackRequest(cue: AudioCue(rawValue: "music.scenario_bed"))
+        )
+        XCTAssertEqual(result, .blocked(.missingAsset))
+    }
+
     func testVTTParserBuildsTimedCaptionsAndTranscript() throws {
         let source = """
         WEBVTT
@@ -139,11 +241,12 @@ final class AudioIntegrationTests: XCTestCase {
 
     func testMeaningfulSFXHaveVisualAndCaptionEquivalents() {
         let required = [
-            "sfx.aed_analysis",
-            "sfx.aed_charging",
-            "sfx.clear_cue",
-            "sfx.paramedic_arrival",
-            "sfx.safety_warning"
+            "sfx.aed_analysis", "sfx.aed_case_open", "sfx.aed_charging",
+            "sfx.answer_correct", "sfx.answer_incorrect", "sfx.badge_unlocked",
+            "sfx.clear_cue", "sfx.connector_insert", "sfx.debrief_transition",
+            "sfx.electrode_packet_open", "sfx.focus_confirm", "sfx.metronome",
+            "sfx.module_complete", "sfx.pad_backing_peel", "sfx.paramedic_arrival",
+            "sfx.pinch_confirm", "sfx.safety_warning"
         ]
         for id in required {
             let state = AudioVisualState.forCue(AudioCue(rawValue: id))
@@ -155,6 +258,30 @@ final class AudioIntegrationTests: XCTestCase {
             AudioVisualState.forCue(AudioCue(rawValue: "sfx.paramedic_arrival"))?.direction
         )
     }
+
+    private func loadApplicationManifest() throws -> TestAudioManifest {
+        let url = try XCTUnwrap(
+            Bundle.main.url(
+                forResource: "ELEVENLABS_AUDIO_MANIFEST",
+                withExtension: "json"
+            ),
+            "Audio manifest is missing from the application bundle"
+        )
+        return try JSONDecoder().decode(
+            TestAudioManifest.self,
+            from: Data(contentsOf: url)
+        )
+    }
+}
+
+private struct TestAudioManifest: Decodable {
+    struct Asset: Decodable {
+        let assetID: String
+        let filename: String
+        let captionFile: String?
+    }
+
+    let assets: [Asset]
 }
 
 private struct MissingAudioResolver: AudioAssetResolving {

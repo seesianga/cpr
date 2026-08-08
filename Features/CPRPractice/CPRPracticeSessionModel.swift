@@ -270,6 +270,15 @@ final class CPRPracticeSessionModel {
         // resource fails closed while retaining the already-built internal summary.
         do {
             let policy = GamificationPolicy.standard(badgeRules: try badgeRuleLoader(bundle))
+            var badgeMetrics: [String: Double] = [
+                "longestInterruptionSeconds": builtSummary.longestInterruptionSeconds,
+                "successfulPracticeCount": builtSummary.scoreOutcome.xpEligible ? 1 : 0
+            ]
+            if let cadence = builtSummary.scoreOutcome.contributions.first(
+                where: { $0.dimension == .cadenceBand }
+            )?.normalisedScore {
+                badgeMetrics["rhythmAccuracy"] = cadence
+            }
             gamificationDecision = GamificationEngine().evaluate(
                 event: CPRPracticeGamificationEvent(
                     learnerID: learnerID,
@@ -280,7 +289,7 @@ final class CPRPracticeSessionModel {
                     scoreOutcome: builtSummary.scoreOutcome
                 ),
                 currentXP: currentXP,
-                metrics: BadgeMetricSnapshot(values: [:]),
+                metrics: BadgeMetricSnapshot(values: badgeMetrics),
                 existingAwards: [],
                 approvedSignOffs: [],
                 policy: policy

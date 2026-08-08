@@ -2,7 +2,33 @@ import Foundation
 import RealityKit
 import SwiftUI
 
-enum SpatialLaboratoryMode: String, CaseIterable, Identifiable, Sendable {
+enum SpatialLaboratoryAccessPolicy {
+    static let moduleIDByMode: [SpatialLaboratoryMode: String] = [
+        .heartAndLungs: "M1",
+        .chainOfSurvival: "M2",
+        .aedExplorer: "M5"
+    ]
+    static let requiredModuleIDs = Set(moduleIDByMode.values)
+
+    static func authorisedModes(
+        in modules: [PresentedCourseModule]
+    ) -> Set<SpatialLaboratoryMode> {
+        let presentedByID = Dictionary(uniqueKeysWithValues: modules.map { ($0.id, $0) })
+        return Set(moduleIDByMode.compactMap { mode, moduleID in
+            presentedByID[moduleID]?.isPresentable == true ? mode : nil
+        })
+    }
+
+    static func lockedModuleIDs(in modules: [PresentedCourseModule]) -> [String] {
+        let modes = authorisedModes(in: modules)
+        return moduleIDByMode
+            .filter { !modes.contains($0.key) }
+            .map(\.value)
+            .sorted()
+    }
+}
+
+enum SpatialLaboratoryMode: String, CaseIterable, Identifiable, Hashable, Sendable {
     case heartAndLungs
     case chainOfSurvival
     case aedExplorer
@@ -481,7 +507,9 @@ struct SpatialLaboratoryView: View {
     @Environment(\.accessibilityReduceMotion) private var systemReduceMotion
     @AppStorage(AudioPreferenceKeys.reduceMotion) private var appReduceMotion = false
 
-    @State private var mode = SpatialLaboratoryMode.heartAndLungs
+    let authorisedModes: Set<SpatialLaboratoryMode>
+
+    @State private var mode: SpatialLaboratoryMode
     @State private var laboratoryContent: SpatialLaboratoryContent?
     @State private var chainModel: ChainOfSurvivalLaboratoryModel?
     @State private var contentError: String?
@@ -500,6 +528,16 @@ struct SpatialLaboratoryView: View {
 
     private var reduceMotion: Bool { systemReduceMotion || appReduceMotion }
 
+    init(
+        authorisedModes: Set<SpatialLaboratoryMode> = Set(SpatialLaboratoryMode.allCases)
+    ) {
+        self.authorisedModes = authorisedModes
+        let initialMode = SpatialLaboratoryMode.allCases.first {
+            authorisedModes.contains($0)
+        } ?? .heartAndLungs
+        _mode = State(initialValue: initialMode)
+    }
+
     var body: some View {
         ZStack(alignment: .topLeading) {
             laboratoryRealityView
@@ -507,7 +545,13 @@ struct SpatialLaboratoryView: View {
             VStack(alignment: .leading, spacing: 12) {
                 Picker("Laboratory", selection: $mode) {
                     ForEach(SpatialLaboratoryMode.allCases) { item in
-                        Text(item.title).tag(item)
+                        Text(
+                            authorisedModes.contains(item)
+                                ? item.title
+                                : "\(item.title) — locked"
+                        )
+                        .tag(item)
+                        .disabled(!authorisedModes.contains(item))
                     }
                 }
                 .pickerStyle(.segmented)
