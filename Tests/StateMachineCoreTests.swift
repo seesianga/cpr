@@ -26,6 +26,15 @@ final class StateMachineCoreTests: XCTestCase {
         XCTAssertTrue(contract.simulatedCallBody.contains("never dials"))
         XCTAssertTrue(contract.simulatedCallBody.contains("hang up only when told"))
         XCTAssertFalse(contract.simulatedCallSourceReferences.isEmpty)
+        XCTAssertEqual(contract.aedPowerOnInstruction.id, "M5-B3")
+        XCTAssertTrue(contract.aedPowerOnInstruction.body.contains("switch it on"))
+        XCTAssertEqual(contract.aedPadPlacementInstruction.id, "M6-B3")
+        XCTAssertTrue(contract.aedPadPlacementInstruction.body.contains("below the left nipple"))
+        XCTAssertTrue(
+            contract.aedPadPlacementInstruction.sourceReferences.contains {
+                $0.clinicalFactID == "fact.aed.padPlacementAdult"
+            }
+        )
     }
 
     func testPracticeContentContractFailsClosedForBlockedFactsAndPerScenarioBranches() throws {
@@ -587,6 +596,7 @@ final class StateMachineCoreTests: XCTestCase {
     func testAEDPreparationPredicatesBlockPadsUntilAllPresentedConditionsResolved() {
         let requirements = Set(AEDChestCondition.allCases)
         var machine = AEDStateMachine(requiredChestConditions: requirements)
+        machine.handle(.pressPowerControl)
 
         let blocked = machine.handle(
             .placePads(rightPadCorrect: true, leftPadCorrect: true)
@@ -611,6 +621,7 @@ final class StateMachineCoreTests: XCTestCase {
 
     func testAEDIncorrectPadsRequireRetry() {
         var machine = AEDStateMachine()
+        machine.handle(.pressPowerControl)
 
         let placement = machine.handle(
             .placePads(rightPadCorrect: true, leftPadCorrect: false)
@@ -623,6 +634,35 @@ final class StateMachineCoreTests: XCTestCase {
         XCTAssertEqual(remediation?.code, .padsIncorrect)
         machine.handle(.retryPadPlacement)
         XCTAssertEqual(machine.state, .awaitingPads)
+    }
+
+    func testAEDPowerControlIsRequiredBeforePreparationOrPadPlacement() {
+        var machine = AEDStateMachine()
+
+        XCTAssertEqual(machine.state, .powerOn)
+        XCTAssertFalse(
+            machine.handle(.placePads(rightPadCorrect: true, leftPadCorrect: true))
+                .wasAccepted
+        )
+        XCTAssertEqual(machine.state, .powerOn)
+        XCTAssertTrue(machine.handle(.pressPowerControl).wasAccepted)
+        XCTAssertEqual(machine.state, .awaitingPads)
+    }
+
+    func testAEDPadCorrectionUsesFactBackedAdultLandmarks() {
+        let remediation = AEDStateMachine.remediation(.padsIncorrect)
+
+        XCTAssertEqual(remediation.sourceFactIDs, ["fact.aed.padPlacementAdult"])
+        XCTAssertEqual(
+            AEDPadPlacementGuidance.leftPadLocation,
+            "the left chest just below and to the left of the left nipple"
+        )
+        XCTAssertEqual(remediation.message, AEDPadPlacementGuidance.correction)
+        XCTAssertTrue(
+            AEDPadPlacementGuidance.accessibleLeftPadHint.contains(
+                AEDPadPlacementGuidance.leftPadLocation
+            )
+        )
     }
 
     func testAEDShockPathBlocksTouchAndRequiresInteractiveClearSweep() {
@@ -1022,6 +1062,7 @@ private extension StateMachineCoreTests {
 
     func aedAtPadsCorrect() -> AEDStateMachine {
         var machine = AEDStateMachine()
+        machine.handle(.pressPowerControl)
         machine.handle(.placePads(rightPadCorrect: true, leftPadCorrect: true))
         return machine
     }

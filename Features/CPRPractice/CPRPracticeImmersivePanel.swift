@@ -41,6 +41,7 @@ struct CPRInterruptionPresentation: Sendable, Equatable {
 /// Head-anchored CPR coaching panel. Spatial targets and every button submit the same
 /// typed events through `CPRPracticeSessionModel`.
 struct CPRPracticeImmersivePanel: View {
+    @Environment(\.lifesaverVisualStyle) private var visualStyle
     let model: CPRPracticeSessionModel
     let reduceMotion: Bool
     let learnerID: String
@@ -61,7 +62,7 @@ struct CPRPracticeImmersivePanel: View {
                 ProgressView("Loading source-backed practice…")
             case let .failed(message):
                 Label(message, systemImage: "exclamationmark.triangle.fill")
-                    .foregroundStyle(.orange)
+                    .lifesaverStatusChip(.critical)
             case .ready:
                 practiceContent
             }
@@ -117,7 +118,7 @@ struct CPRPracticeImmersivePanel: View {
             VStack(alignment: .leading) {
                 Text("Rate band").font(.caption).foregroundStyle(.secondary)
                 Text(rateText).font(.title3.monospacedDigit())
-                    .foregroundStyle(rateColour)
+                    .lifesaverStatusChip(rateStatusRole)
                 Text(rateStatusText)
                     .font(.caption2)
             }
@@ -125,9 +126,16 @@ struct CPRPracticeImmersivePanel: View {
                 Text("Interruption timer").font(.caption).foregroundStyle(.secondary)
                 Text(model.liveInterruptionSeconds, format: .number.precision(.fractionLength(1)))
                     .font(.title3.monospacedDigit())
-                    .foregroundStyle(interruption.isThresholdExceeded ? .red : .primary)
+                    .foregroundStyle(
+                        interruption.isThresholdExceeded
+                            ? visualStyle.foregroundColor(for: .critical)
+                            : .primary
+                    )
                 Label(interruption.label, systemImage: interruption.systemImage)
                     .font(.caption2)
+                    .lifesaverStatusChip(
+                        interruption.isThresholdExceeded ? .critical : .neutral
+                    )
             }
             if reduceMotion {
                 Label(
@@ -251,9 +259,9 @@ struct CPRPracticeImmersivePanel: View {
         return "\(Int(rate.rounded()))/min"
     }
 
-    private var rateColour: Color {
-        guard let band = model.metrics.cadenceBands.last else { return .secondary }
-        return band == .withinSupportedBand ? .green : .orange
+    private var rateStatusRole: LifesaverStatusRole {
+        guard let band = model.metrics.cadenceBands.last else { return .neutral }
+        return band == .withinSupportedBand ? .success : .warning
     }
 
     private var rateStatusText: String {

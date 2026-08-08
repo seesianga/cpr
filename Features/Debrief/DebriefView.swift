@@ -4,6 +4,7 @@ enum DebriefAwardPersistenceState: Sendable, Equatable {
     case pending
     case saving
     case saved(xp: Int)
+    case practiceOnly(explanation: String)
     case failed
 }
 
@@ -122,6 +123,13 @@ struct DebriefView: View {
         case let .saved(xp):
             Label("XP added to this learner record: \(xp)", systemImage: "checkmark.seal.fill")
                 .font(.subheadline.monospacedDigit())
+        case let .practiceOnly(explanation):
+            Label(
+                "Practice only — no completion record, XP, or badge was saved. \(explanation)",
+                systemImage: "shield.slash.fill"
+            )
+            .font(.subheadline)
+            .foregroundStyle(.orange)
         case .failed:
             Label(
                 "The completion record could not be saved. No XP was added.",

@@ -1,9 +1,20 @@
 import Foundation
 
+enum AEDPadPlacementGuidance {
+    // fact.aed.padPlacementAdult
+    static let leftPadLocation =
+        "the left chest just below and to the left of the left nipple"
+    static let correction =
+        "Place the right pad on the right chest just below the collarbone and the left pad on \(leftPadLocation); follow the pictures printed on the pads."
+    static let accessibleLeftPadHint =
+        "Alternative to dragging the left pad on \(leftPadLocation)"
+}
+
 /// Runtime safety states requested for Phase 5A. These are intentionally distinct from
 /// the Phase 3B JSON's authored teaching-stage labels; `PracticeMachineContentContract` validates
 /// and documents that source/runtime boundary.
 enum AEDPracticeState: String, Codable, CaseIterable, Sendable {
+    case powerOn
     case awaitingPads
     case padsIncorrect
     case padsCorrect
@@ -72,6 +83,7 @@ struct AEDPreparationChecklist: Codable, Equatable, Sendable {
 }
 
 enum AEDPracticeEvent: Codable, Equatable, Sendable {
+    case pressPowerControl
     case performPreparation(AEDPreparationAction)
     case placePads(rightPadCorrect: Bool, leftPadCorrect: Bool)
     case retryPadPlacement
@@ -88,6 +100,8 @@ enum AEDPracticeEvent: Codable, Equatable, Sendable {
         bystandersConfirmedClear: Bool,
         anyoneTouching: Bool
     )
+    /// Invalidates any previously accepted clear sweep when contact resumes.
+    case clearCheckInvalidated
     case pressShockControl(anyoneTouching: Bool)
     case coachedResumeWindowExpired
     case resumeCompressions
@@ -135,7 +149,7 @@ enum AEDPracticeCriticalFailure: String, Codable, CaseIterable, Sendable {
 /// Pure-Swift AED runtime reducer. Contact and interaction provenance are carried in typed
 /// events, so a view cannot bypass analysis, clear-sweep, shock, or resume invariants.
 struct AEDStateMachine: EventSourcedStateMachine {
-    private(set) var state: AEDPracticeState = .awaitingPads
+    private(set) var state: AEDPracticeState = .powerOn
     private(set) var eventLog: [StateMachineEventLogEntry<
         AEDPracticeState,
         AEDPracticeEvent,
@@ -169,6 +183,10 @@ struct AEDStateMachine: EventSourcedStateMachine {
         >
 
         switch (state, event) {
+        case (.powerOn, .pressPowerControl):
+            state = .awaitingPads
+            outcome = .accepted(to: state, remediation: nil)
+
         case let (.awaitingPads, .performPreparation(action)):
             if preparation.perform(action) {
                 outcome = .accepted(to: state, remediation: nil)
@@ -297,6 +315,25 @@ struct AEDStateMachine: EventSourcedStateMachine {
             clearCheckCompleted = true
             outcome = .accepted(to: state, remediation: nil)
 
+        case (.padsCorrect, .clearCheckInvalidated),
+             (.analysing, .clearCheckInvalidated),
+             (.shockAdvised, .clearCheckInvalidated),
+             (.charging, .clearCheckInvalidated),
+             (.clearConfirmation, .clearCheckInvalidated):
+            clearCheckCompleted = false
+            switch state {
+            case .analysing:
+                appendFailure(.contactDuringAnalysis)
+            case .shockAdvised, .charging, .clearConfirmation:
+                appendFailure(.contactDuringShock)
+            default:
+                break
+            }
+            outcome = .accepted(
+                to: state,
+                remediation: Self.remediation(.clearSweepRequired)
+            )
+
         case let (.clearConfirmation, .pressShockControl(anyoneTouching)):
             guard clearCheckCompleted else {
                 appendFailure(.shockWithoutClearCheck)
@@ -404,9 +441,10 @@ struct AEDStateMachine: EventSourcedStateMachine {
                 sourceFactIDs: ["fact.aed.applyDuringCpr"]
             )
         case .padsIncorrect:
+            // fact.aed.padPlacementAdult
             AEDPracticeRemediation(
                 code: code,
-                message: "Place the right pad below the right collarbone and the left pad on the left side below armpit level, following the pad pictures.",
+                message: AEDPadPlacementGuidance.correction,
                 sourceFactIDs: ["fact.aed.padPlacementAdult"]
             )
         case .handsOffRequired:
@@ -431,7 +469,12 @@ struct AEDStateMachine: EventSourcedStateMachine {
             AEDPracticeRemediation(
                 code: code,
                 message: "Restart compressions immediately after either AED outcome.",
-                sourceFactIDs: ["fact.aed.resumeAfterShock", "fact.aed.noShockAdvised"]
+                sourceFactIDs: [
+                    "fact.aed.resumeAfterShock",
+                    "fact.aed.noShockAdvised",
+                    "fact.compression.minimiseInterruptions",
+                    "fact.compression.restRule"
+                ]
             )
         case .eventOutOfSequence:
             AEDPracticeRemediation(

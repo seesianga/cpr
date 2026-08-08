@@ -1,16 +1,14 @@
 import SwiftUI
 
 struct DRSABCPracticeImmersivePanel: View {
+    @Environment(\.lifesaverVisualStyle) private var visualStyle
     let model: DRSABCPracticeSessionModel
 
     var body: some View {
         VStack(alignment: .leading, spacing: 13) {
             Text(DRSABCPracticeSessionModel.simulationBadge)
                 .font(.caption.bold())
-                .foregroundStyle(.red)
-                .padding(.horizontal, 10)
-                .padding(.vertical, 6)
-                .background(.red.opacity(0.12), in: Capsule())
+                .lifesaverStatusChip(.critical)
                 .accessibilityAddTraits(.isHeader)
 
             Text(model.guidanceTitle)
@@ -23,7 +21,7 @@ struct DRSABCPracticeImmersivePanel: View {
                 ProgressView("Loading source-backed DRSABC practice…")
             case let .failed(message):
                 Label(message, systemImage: "exclamationmark.triangle.fill")
-                    .foregroundStyle(.orange)
+                    .lifesaverStatusChip(.critical)
             case .ready:
                 Group {
                     if let correction = model.activeCorrection {
@@ -104,7 +102,7 @@ struct DRSABCPracticeImmersivePanel: View {
         case .complete:
             VStack(alignment: .leading, spacing: 6) {
                 Label("Internal practice complete", systemImage: "checkmark.seal.fill")
-                    .foregroundStyle(.green)
+                    .lifesaverStatusChip(.success)
                 Text("This is not SRFAC certification. Practical competency requires instructor sign-off.")
                     .font(.footnote)
             }
@@ -117,7 +115,7 @@ struct DRSABCPracticeImmersivePanel: View {
     private func correctiveFeedback(_ correction: DRSABCRemediation) -> some View {
         VStack(alignment: .leading, spacing: 9) {
             Label(correction.message, systemImage: "exclamationmark.shield.fill")
-                .foregroundStyle(.orange)
+                .lifesaverStatusChip(.warning)
             ForEach(correction.sourceFactIDs, id: \.self) { factID in
                 Text("Clinical fact: \(factID)")
                     .font(.caption.monospaced())
@@ -138,7 +136,17 @@ struct DRSABCPracticeImmersivePanel: View {
             .buttonStyle(.borderedProminent)
         }
         .padding(14)
-        .background(.orange.opacity(0.10), in: RoundedRectangle(cornerRadius: 18))
+        .background(
+            visualStyle.backgroundColor(for: .warning),
+            in: RoundedRectangle(cornerRadius: 18)
+        )
+        .overlay {
+            RoundedRectangle(cornerRadius: 18)
+                .stroke(
+                    visualStyle.borderColor(for: .warning),
+                    lineWidth: visualStyle.statusBorderWidth
+                )
+        }
     }
 
     private func buttonGrid(

@@ -114,6 +114,9 @@ struct TrackedPalmObservation: Sendable, Equatable {
 enum HandTrackingDerivedEvent: Codable, Equatable, Sendable {
     case trackingAvailabilityChanged(isAvailable: Bool)
     case placementChanged(CPRHandPlacementZone)
+    /// Emitted only after an in-corridor placement remains stable for the detector's
+    /// critical-placement dwell threshold. It is a transit filter, not a clinical measure.
+    case placementDwellConfirmed(CPRHandPlacementZone)
     case handStackingChanged(CPRHandStackingHeuristic)
     case interruptionMeasured(durationSeconds: Double)
     case compressionDetected(
@@ -137,6 +140,7 @@ enum HandTrackingDerivedEvent: Codable, Equatable, Sendable {
             .recordInterruption(durationSeconds: duration)
         case .trackingAvailabilityChanged,
              .placementChanged,
+             .placementDwellConfirmed,
              .handStackingChanged,
              .cadenceUpdated:
             nil

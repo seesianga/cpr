@@ -23,6 +23,7 @@ final class DRSABCPracticeSessionModel {
     var state: DRSABCState? { machine?.state }
     var eventLogCount: Int { machine?.eventLog.count ?? 0 }
     var criticalFailures: [DRSABCCriticalFailure] { machine?.criticalFailures ?? [] }
+    var contentVersion: String? { content?.contentVersion }
     var simulatedCallTitle: String {
         content?.simulatedCallTitle ?? "SIMULATION — 995 call rehearsal"
     }

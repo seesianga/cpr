@@ -58,6 +58,7 @@ struct PracticeMachineContentContract: Sendable, Equatable {
     let dispatcherReminder: PracticeContentInstruction
     let aedDelegationInstruction: PracticeContentInstruction
     let remediationCitationsByFactID: [String: [PracticeSourceCitation]]
+    let aedPowerOnInstruction: PracticeContentInstruction
     let aedPreparationInstructions: [AEDChestCondition: PracticeContentInstruction]
     let aedPadPlacementInstruction: PracticeContentInstruction
 
@@ -164,8 +165,17 @@ struct PracticeMachineContentContract: Sendable, Equatable {
             }
             preparationInstructions[condition] = PracticeContentInstruction(block: block)
         }
-        guard let padPlacementBlock = module5Blocks["M5-B3"] else {
+        guard let powerOnBlock = module5Blocks["M5-B3"] else {
             throw PracticeMachineContentError.missingCourseBlock("M5-B3")
+        }
+        guard let module6 = course.modules.first(where: { $0.id == "M6" }) else {
+            throw PracticeMachineContentError.missingCourseModule("M6")
+        }
+        let module6Blocks = Dictionary(
+            uniqueKeysWithValues: module6.lessons.flatMap(\.contentBlocks).map { ($0.id, $0) }
+        )
+        guard let padPlacementBlock = module6Blocks["M6-B3"] else {
+            throw PracticeMachineContentError.missingCourseBlock("M6-B3")
         }
 
         try ([
@@ -175,6 +185,7 @@ struct PracticeMachineContentContract: Sendable, Equatable {
             aedDelegationBlock,
             breathingBranchBlock,
             tempoBlock,
+            powerOnBlock,
             padPlacementBlock
         ] + preparationBlockIDs.compactMap { module5Blocks[$0.1] })
             .forEach(validateInstructionBlock)
@@ -287,6 +298,7 @@ struct PracticeMachineContentContract: Sendable, Equatable {
             dispatcherReminder: PracticeContentInstruction(block: dispatcherBlock),
             aedDelegationInstruction: PracticeContentInstruction(block: aedDelegationBlock),
             remediationCitationsByFactID: remediationCitations,
+            aedPowerOnInstruction: PracticeContentInstruction(block: powerOnBlock),
             aedPreparationInstructions: preparationInstructions,
             aedPadPlacementInstruction: PracticeContentInstruction(block: padPlacementBlock)
         )

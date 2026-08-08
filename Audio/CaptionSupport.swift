@@ -171,6 +171,7 @@ struct SpatialSpeechCaptionOverlay: View {
                     .multilineTextAlignment(.center)
                     .frame(maxWidth: 680)
                     .padding(14)
+                    .lifesaverCaptionSurface()
                     .glassBackgroundEffect()
                     .accessibilityLabel("Caption: \(text)")
             }
@@ -230,6 +231,7 @@ struct AudioCaptionOverlay: View {
         }
         .frame(maxWidth: 680)
         .padding(14)
+        .lifesaverCaptionSurface()
         .glassBackgroundEffect()
         .opacity(snapshot.visualState == nil && captionText == nil ? 0 : 1)
         .task {

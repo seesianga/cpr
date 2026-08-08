@@ -1,4 +1,5 @@
 import Foundation
+import RealityKit
 import XCTest
 @testable import LifesaverVision
 
@@ -152,6 +153,23 @@ final class OnboardingGamificationComfortTests: XCTestCase {
 
         XCTAssertEqual(session.elapsedImmersionTime, 12, accuracy: 0.001)
         XCTAssertTrue(session.isBreakSuggestionVisible)
+    }
+
+    func testImmersivePanelIsPlacedOnceAndRecentreUsesFreshOneShotTarget() {
+        XCTAssertEqual(ImmersivePanelPlacementPolicy.trackingMode, .once)
+        let anchor = ImmersivePanelPlacementPolicy.makeAnchor()
+        XCTAssertEqual(anchor.anchoring.trackingMode, .once)
+
+        ImmersivePanelPlacementPolicy.recentre(anchor)
+
+        XCTAssertEqual(anchor.anchoring.trackingMode, .once)
+        XCTAssertEqual(
+            ImmersivePanelPlacementPolicy.interfaceOffset(
+                horizontalBias: -0.10,
+                isSeated: true
+            ),
+            SIMD3<Float>(-0.10, -0.12, -1.35)
+        )
     }
 
     func testEffectiveReduceMotionUsesSystemOrAppPreference() {

@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct AEDPracticeImmersivePanel: View {
+    @Environment(\.lifesaverVisualStyle) private var visualStyle
     let model: AEDPracticeSessionModel
     let currentScene: SpatialSceneName
     let onRequestPlacementRoom: () -> Void
@@ -21,7 +22,7 @@ struct AEDPracticeImmersivePanel: View {
                 ProgressView("Loading source-backed AED practice…")
             case let .failed(message):
                 Label(message, systemImage: "exclamationmark.triangle.fill")
-                    .foregroundStyle(.orange)
+                    .lifesaverStatusChip(.critical)
             case .ready:
                 controls
                     .disabled(model.isPaused)
@@ -38,7 +39,9 @@ struct AEDPracticeImmersivePanel: View {
 
     @ViewBuilder
     private var controls: some View {
-        if currentScene == .aedPreparationRoom, !model.isPreparationComplete {
+        if currentScene == .aedPreparationRoom, model.state == .powerOn {
+            powerOnControls
+        } else if currentScene == .aedPreparationRoom, !model.isPreparationComplete {
             ScrollView {
                 VStack(alignment: .leading, spacing: 10) {
                     ForEach(model.preparationItems) { item in
@@ -47,7 +50,10 @@ struct AEDPracticeImmersivePanel: View {
                                 Text(item.instruction.title).font(.headline)
                                 Spacer()
                                 if item.isComplete {
-                                    Image(systemName: "checkmark.circle.fill").foregroundStyle(.green)
+                                    Image(systemName: "checkmark.circle.fill")
+                                        .foregroundStyle(
+                                            visualStyle.foregroundColor(for: .success)
+                                        )
                                 }
                             }
                             Text(item.instruction.body)
@@ -67,7 +73,7 @@ struct AEDPracticeImmersivePanel: View {
             .frame(maxHeight: 430)
         } else if currentScene == .aedPreparationRoom {
             Label("All presented chest-preparation checks complete", systemImage: "checkmark.seal.fill")
-                .foregroundStyle(.green)
+                .lifesaverStatusChip(.success)
             Button("Continue to pad-placement room", systemImage: "arrow.right") {
                 onRequestPlacementRoom()
             }
@@ -81,6 +87,9 @@ struct AEDPracticeImmersivePanel: View {
     @ViewBuilder
     private var placementAndAEDControls: some View {
         switch model.state {
+        case .powerOn:
+            powerOnControls
+
         case .awaitingPads:
             VStack(alignment: .leading, spacing: 10) {
                 Text(model.padPlacementInstruction?.body ?? "Follow the pad pictures.")
@@ -95,7 +104,8 @@ struct AEDPracticeImmersivePanel: View {
                         model.placePadUsingAccessibleControl(rightPad: false, inCorrectZone: true)
                     }
                     .buttonStyle(.borderedProminent)
-                    .accessibilityHint("Alternative to dragging the left pad on the left side below armpit level")
+                    // fact.aed.padPlacementAdult
+                    .accessibilityHint(AEDPadPlacementGuidance.accessibleLeftPadHint)
                 }
                 Button("Practise an incorrect placement") {
                     model.placePadUsingAccessibleControl(rightPad: true, inCorrectZone: false)
@@ -116,7 +126,7 @@ struct AEDPracticeImmersivePanel: View {
         case .analysing:
             VStack(alignment: .leading, spacing: 8) {
                 Label("HANDS OFF — simulated analysis", systemImage: "hand.raised.fill")
-                    .foregroundStyle(.orange)
+                    .lifesaverStatusChip(.warning)
                 HStack {
                     Button("Trainer says shock advised") {
                         model.receiveAnalysisOutcome(.shock)
@@ -142,10 +152,28 @@ struct AEDPracticeImmersivePanel: View {
             .buttonStyle(.borderedProminent)
 
         case .noShockAdvised, .simulatedShock:
-            Button("Resume compressions now", systemImage: "heart.fill") {
-                model.resumeCompressions()
+            VStack(alignment: .leading, spacing: 9) {
+                if let caption = model.resumeCaptionCue {
+                    Label(caption, systemImage: "captions.bubble.fill")
+                        .font(.headline)
+                        .lifesaverStatusChip(.critical)
+                        .accessibilityLabel("Caption cue: \(caption)")
+                }
+                Text(
+                    "Coached countdown: \(model.resumeCoachingSecondsRemaining ?? 0) seconds remaining"
+                )
+                .font(.title3.monospacedDigit().bold())
+                .accessibilityLabel(
+                    "\(model.resumeCoachingSecondsRemaining ?? 0) seconds remaining to resume compressions"
+                )
+                Text("Resume immediately; the countdown is a visible safety backstop, not permission to delay.")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                Button("Resume compressions now", systemImage: "heart.fill") {
+                    model.resumeCompressions()
+                }
+                .buttonStyle(.borderedProminent)
             }
-            .buttonStyle(.borderedProminent)
 
         case .resumeCompressions:
             Button("Finish AED practice", systemImage: "checkmark.seal") {
@@ -156,13 +184,32 @@ struct AEDPracticeImmersivePanel: View {
         case .complete:
             VStack(alignment: .leading, spacing: 6) {
                 Label("Internal practice complete", systemImage: "checkmark.seal.fill")
-                    .foregroundStyle(.green)
+                    .lifesaverStatusChip(.success)
                 Text("This is not SRFAC certification. Practical competency requires instructor sign-off.")
                     .font(.footnote)
             }
 
         case nil:
             EmptyView()
+        }
+    }
+
+    private var powerOnControls: some View {
+        VStack(alignment: .leading, spacing: 9) {
+            if let instruction = model.powerOnInstruction {
+                Text(instruction.title)
+                    .font(.headline)
+                Text(instruction.body)
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+            }
+            Button("Switch on simulated AED", systemImage: "power") {
+                model.pressPowerButton()
+            }
+            .buttonStyle(.borderedProminent)
+            .accessibilityHint(
+                "Accessible alternative to gazing and pinching the AED power button"
+            )
         }
     }
 

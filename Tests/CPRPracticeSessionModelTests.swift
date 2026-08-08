@@ -111,6 +111,59 @@ final class CPRPracticeSessionModelTests: XCTestCase {
         await model.stop()
     }
 
+    func testTransientXiphoidTransitDoesNotRecordCriticalPlacementFailure() async throws {
+        let driver = SimulatedHandInput()
+        let model = CPRPracticeSessionModel(handTracking: driver)
+        try await prepare(model, driver: driver)
+        model.confirmPositioning()
+        XCTAssertEqual(model.state, .landmarkCheck)
+
+        _ = driver.submit(
+            SimulatedHandFrame(
+                timestampSeconds: 0,
+                leftPalmWorld: [0, 0.12, 0.30]
+            )
+        )
+        _ = driver.submit(
+            SimulatedHandFrame(
+                timestampSeconds: 0.20,
+                leftPalmWorld: [0, 0.12, 0]
+            )
+        )
+
+        for _ in 0..<40 where model.state != .compressionCycles {
+            try await Task.sleep(for: .milliseconds(5))
+        }
+        XCTAssertEqual(model.state, .compressionCycles)
+        XCTAssertTrue(model.criticalFailures.isEmpty)
+        XCTAssertEqual(model.metrics.totalCompressions, 0)
+        await model.stop()
+    }
+
+    func testSustainedXiphoidPlacementDwellRecordsCriticalFailure() async throws {
+        let driver = SimulatedHandInput()
+        let model = CPRPracticeSessionModel(handTracking: driver)
+        try await prepare(model, driver: driver)
+        model.confirmPositioning()
+
+        for timestamp in [0.0, 0.20, HandSignalDetector.criticalPlacementDwellSeconds] {
+            _ = driver.submit(
+                SimulatedHandFrame(
+                    timestampSeconds: timestamp,
+                    leftPalmWorld: [0, 0.12, 0.30]
+                )
+            )
+        }
+
+        for _ in 0..<40 where model.state != .correctiveFeedback {
+            try await Task.sleep(for: .milliseconds(5))
+        }
+        XCTAssertEqual(model.state, .correctiveFeedback)
+        XCTAssertEqual(model.criticalFailures, [.compressionOnXiphoid])
+        XCTAssertEqual(model.metrics.totalCompressions, 0)
+        await model.stop()
+    }
+
     func testTerminalGapAboveTenSecondsIsRecordedAndBlocksXP() async throws {
         let driver = SimulatedHandInput(startState: .permissionDenied)
         let model = CPRPracticeSessionModel(handTracking: driver)

@@ -59,6 +59,7 @@ final class CPRPracticeSessionModel {
 
     var state: CPRPracticeState? { machine?.state }
     var metrics: CPRPracticeMetrics { machine?.metrics ?? CPRPracticeMetrics() }
+    var criticalFailures: [CPRPracticeCriticalFailure] { machine?.criticalFailures ?? [] }
     var eventLogCount: Int { machine?.eventLog.count ?? 0 }
     var targetRateText: String {
         guard let policy = content?.cprPolicy else { return "100–120/min" }
@@ -360,6 +361,11 @@ final class CPRPracticeSessionModel {
             }
             handTrackingState = handTracking.state
         case let .placementChanged(zone):
+            if machine?.state == .landmarkCheck,
+               zone != .xiphoidAvoidZone {
+                submit(.classifyHandPlacement(zone))
+            }
+        case let .placementDwellConfirmed(zone):
             if machine?.state == .landmarkCheck {
                 submit(.classifyHandPlacement(zone))
             }

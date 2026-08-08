@@ -16,12 +16,12 @@ struct AdministrationView: View {
 
     @AppStorage("academy.assessment.passThreshold") private var passThreshold = 0.80
     @AppStorage("academy.badges.rulesJSON") private var badgeRulesJSON = ""
-    @AppStorage("academy.retention.progressDays") private var progressRetentionDays = 730
-    @AppStorage("academy.retention.attemptDays") private var attemptRetentionDays = 730
-    @AppStorage("academy.retention.feedbackDays") private var feedbackRetentionDays = 730
-    @AppStorage("academy.retention.learningEventDays") private var learningEventRetentionDays = 730
-    @AppStorage("academy.retention.offlineQueueDays") private var offlineQueueRetentionDays = 30
-    @AppStorage("academy.retention.revokedConsentDays") private var consentRetentionDays = 365
+    @AppStorage(RetentionPreferenceKeys.progressDays) private var progressRetentionDays = 730
+    @AppStorage(RetentionPreferenceKeys.attemptDays) private var attemptRetentionDays = 730
+    @AppStorage(RetentionPreferenceKeys.feedbackDays) private var feedbackRetentionDays = 730
+    @AppStorage(RetentionPreferenceKeys.learningEventDays) private var learningEventRetentionDays = 730
+    @AppStorage(RetentionPreferenceKeys.offlineQueueDays) private var offlineQueueRetentionDays = 30
+    @AppStorage(RetentionPreferenceKeys.revokedConsentDays) private var consentRetentionDays = 365
     @AppStorage("academy.instructor.permissionsJSON") private var instructorPermissionsJSON = "[]"
 
     @State private var newUserName = ""

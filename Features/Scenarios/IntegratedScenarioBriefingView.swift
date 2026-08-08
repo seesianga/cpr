@@ -1,4 +1,5 @@
 import SwiftUI
+import SwiftData
 
 /// Shared-space preparation for an integrated attempt. Clinical transitions remain in
 /// `ScenarioEngine`; this view only selects equivalent interaction affordances.
@@ -7,8 +8,11 @@ struct IntegratedScenarioBriefingView: View {
 
     @Environment(\.openImmersiveSpace) private var openImmersiveSpace
     @Environment(AppModel.self) private var appModel
+    @Environment(\.modelContext) private var modelContext
     @State private var engine: ScenarioEngine?
+    @State private var scoringDecision: ScenarioScoringDecision?
     @State private var preparationError: String?
+    @State private var isPreparing = false
     @State private var selectedAssignment: ScenarioBystanderAssignment = .getAED
     @State private var selectedMethod: ScenarioInteractionMethod = .gazeAndPinch
 
@@ -43,13 +47,28 @@ struct IntegratedScenarioBriefingView: View {
 
             Section("Attempt preparation") {
                 Button("Prepare approved scenario pattern", systemImage: "checkmark.shield") {
-                    prepareAttempt()
+                    Task { await prepareAttempt() }
                 }
                 .buttonStyle(.borderedProminent)
+                .disabled(isPreparing)
+
+                if isPreparing {
+                    ProgressView("Verifying clinical scoring eligibility")
+                }
 
                 if let engine {
                     Label("Attempt ready", systemImage: "checkmark.circle.fill")
                         .foregroundStyle(.green)
+                    if let explanation = scoringDecision?.practiceOnlyExplanation {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Label("PRACTICE ONLY — UNSCORED", systemImage: "shield.slash.fill")
+                                .font(.headline)
+                            Text("\(explanation) No completion record, XP, or badge will be saved.")
+                                .font(.footnote)
+                        }
+                        .foregroundStyle(.orange)
+                        .accessibilityElement(children: .combine)
+                    }
                     Text("The AED outcome order is selected from the approved pool and intentionally hidden. Clear checks, clinical branches, and CPR resumption rules cannot be randomised.")
                         .foregroundStyle(.secondary)
                     LabeledContent("Scene", value: engine.scene.rawValue)
@@ -90,18 +109,28 @@ struct IntegratedScenarioBriefingView: View {
         .navigationTitle(definition.title)
     }
 
-    private func prepareAttempt() {
+    @MainActor
+    private func prepareAttempt() async {
+        isPreparing = true
+        defer { isPreparing = false }
         do {
             let document = try ScenarioDefinitionsCodec.load()
+            let decision = await ScenarioScoringGate().authorizeBundledLaunch(
+                document: document,
+                scenarioID: definition.id,
+                modelContainer: modelContext.container
+            )
             let prepared = try ScenarioEngine(
                 document: document,
                 scenarioID: definition.id,
                 selector: RandomScenarioPatternSelector()
             )
             engine = prepared
+            scoringDecision = decision
             preparationError = nil
         } catch {
             engine = nil
+            scoringDecision = nil
             preparationError = "This scenario failed its safety or content checks and cannot start."
         }
     }

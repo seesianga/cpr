@@ -1,5 +1,6 @@
 import Foundation
 import Observation
+import SwiftData
 import SwiftUI
 
 private enum IntegratedScenarioSessionError: Error {
@@ -54,6 +55,7 @@ final class IntegratedScenarioSessionModel {
     private(set) var isPaused = false
     private(set) var isLoneRescuer = false
     private(set) var cprCompressionCount = 0
+    private(set) var scoringDecision: ScenarioScoringDecision = .practiceOnly(.notVerified)
     let requiredCompressionCount = CPRPracticePolicy.sourceBacked.preferredCompressionsPerCycle
     var selectedBystanderAssignment: ScenarioBystanderAssignment = .getAED
 
@@ -74,15 +76,37 @@ final class IntegratedScenarioSessionModel {
     func prepare(
         scenarioID: String,
         patternID: String,
-        audioDirector: any AudioDirector
-    ) {
+        audioDirector: any AudioDirector,
+        modelContainer: ModelContainer? = nil,
+        bundle: Bundle = .main
+    ) async {
         do {
+            let document = try ScenarioDefinitionsCodec.load(from: bundle)
+            let gate = ScenarioScoringGate()
+            let decision: ScenarioScoringDecision
+            if let modelContainer {
+                decision = await gate.authorizeBundledLaunch(
+                    document: document,
+                    scenarioID: scenarioID,
+                    modelContainer: modelContainer,
+                    bundle: bundle
+                )
+            } else {
+                decision = gate.authorizeBundledPracticeOnly(
+                    document: document,
+                    scenarioID: scenarioID,
+                    bundle: bundle
+                )
+            }
+
             audioCommandTask?.cancel()
             audioCommandTask = nil
-            engine = try ScenarioEngine.loadBundled(
+            engine = try ScenarioEngine(
+                document: document,
                 scenarioID: scenarioID,
                 selector: DeterministicScenarioPatternSelector(patternID: patternID)
             )
+            scoringDecision = decision
             self.audioDirector = audioDirector
             stage = .sceneSafety
             correction = nil
@@ -110,6 +134,7 @@ final class IntegratedScenarioSessionModel {
             }
         } catch {
             engine = nil
+            scoringDecision = .practiceOnly(.contentUnavailable)
             errorMessage = "The approved scenario definition could not be prepared."
         }
     }
@@ -453,6 +478,9 @@ final class IntegratedScenarioSessionModel {
             .dryChest
         ]
         do {
+            try requireAccepted(
+                engine.submit(AEDPracticeEvent.pressPowerControl)
+            )
             for action in preparation {
                 try requireAccepted(
                     engine.submit(AEDPracticeEvent.performPreparation(action))
@@ -791,6 +819,20 @@ struct IntegratedScenarioImmersivePanel: View {
                 .font(.title2.bold())
                 .accessibilityAddTraits(.isHeader)
 
+            if let explanation = model.scoringDecision.practiceOnlyExplanation {
+                VStack(alignment: .leading, spacing: 4) {
+                    Label("PRACTICE ONLY — UNSCORED", systemImage: "shield.slash.fill")
+                        .font(.headline)
+                    Text("\(explanation) No completion record, XP, or badge will be saved.")
+                        .font(.footnote)
+                }
+                .foregroundStyle(.orange)
+                .accessibilityElement(children: .combine)
+                .accessibilityLabel(
+                    "Practice only, unscored. \(explanation) No completion record, experience points, or badge will be saved."
+                )
+            }
+
             if let errorMessage = model.errorMessage {
                 Label(errorMessage, systemImage: "exclamationmark.triangle")
                     .foregroundStyle(.orange)
@@ -910,8 +952,8 @@ struct IntegratedScenarioImmersivePanel: View {
             ])
 
         case .aedPreparation:
-            Text("Complete the presented preparation checks, apply both simulated pads, and follow the trainer prompts.")
-            Button("Prepare and apply simulated AED", systemImage: "waveform.path.ecg") {
+            Text("Switch on the simulated AED first, complete the presented preparation checks, apply both simulated pads, and follow the trainer prompts.")
+            Button("Switch on, prepare and apply simulated AED", systemImage: "waveform.path.ecg") {
                 model.prepareAndApplyAED()
             }
             .buttonStyle(.borderedProminent)

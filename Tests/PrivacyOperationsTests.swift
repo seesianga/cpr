@@ -330,6 +330,91 @@ final class PrivacyOperationsTests: XCTestCase {
         XCTAssertEqual(events.last?.metadata["purgedRecordCount"], "7")
     }
 
+    func testAutomaticRetentionRunsAtLaunchSuppressesBeforeDayAndRerunsAtDay() async throws {
+        let container = try PersistenceBootstrap.makeModelContainer(inMemory: true)
+        let context = ModelContext(container)
+        let now = Date(timeIntervalSince1970: 1_800_000_000)
+        let old = now.addingTimeInterval(-31 * 24 * 60 * 60)
+        context.insert(
+            ProgressRecord(
+                id: "automatic-retention-progress",
+                learnerID: "automatic-retention-learner",
+                courseID: "course-1",
+                contentVersion: "1.0.0",
+                completionFraction: 0.5,
+                updatedAt: old
+            )
+        )
+        try context.save()
+
+        let suite = "AutomaticRetentionTests.\(UUID().uuidString)"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suite))
+        defer { defaults.removePersistentDomain(forName: suite) }
+        for key in [
+            RetentionPreferenceKeys.progressDays,
+            RetentionPreferenceKeys.attemptDays,
+            RetentionPreferenceKeys.feedbackDays,
+            RetentionPreferenceKeys.learningEventDays,
+            RetentionPreferenceKeys.offlineQueueDays,
+            RetentionPreferenceKeys.revokedConsentDays
+        ] {
+            defaults.set(30, forKey: key)
+        }
+        let scheduleStore = UserDefaultsAutomaticRetentionScheduleStore(
+            defaults: defaults,
+            key: "test.lastAutomaticRetention"
+        )
+        let configurationStore = UserDefaultsRetentionConfigurationStore(
+            defaults: defaults
+        )
+        let auditLog = InMemoryAuditLogService()
+        let privacy = PrivacyOperationsService(
+            modelContainer: container,
+            auditLog: auditLog
+        )
+        let enforcer = AutomaticRetentionEnforcer(
+            privacyOperations: privacy,
+            scheduleStore: scheduleStore,
+            configurationProvider: configurationStore
+        )
+
+        let launchReport = try await enforcer.enforceOnLaunchIfNeeded(now: now)
+
+        XCTAssertEqual(launchReport?.purgedRecordCount, 1)
+        XCTAssertEqual(scheduleStore.lastSuccessfulEnforcement(), now)
+        let duplicateLaunch = try await enforcer.enforceOnLaunchIfNeeded(
+            now: now.addingTimeInterval(60)
+        )
+        XCTAssertNil(duplicateLaunch)
+        let beforeDue = try await enforcer.enforceIfDue(
+            now: now.addingTimeInterval(AutomaticRetentionEnforcer.standardInterval - 1)
+        )
+        XCTAssertNil(beforeDue)
+
+        let rebuiltEnforcer = AutomaticRetentionEnforcer(
+            privacyOperations: privacy,
+            scheduleStore: scheduleStore,
+            configurationProvider: configurationStore
+        )
+        let persistedBeforeDue = try await rebuiltEnforcer.enforceIfDue(
+            now: now.addingTimeInterval(60 * 60)
+        )
+        XCTAssertNil(persistedBeforeDue)
+
+        let due = now.addingTimeInterval(AutomaticRetentionEnforcer.standardInterval)
+        let intervalReport = try await enforcer.enforceIfDue(now: due)
+        XCTAssertNotNil(intervalReport)
+        XCTAssertEqual(scheduleStore.lastSuccessfulEnforcement(), due)
+
+        let events = await auditLog.events()
+        XCTAssertEqual(events.map(\.action), [
+            "retention_policy_enforced",
+            "retention_policy_enforced"
+        ])
+        XCTAssertEqual(events.first?.metadata["purgedRecordCount"], "1")
+        XCTAssertEqual(events.last?.metadata["purgedRecordCount"], "0")
+    }
+
     func testRetentionRejectsNegativeConfiguration() async throws {
         let container = try PersistenceBootstrap.makeModelContainer(inMemory: true)
         let service = PrivacyOperationsService(

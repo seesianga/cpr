@@ -31,6 +31,7 @@ struct SimulationSpaceRootView: View {
     @State private var debriefAwardState: DebriefAwardPersistenceState = .pending
     @State private var spatialSpeechCaption: SpatialSpeechCaptionPlayback?
     @State private var spatialAudioSceneStarted: SpatialSceneName?
+    @State private var controlsAnchor: AnchorEntity?
 
     private var effectiveReduceMotion: Bool {
         SpatialAccessibility.effectiveReduceMotion(
@@ -41,8 +42,9 @@ struct SimulationSpaceRootView: View {
 
     var body: some View {
         RealityView { content, attachments in
-            let controlsAnchor = AnchorEntity(.head)
+            let controlsAnchor = ImmersivePanelPlacementPolicy.makeAnchor()
             controlsAnchor.name = "simulation_controls_anchor"
+            self.controlsAnchor = controlsAnchor
             if let controls = attachments.entity(for: "simulation-interface") {
                 let horizontalOffset: Float = switch appModel.onboardingDominantHand {
                 case .left: -0.10
@@ -50,10 +52,10 @@ struct SimulationSpaceRootView: View {
                 case .noPreference: 0
                 case nil: 0
                 }
-                let verticalOffset: Float = appModel.onboardingComfortPosture == .seated
-                    ? -0.12
-                    : -0.04
-                controls.position = [horizontalOffset, verticalOffset, -1.35]
+                controls.position = ImmersivePanelPlacementPolicy.interfaceOffset(
+                    horizontalBias: horizontalOffset,
+                    isSeated: appModel.onboardingComfortPosture == .seated
+                )
                 controlsAnchor.addChild(controls)
             }
             content.add(controlsAnchor)
@@ -153,10 +155,11 @@ struct SimulationSpaceRootView: View {
                 guard integratedScenarioSession.debrief == nil else { break }
                 persistedScenarioAttemptID = nil
                 debriefAwardState = .pending
-                integratedScenarioSession.prepare(
+                await integratedScenarioSession.prepare(
                     scenarioID: scenarioID,
                     patternID: patternID,
-                    audioDirector: appModel.audioDirector
+                    audioDirector: appModel.audioDirector,
+                    modelContainer: modelContext.container
                 )
             }
         }
@@ -222,6 +225,7 @@ struct SimulationSpaceRootView: View {
                 persistStandaloneAttempt(
                     id: UUID().uuidString,
                     persistedID: &persistedAEDAttemptID,
+                    contentVersion: aedSession.contentVersion,
                     activityID: "M5-aed-practice",
                     attemptKind: "aed-practice",
                     score: aedSession.criticalFailures.isEmpty ? 100 : 0,
@@ -256,6 +260,7 @@ struct SimulationSpaceRootView: View {
             persistStandaloneAttempt(
                 id: UUID().uuidString,
                 persistedID: &persistedDRSABCAttemptID,
+                contentVersion: drsabcSession.contentVersion,
                 activityID: "M3-drsabc-sequence-practice",
                 attemptKind: "drsabc-practice",
                 score: drsabcSession.criticalFailures.isEmpty ? 100 : 0,
@@ -267,8 +272,10 @@ struct SimulationSpaceRootView: View {
         }
         .onChange(of: integratedScenarioSession.debrief) { _, debrief in
             guard let debrief else { return }
-            persistScenarioAttempt(debrief)
-            appModel.moveIntegratedScenarioToDebrief()
+            Task { @MainActor in
+                await persistScenarioAttempt(debrief)
+                appModel.moveIntegratedScenarioToDebrief()
+            }
         }
         .onDisappear {
             if appModel.immersionState == .open,
@@ -283,6 +290,7 @@ struct SimulationSpaceRootView: View {
             spatialAudioSceneStarted = nil
             assetRegistry.releaseAllScenes()
             loadedScene = nil
+            controlsAnchor = nil
             aedSession.stop()
             Task { await cprSession.stop() }
             comfortSession.reset()
@@ -390,12 +398,26 @@ struct SimulationSpaceRootView: View {
             .buttonStyle(.bordered)
             .accessibilityHint("Pauses or resumes the practice engine, audio, and visible room")
 
+            Button("Recentre panel", systemImage: "viewfinder") {
+                recentreSimulationPanel()
+            }
+            .buttonStyle(.bordered)
+            .accessibilityLabel("Recentre simulation panel")
+            .accessibilityHint(
+                "Places the panel once at a comfortable distance in the direction you are currently looking"
+            )
+
             Button("Exit", systemImage: "xmark.circle.fill") {
                 Task { await exitSimulation() }
             }
             .buttonStyle(.borderedProminent)
             .accessibilityHint("Ends hand input and returns to the shared-space dashboard")
         }
+    }
+
+    private func recentreSimulationPanel() {
+        guard let controlsAnchor else { return }
+        ImmersivePanelPlacementPolicy.recentre(controlsAnchor)
     }
 
     private var comfortBreakSuggestion: some View {
@@ -504,6 +526,8 @@ struct SimulationSpaceRootView: View {
             ) else { return }
             playInterfaceSFX("sfx.pinch_confirm")
             switch target.name {
+            case "aed_power_button":
+                aedSession.pressPowerButton()
             case "training_razor":
                 aedSession.completePreparation(.hairPreventsPadContact)
             case "prep_cloth":
@@ -796,6 +820,7 @@ struct SimulationSpaceRootView: View {
     private func persistStandaloneAttempt(
         id: String,
         persistedID: inout String?,
+        contentVersion: String?,
         activityID: String,
         attemptKind: String,
         score: Double,
@@ -805,6 +830,8 @@ struct SimulationSpaceRootView: View {
         resultSummary: String
     ) {
         guard persistedID == nil,
+              let contentVersion,
+              !contentVersion.isEmpty,
               let user = authenticationModel.currentUser,
               !user.id.isEmpty
         else { return }
@@ -816,7 +843,7 @@ struct SimulationSpaceRootView: View {
                 learnerID: user.id,
                 activityID: activityID,
                 courseID: "lifesaver-vision-cpr-aed-spatial-academy",
-                contentVersion: "1.0.0",
+                contentVersion: contentVersion,
                 attemptKind: attemptKind,
                 startedAt: .now,
                 completedAt: .now,
@@ -878,8 +905,39 @@ struct SimulationSpaceRootView: View {
     }
 
     @MainActor
-    private func persistScenarioAttempt(_ debrief: ScenarioDebrief) {
+    private func persistScenarioAttempt(_ debrief: ScenarioDebrief) async {
         debriefAwardState = .saving
+        guard case let .scored(startAuthorization) = integratedScenarioSession.scoringDecision,
+              startAuthorization.scenarioID == debrief.scenarioID,
+              startAuthorization.contentVersion == debrief.scoreOutcome.contentVersion
+        else {
+            debriefAwardState = .practiceOnly(
+                explanation: integratedScenarioSession.scoringDecision.practiceOnlyExplanation
+                    ?? ScenarioPracticeOnlyReason.attemptContentMismatch.learnerExplanation
+            )
+            return
+        }
+
+        let persistenceDecision: ScenarioScoringDecision
+        do {
+            let document = try ScenarioDefinitionsCodec.load()
+            persistenceDecision = await ScenarioScoringGate().authorizeBundledPersistence(
+                document: document,
+                debrief: debrief,
+                eventLog: integratedScenarioSession.eventLog,
+                modelContainer: modelContext.container
+            )
+        } catch {
+            persistenceDecision = .practiceOnly(.contentUnavailable)
+        }
+        guard case .scored = persistenceDecision else {
+            debriefAwardState = .practiceOnly(
+                explanation: persistenceDecision.practiceOnlyExplanation
+                    ?? ScenarioPracticeOnlyReason.notVerified.learnerExplanation
+            )
+            return
+        }
+
         guard persistedScenarioAttemptID == nil,
               let user = authenticationModel.currentUser,
               !user.id.isEmpty,
@@ -891,13 +949,14 @@ struct SimulationSpaceRootView: View {
         }
 
         let attemptID = UUID().uuidString
+        let metadata = ScenarioPersistenceMetadata(debrief: debrief)
         persistedScenarioAttemptID = attemptID
         let attempt = AttemptRecord(
             id: attemptID,
             learnerID: user.id,
             activityID: debrief.scenarioID,
-            courseID: "lifesaver-vision-cpr-aed-spatial-academy",
-            contentVersion: "1.0.0",
+            courseID: metadata.courseID,
+            contentVersion: metadata.contentVersion,
             attemptKind: "integrated-scenario",
             startedAt: .now,
             completedAt: .now,
@@ -1008,8 +1067,8 @@ struct SimulationSpaceRootView: View {
         let decision = GamificationEngine().evaluate(
             event: GamificationEvent(
                 learnerID: learnerID,
-                courseID: "lifesaver-vision-cpr-aed-spatial-academy",
-                contentVersion: "1.0.0",
+                courseID: ScenarioPersistenceMetadata(debrief: debrief).courseID,
+                contentVersion: debrief.scoreOutcome.contentVersion,
                 sourceAttemptID: attemptID,
                 completedAt: .now,
                 scoreOutcome: debrief.scoreOutcome
@@ -1027,7 +1086,7 @@ struct SimulationSpaceRootView: View {
                     learnerID: award.learnerID,
                     badgeID: award.badgeID,
                     awardedAt: award.awardedAt,
-                    contentVersion: "1.0.0",
+                    contentVersion: debrief.scoreOutcome.contentVersion,
                     sourceAttemptID: award.sourceAttemptID,
                     reason: "Source-backed safe scenario evidence"
                 )

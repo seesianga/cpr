@@ -24,9 +24,18 @@ struct AEDSpatialCueRequest: Identifiable, Sendable, Equatable {
 @MainActor
 @Observable
 final class AEDPracticeSessionModel {
-    /// Project-authored UI coaching window. This is not a clinical timing threshold;
-    /// the source-backed learner instruction remains to resume compressions immediately.
-    static let defaultResumeCoachingDelay: Duration = .seconds(4)
+    /// Visible coaching watchdog aligned to the source-backed maximum interruption budget.
+    /// `fact.compression.restRule` supplies 10 seconds, while
+    /// `fact.compression.minimiseInterruptions`, `fact.aed.resumeAfterShock`, and
+    /// `fact.aed.noShockAdvised` still require the learner to resume immediately.
+    static let defaultResumeCoachingDelay: Duration = .seconds(10)
+    static let resumeCaptionCueText = "Resume compressions now"
+    static let resumeCoachingSourceFactIDs = [
+        "fact.compression.restRule",
+        "fact.compression.minimiseInterruptions",
+        "fact.aed.resumeAfterShock",
+        "fact.aed.noShockAdvised"
+    ]
 
     private let resumeCoachingDelay: Duration
     private var audioDirector: any AudioDirector
@@ -35,6 +44,8 @@ final class AEDPracticeSessionModel {
     private var rightPadCorrect: Bool?
     private var leftPadCorrect: Bool?
     private var resumeCoachingTask: Task<Void, Never>?
+    private var resumeCoachingDeadlineUptime: TimeInterval?
+    private var pausedResumeCoachingSeconds: TimeInterval?
 
     private(set) var loadState: AEDPracticeSessionLoadState = .idle
     private(set) var latestFeedback: String?
@@ -46,6 +57,7 @@ final class AEDPracticeSessionModel {
     private(set) var isPaused = false
     private(set) var hasActiveSafetyCorrection = false
     private(set) var spatialCueRequest: AEDSpatialCueRequest?
+    private(set) var resumeCoachingSecondsRemaining: Int?
 
     init(
         resumeCoachingDelay: Duration = defaultResumeCoachingDelay,
@@ -62,9 +74,18 @@ final class AEDPracticeSessionModel {
     var state: AEDPracticeState? { machine?.state }
     var eventLogCount: Int { machine?.eventLog.count ?? 0 }
     var criticalFailures: [AEDPracticeCriticalFailure] { machine?.criticalFailures ?? [] }
+    var contentVersion: String? { content?.contentVersion }
     var isPreparationComplete: Bool { machine?.preparation.isReadyForPads ?? false }
+    var powerOnInstruction: PracticeContentInstruction? {
+        content?.aedPowerOnInstruction
+    }
     var padPlacementInstruction: PracticeContentInstruction? {
         content?.aedPadPlacementInstruction
+    }
+    var resumeCaptionCue: String? {
+        state == .noShockAdvised || state == .simulatedShock
+            ? Self.resumeCaptionCueText
+            : nil
     }
 
     var preparationItems: [AEDPreparationPracticeItem] {
@@ -87,6 +108,7 @@ final class AEDPracticeSessionModel {
 
     var guidanceTitle: String {
         switch state {
+        case .powerOn: "Switch on the AED trainer"
         case .awaitingPads where !isPreparationComplete: "Prepare the chest"
         case .awaitingPads: "Place both pads"
         case .padsIncorrect: "Correct pad placement"
@@ -106,6 +128,8 @@ final class AEDPracticeSessionModel {
     var guidanceBody: String {
         if let latestFeedback { return latestFeedback }
         return switch state {
+        case .powerOn:
+            powerOnInstruction?.body ?? "Switch on the simulated AED and follow its prompts."
         case .awaitingPads where !isPreparationComplete:
             "Complete each source-backed preparation condition presented in the room."
         case .awaitingPads:
@@ -134,7 +158,7 @@ final class AEDPracticeSessionModel {
     }
 
     func prepare(from bundle: Bundle = .main) {
-        cancelResumeCoachingTimer()
+        clearResumeCoachingTimer()
         do {
             let loaded = try PracticeMachineContentContract.loadBundled(from: bundle)
             content = loaded
@@ -166,12 +190,21 @@ final class AEDPracticeSessionModel {
 
     func setPaused(_ paused: Bool) {
         guard isPaused != paused else { return }
-        isPaused = paused
         if paused {
-            cancelResumeCoachingTimer()
+            pauseResumeCoachingTimer()
+            isPaused = true
         } else if state == .noShockAdvised || state == .simulatedShock {
-            startResumeCoachingTimer()
+            isPaused = false
+            startResumeCoachingTimer(resetWindow: false)
+        } else {
+            isPaused = false
         }
+    }
+
+    /// Accessible alternative to pressing the semantic `aed_power_button` entity.
+    func pressPowerButton() {
+        guard canInteract else { return }
+        submit(.pressPowerControl)
     }
 
     func completePreparation(_ condition: AEDChestCondition) {
@@ -244,7 +277,8 @@ final class AEDPracticeSessionModel {
 
     func markBystanderTouching(_ entityName: String) {
         guard canInteract else { return }
-        guard bystanderClearStates[entityName] != nil else { return }
+        guard bystanderClearStates[entityName] == true else { return }
+        submit(.clearCheckInvalidated)
         bystanderClearStates[entityName] = false
         clearZoneActivated = false
     }
@@ -296,7 +330,7 @@ final class AEDPracticeSessionModel {
             )
         )
         if entry?.wasAccepted == true, state == .noShockAdvised {
-            startResumeCoachingTimer()
+            startResumeCoachingTimer(resetWindow: true)
         }
     }
 
@@ -322,12 +356,13 @@ final class AEDPracticeSessionModel {
         )
         if entry?.wasAccepted == true {
             resetClearSweep()
-            startResumeCoachingTimer()
+            startResumeCoachingTimer(resetWindow: true)
         }
     }
 
     func expireResumeWindow() {
         guard canInteract else { return }
+        finishResumeCoachingTimerAtExpiry()
         submit(.coachedResumeWindowExpired)
     }
 
@@ -335,7 +370,7 @@ final class AEDPracticeSessionModel {
         guard canInteract else { return }
         let entry = submit(.resumeCompressions)
         if entry?.wasAccepted == true {
-            cancelResumeCoachingTimer()
+            clearResumeCoachingTimer()
         }
     }
 
@@ -345,7 +380,7 @@ final class AEDPracticeSessionModel {
     }
 
     func stop() {
-        cancelResumeCoachingTimer()
+        clearResumeCoachingTimer()
     }
 
     private func submitPadPlacementWhenBothAttempted() {
@@ -374,19 +409,79 @@ final class AEDPracticeSessionModel {
 
     private var canInteract: Bool { !isPaused && machine != nil }
 
-    private func startResumeCoachingTimer() {
-        cancelResumeCoachingTimer()
-        let delay = resumeCoachingDelay
+    private func startResumeCoachingTimer(resetWindow: Bool) {
+        resumeCoachingTask?.cancel()
+        resumeCoachingTask = nil
+        let remainingSeconds = resetWindow
+            ? Self.seconds(from: resumeCoachingDelay)
+            : pausedResumeCoachingSeconds ?? Self.seconds(from: resumeCoachingDelay)
+        pausedResumeCoachingSeconds = nil
+        guard remainingSeconds > 0 else {
+            resumeCoachingSecondsRemaining = 0
+            expireResumeWindow()
+            return
+        }
+        let deadline = ProcessInfo.processInfo.systemUptime + remainingSeconds
+        resumeCoachingDeadlineUptime = deadline
+        updateResumeCountdown(remainingSeconds: remainingSeconds)
         resumeCoachingTask = Task { [weak self] in
-            try? await Task.sleep(for: delay)
-            guard !Task.isCancelled, let self else { return }
-            self.expireResumeWindow()
+            while !Task.isCancelled {
+                guard let self,
+                      self.resumeCoachingDeadlineUptime == deadline
+                else { return }
+                let remaining = max(
+                    0,
+                    deadline - ProcessInfo.processInfo.systemUptime
+                )
+                self.updateResumeCountdown(remainingSeconds: remaining)
+                if remaining <= 0 {
+                    self.expireResumeWindow()
+                    return
+                }
+                try? await Task.sleep(
+                    for: min(.milliseconds(100), .seconds(remaining))
+                )
+            }
         }
     }
 
-    private func cancelResumeCoachingTimer() {
+    private func pauseResumeCoachingTimer() {
+        if let deadline = resumeCoachingDeadlineUptime {
+            let remaining = max(0, deadline - ProcessInfo.processInfo.systemUptime)
+            pausedResumeCoachingSeconds = remaining
+            updateResumeCountdown(remainingSeconds: remaining)
+        }
+        resumeCoachingDeadlineUptime = nil
         resumeCoachingTask?.cancel()
         resumeCoachingTask = nil
+    }
+
+    private func finishResumeCoachingTimerAtExpiry() {
+        resumeCoachingTask?.cancel()
+        resumeCoachingTask = nil
+        resumeCoachingDeadlineUptime = nil
+        pausedResumeCoachingSeconds = 0
+        resumeCoachingSecondsRemaining = 0
+    }
+
+    private func clearResumeCoachingTimer() {
+        resumeCoachingTask?.cancel()
+        resumeCoachingTask = nil
+        resumeCoachingDeadlineUptime = nil
+        pausedResumeCoachingSeconds = nil
+        resumeCoachingSecondsRemaining = nil
+    }
+
+    private func updateResumeCountdown(remainingSeconds: TimeInterval) {
+        resumeCoachingSecondsRemaining = max(0, Int(ceil(remainingSeconds)))
+    }
+
+    private static func seconds(from duration: Duration) -> TimeInterval {
+        let components = duration.components
+        return max(
+            0,
+            Double(components.seconds) + Double(components.attoseconds) / 1e18
+        )
     }
 
     @discardableResult

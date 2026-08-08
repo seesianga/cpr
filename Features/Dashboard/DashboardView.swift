@@ -236,7 +236,7 @@ struct DashboardView: View {
                     "Instructor practical sign-off recorded — internal completion record",
                     systemImage: "checkmark.seal.fill"
                 )
-                .foregroundStyle(.green)
+                .lifesaverStatusChip(.success)
             }
         }
     }
@@ -268,6 +268,7 @@ struct DashboardView: View {
                                     Label(cell.status.label, systemImage: cell.status.symbolName)
                                         .font(.caption2)
                                         .frame(minWidth: 118, alignment: .leading)
+                                        .lifesaverStatusChip(cell.status.visualRole)
                                         .accessibilityLabel("\(row.moduleID), \(cell.skill.rawValue): \(cell.status.label)")
                                 }
                             }
@@ -487,6 +488,17 @@ struct DashboardView: View {
             return
         }
         activeLessonRoute = route
+    }
+}
+
+private extension MasteryEvidenceStatus {
+    var visualRole: LifesaverStatusRole {
+        switch self {
+        case .safePracticeEvidence: .success
+        case .learningComplete: .informational
+        case .locked: .warning
+        case .notApplicable, .notStarted: .neutral
+        }
     }
 }
 

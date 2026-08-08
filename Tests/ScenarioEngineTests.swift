@@ -310,6 +310,9 @@ final class ScenarioEngineTests: XCTestCase {
 
         let prematureCycle = machine.handle(.beginNextAnalysisCycle)
         XCTAssertFalse(prematureCycle.wasAccepted)
+        XCTAssertEqual(machine.state, .powerOn)
+
+        XCTAssertTrue(machine.handle(.pressPowerControl).wasAccepted)
         XCTAssertEqual(machine.state, .awaitingPads)
 
         XCTAssertTrue(
@@ -381,9 +384,9 @@ final class ScenarioEngineTests: XCTestCase {
     }
 
     @MainActor
-    func testIntegratedSessionRunsEveryApprovedAnalysisThroughAEDReducer() throws {
+    func testIntegratedSessionRunsEveryApprovedAnalysisThroughAEDReducer() async throws {
         let model = IntegratedScenarioSessionModel()
-        model.prepare(
+        await model.prepare(
             scenarioID: "scenario-a-home",
             patternID: "N-S-N",
             audioDirector: NoOpAudioDirector()
@@ -473,9 +476,9 @@ final class ScenarioEngineTests: XCTestCase {
     }
 
     @MainActor
-    func testIntegratedNormalBreathingDebriefDoesNotInventCPROrAEDFailure() throws {
+    func testIntegratedNormalBreathingDebriefDoesNotInventCPROrAEDFailure() async throws {
         let model = IntegratedScenarioSessionModel()
-        model.prepare(
+        await model.prepare(
             scenarioID: "scenario-a-home",
             patternID: "S-N-N",
             audioDirector: NoOpAudioDirector()
@@ -513,9 +516,9 @@ final class ScenarioEngineTests: XCTestCase {
     }
 
     @MainActor
-    func testUnsafeSceneCorrectionPreservesBranchCursorForSafeRetry() throws {
+    func testUnsafeSceneCorrectionPreservesBranchCursorForSafeRetry() async throws {
         let model = IntegratedScenarioSessionModel()
-        model.prepare(
+        await model.prepare(
             scenarioID: "scenario-a-home",
             patternID: "S-N-N",
             audioDirector: NoOpAudioDirector()
@@ -541,9 +544,9 @@ final class ScenarioEngineTests: XCTestCase {
     }
 
     @MainActor
-    func testRepeatedCriticalErrorCreatesFreshCorrectionWithoutDoubleScoring() throws {
+    func testRepeatedCriticalErrorCreatesFreshCorrectionWithoutDoubleScoring() async throws {
         let model = IntegratedScenarioSessionModel()
-        model.prepare(
+        await model.prepare(
             scenarioID: "scenario-a-home",
             patternID: "S-N-N",
             audioDirector: NoOpAudioDirector()
@@ -576,9 +579,9 @@ final class ScenarioEngineTests: XCTestCase {
     }
 
     @MainActor
-    func testOutOfStageSpatialEquivalentActionsCannotAdvanceClinicalSession() {
+    func testOutOfStageSpatialEquivalentActionsCannotAdvanceClinicalSession() async {
         let model = IntegratedScenarioSessionModel()
-        model.prepare(
+        await model.prepare(
             scenarioID: "scenario-a-home",
             patternID: "S-N-N",
             audioDirector: NoOpAudioDirector()
@@ -608,13 +611,13 @@ final class ScenarioEngineTests: XCTestCase {
         XCTAssertFalse(model.aedRetrievalAssigned)
         XCTAssertEqual(model.engine?.drsabcState, .step(.danger))
         XCTAssertEqual(model.engine?.cprState, .positioning)
-        XCTAssertEqual(model.engine?.aedState, .awaitingPads)
+        XCTAssertEqual(model.engine?.aedState, .powerOn)
     }
 
     @MainActor
-    func testIntegratedCPRCountsOnlyReducerAcceptedCompressionBeats() {
+    func testIntegratedCPRCountsOnlyReducerAcceptedCompressionBeats() async {
         let model = IntegratedScenarioSessionModel()
-        model.prepare(
+        await model.prepare(
             scenarioID: "scenario-a-home",
             patternID: "N-N-N",
             audioDirector: NoOpAudioDirector()
@@ -670,9 +673,9 @@ final class ScenarioEngineTests: XCTestCase {
     }
 
     @MainActor
-    func testOutOfBandAcceptedCompressionsCannotEarnSafeCPRScoreOrXP() throws {
+    func testOutOfBandAcceptedCompressionsCannotEarnSafeCPRScoreOrXP() async throws {
         let model = IntegratedScenarioSessionModel()
-        model.prepare(
+        await model.prepare(
             scenarioID: "scenario-a-home",
             patternID: "N-N-N",
             audioDirector: NoOpAudioDirector()
@@ -709,9 +712,9 @@ final class ScenarioEngineTests: XCTestCase {
     }
 
     @MainActor
-    func testFarAEDBranchRecordsSupportedDelayMinimisationEvidence() throws {
+    func testFarAEDBranchRecordsSupportedDelayMinimisationEvidence() async throws {
         let model = IntegratedScenarioSessionModel()
-        model.prepare(
+        await model.prepare(
             scenarioID: "scenario-a-home",
             patternID: "N-N-N",
             audioDirector: NoOpAudioDirector()
@@ -744,9 +747,9 @@ final class ScenarioEngineTests: XCTestCase {
     }
 
     @MainActor
-    func testXiphoidCompressionAfterRhythmBeginsGetsGuidedCorrectionAndRecovery() {
+    func testXiphoidCompressionAfterRhythmBeginsGetsGuidedCorrectionAndRecovery() async {
         let model = IntegratedScenarioSessionModel()
-        model.prepare(
+        await model.prepare(
             scenarioID: "scenario-a-home",
             patternID: "N-N-N",
             audioDirector: NoOpAudioDirector()
@@ -784,9 +787,9 @@ final class ScenarioEngineTests: XCTestCase {
     }
 
     @MainActor
-    func testScenarioBFocusSupportAndLoneFarBranchesReachBreathingWithoutPenalty() {
+    func testScenarioBFocusSupportAndLoneFarBranchesReachBreathingWithoutPenalty() async {
         let model = IntegratedScenarioSessionModel()
-        model.prepare(
+        await model.prepare(
             scenarioID: "scenario-b-shopping-centre",
             patternID: "S-N-N",
             audioDirector: NoOpAudioDirector()

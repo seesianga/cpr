@@ -6,10 +6,13 @@ struct LifesaverVisionApp: App {
     @State private var appModel = AppModel()
     @State private var authenticationModel: AuthenticationModel
     @State private var immersionStyle: ImmersionStyle = .mixed
+    @AppStorage(AudioPreferenceKeys.highContrast) private var highContrast = false
     private let modelContainer: ModelContainer
+    private let automaticRetentionEnforcer: AutomaticRetentionEnforcer
 
     init() {
-        modelContainer = AppPersistence.makeContainer()
+        let container = AppPersistence.makeContainer()
+        modelContainer = container
         let service: any AuthenticationService
         #if UITEST
         if ProcessInfo.processInfo.arguments.contains("--ui-test-authenticated-learner") {
@@ -27,6 +30,13 @@ struct LifesaverVisionApp: App {
         #else
         service = LocalAuthenticationService()
         #endif
+        let repository = SwiftDataRepositoryStore(modelContainer: container)
+        automaticRetentionEnforcer = AutomaticRetentionEnforcer(
+            privacyOperations: PrivacyOperationsService(
+                modelContainer: container,
+                auditLog: repository
+            )
+        )
         _authenticationModel = State(
             initialValue: AuthenticationModel(service: service)
         )
@@ -36,13 +46,22 @@ struct LifesaverVisionApp: App {
         WindowGroup("Dashboard", id: AppModel.dashboardWindowID) {
             AuthenticationGateView(model: authenticationModel)
                 .environment(appModel)
+                .environment(
+                    \.lifesaverVisualStyle,
+                    LifesaverVisualStyle(highContrast: highContrast)
+                )
                 .modelContainer(modelContainer)
+                .automaticRetentionEnforcement(using: automaticRetentionEnforcer)
         }
 
         WindowGroup("Learning Lab", id: AppModel.learningLabWindowID) {
             LearningLabRootView()
                 .environment(appModel)
                 .environment(authenticationModel)
+                .environment(
+                    \.lifesaverVisualStyle,
+                    LifesaverVisualStyle(highContrast: highContrast)
+                )
                 .modelContainer(modelContainer)
         }
         .windowStyle(.volumetric)
@@ -52,6 +71,10 @@ struct LifesaverVisionApp: App {
             AchievementGalleryRootView()
                 .environment(appModel)
                 .environment(authenticationModel)
+                .environment(
+                    \.lifesaverVisualStyle,
+                    LifesaverVisualStyle(highContrast: highContrast)
+                )
                 .modelContainer(modelContainer)
         }
         .windowStyle(.volumetric)
@@ -61,6 +84,10 @@ struct LifesaverVisionApp: App {
             SimulationSpaceRootView()
                 .environment(appModel)
                 .environment(authenticationModel)
+                .environment(
+                    \.lifesaverVisualStyle,
+                    LifesaverVisualStyle(highContrast: highContrast)
+                )
                 .modelContainer(modelContainer)
         }
         .immersionStyle(selection: $immersionStyle, in: .mixed)

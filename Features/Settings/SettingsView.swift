@@ -1,5 +1,12 @@
 import SwiftUI
 
+enum SettingsAccessibilityLabels {
+    static let narrationVolume = "Narration volume"
+    static let dialogueVolume = "Dialogue volume"
+    static let soundEffectsVolume = "Sound effects volume"
+    static let musicVolume = "Music volume"
+}
+
 /// Learner-controlled audio and accessibility preferences.
 struct SettingsView: View {
     @Environment(AppModel.self) private var appModel
@@ -16,10 +23,26 @@ struct SettingsView: View {
     var body: some View {
         Form {
             Section("Audio") {
-                volumeControl("Narration", value: $narrationVolume)
-                volumeControl("Dialogue and Safety Voice", value: $dialogueVolume)
-                volumeControl("Music", value: $musicVolume)
-                volumeControl("Sound Effects", value: $soundEffectsVolume)
+                volumeControl(
+                    "Narration",
+                    accessibilityLabel: SettingsAccessibilityLabels.narrationVolume,
+                    value: $narrationVolume
+                )
+                volumeControl(
+                    "Dialogue and Safety Voice",
+                    accessibilityLabel: SettingsAccessibilityLabels.dialogueVolume,
+                    value: $dialogueVolume
+                )
+                volumeControl(
+                    "Music",
+                    accessibilityLabel: SettingsAccessibilityLabels.musicVolume,
+                    value: $musicVolume
+                )
+                volumeControl(
+                    "Sound Effects",
+                    accessibilityLabel: SettingsAccessibilityLabels.soundEffectsVolume,
+                    value: $soundEffectsVolume
+                )
 
                 Picker("Narration Speed", selection: $narrationSpeed) {
                     Text("0.8×").tag(0.8)
@@ -50,10 +73,15 @@ struct SettingsView: View {
         }
     }
 
-    private func volumeControl(_ title: LocalizedStringKey, value: Binding<Double>) -> some View {
+    private func volumeControl(
+        _ title: LocalizedStringKey,
+        accessibilityLabel: String,
+        value: Binding<Double>
+    ) -> some View {
         VStack(alignment: .leading, spacing: 8) {
             Text(title)
             Slider(value: value, in: 0...1)
+                .accessibilityLabel(Text(accessibilityLabel))
                 .accessibilityValue(Text(value.wrappedValue, format: .percent))
         }
     }

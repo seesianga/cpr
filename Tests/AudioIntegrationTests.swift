@@ -42,7 +42,7 @@ final class AudioIntegrationTests: XCTestCase {
         }
     }
 
-    func testPreferencesPersistAllChannelsRateAndDefaultCaptions() throws {
+    func testPreferencesPersistAllChannelsRateCaptionsAndContrast() throws {
         let suite = "AudioIntegrationTests.\(UUID().uuidString)"
         let defaults = try XCTUnwrap(UserDefaults(suiteName: suite))
         defer { defaults.removePersistentDomain(forName: suite) }
@@ -56,7 +56,8 @@ final class AudioIntegrationTests: XCTestCase {
                 soundEffectsVolume: 0.3,
                 musicVolume: 0.4,
                 narrationSpeed: 1.2,
-                captionsEnabled: false
+                captionsEnabled: false,
+                highContrast: true
             )
         )
 
@@ -68,7 +69,8 @@ final class AudioIntegrationTests: XCTestCase {
                 soundEffectsVolume: 0.3,
                 musicVolume: 0.4,
                 narrationSpeed: 1.2,
-                captionsEnabled: false
+                captionsEnabled: false,
+                highContrast: true
             )
         )
     }
@@ -80,7 +82,8 @@ final class AudioIntegrationTests: XCTestCase {
             soundEffectsVolume: .infinity,
             musicVolume: 0.4,
             narrationSpeed: 1.13,
-            captionsEnabled: true
+            captionsEnabled: true,
+            highContrast: false
         ).normalised()
 
         XCTAssertEqual(value.narrationVolume, 0)

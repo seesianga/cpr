@@ -22,6 +22,7 @@ struct AudioPreferencesSnapshot: Sendable, Equatable {
     var musicVolume: Double
     var narrationSpeed: Double
     var captionsEnabled: Bool
+    var highContrast: Bool
 
     static let defaults = AudioPreferencesSnapshot(
         narrationVolume: 0.8,
@@ -29,7 +30,8 @@ struct AudioPreferencesSnapshot: Sendable, Equatable {
         soundEffectsVolume: 0.7,
         musicVolume: 0.5,
         narrationSpeed: 1.0,
-        captionsEnabled: true
+        captionsEnabled: true,
+        highContrast: false
     )
 
     func normalised() -> Self {
@@ -72,7 +74,9 @@ struct AudioPreferencesStore: @unchecked Sendable {
             narrationSpeed: number(for: AudioPreferenceKeys.narrationSpeed)
                 ?? fallback.narrationSpeed,
             captionsEnabled: bool(for: AudioPreferenceKeys.captionsEnabled)
-                ?? fallback.captionsEnabled
+                ?? fallback.captionsEnabled,
+            highContrast: bool(for: AudioPreferenceKeys.highContrast)
+                ?? fallback.highContrast
         ).normalised()
     }
 
@@ -84,6 +88,7 @@ struct AudioPreferencesStore: @unchecked Sendable {
         defaults.set(value.musicVolume, forKey: AudioPreferenceKeys.musicVolume)
         defaults.set(value.narrationSpeed, forKey: AudioPreferenceKeys.narrationSpeed)
         defaults.set(value.captionsEnabled, forKey: AudioPreferenceKeys.captionsEnabled)
+        defaults.set(value.highContrast, forKey: AudioPreferenceKeys.highContrast)
     }
 
     private func number(for key: String) -> Double? {

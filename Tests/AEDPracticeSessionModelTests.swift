@@ -3,6 +3,26 @@ import XCTest
 
 @MainActor
 final class AEDPracticeSessionModelTests: XCTestCase {
+    func testPowerOnStageUsesM5B3AndBlocksPreparationUntilActivated() throws {
+        let model = AEDPracticeSessionModel(resumeCoachingDelay: .seconds(60))
+        model.prepare()
+
+        XCTAssertEqual(model.state, .powerOn)
+        XCTAssertEqual(model.powerOnInstruction?.id, "M5-B3")
+        XCTAssertTrue(model.powerOnInstruction?.body.contains("switch it on") == true)
+        model.completePreparation(.hairPreventsPadContact)
+        XCTAssertFalse(
+            model.preparationItems.first(where: {
+                $0.condition == .hairPreventsPadContact
+            })?.isComplete ?? true
+        )
+
+        model.pressPowerButton()
+
+        XCTAssertEqual(model.state, .awaitingPads)
+        model.stop()
+    }
+
     func testAcceptedAEDInteractionsPublishSpatialCueSequence() throws {
         let model = preparedModel()
 
@@ -149,6 +169,7 @@ final class AEDPracticeSessionModelTests: XCTestCase {
     func testNoShockResumeCoachingTimerFlagsDelayAndStillAllowsRecovery() async throws {
         let model = AEDPracticeSessionModel(resumeCoachingDelay: .milliseconds(20))
         model.prepare()
+        model.pressPowerButton()
         completePreparation(in: model)
         placeCorrectPads(in: model)
         confirmAllBystanders(in: model)
@@ -217,21 +238,75 @@ final class AEDPracticeSessionModelTests: XCTestCase {
         model.stop()
     }
 
-    func testPauseCancelsAndResumeRestartsAEDResumeCoachingTimer() async throws {
-        let model = AEDPracticeSessionModel(resumeCoachingDelay: .milliseconds(30))
+    func testBystanderTouchInvalidatesMachineLatchAndSingleConfirmCannotShock() {
+        let model = modelAtPadsCorrect()
+        confirmAllBystanders(in: model)
+        model.activateClearZone()
+        model.receiveAnalysisOutcome(.shock)
+        model.beginCharging()
+        model.finishCharging()
+        confirmAllBystanders(in: model)
+        model.activateClearZone()
+        XCTAssertTrue(model.clearZoneActivated)
+
+        model.markBystanderTouching("bystander_01")
+        model.confirmBystanderClear("bystander_01")
+        model.pressSimulatedShockControl()
+
+        XCTAssertEqual(model.state, .clearConfirmation)
+        XCTAssertFalse(model.clearZoneActivated)
+        XCTAssertTrue(model.criticalFailures.contains(.shockWithoutClearCheck))
+
+        model.activateClearZone()
+        model.pressSimulatedShockControl()
+        XCTAssertEqual(model.state, .simulatedShock)
+        model.stop()
+    }
+
+    func testResumePromptExposesTenSecondSourceBackedCountdownAndCaption() {
+        XCTAssertEqual(AEDPracticeSessionModel.defaultResumeCoachingDelay, .seconds(10))
+        XCTAssertEqual(
+            Set(AEDPracticeSessionModel.resumeCoachingSourceFactIDs),
+            Set([
+                "fact.compression.restRule",
+                "fact.compression.minimiseInterruptions",
+                "fact.aed.resumeAfterShock",
+                "fact.aed.noShockAdvised"
+            ])
+        )
+        let model = AEDPracticeSessionModel()
         model.prepare()
+        model.pressPowerButton()
         completePreparation(in: model)
         placeCorrectPads(in: model)
         confirmAllBystanders(in: model)
         model.activateClearZone()
         model.receiveAnalysisOutcome(.noShock)
 
+        XCTAssertEqual(model.resumeCaptionCue, "Resume compressions now")
+        XCTAssertEqual(model.resumeCoachingSecondsRemaining, 10)
+        model.stop()
+    }
+
+    func testPausePreservesRemainingAEDResumeCoachingTime() async throws {
+        let model = AEDPracticeSessionModel(resumeCoachingDelay: .milliseconds(300))
+        model.prepare()
+        model.pressPowerButton()
+        completePreparation(in: model)
+        placeCorrectPads(in: model)
+        confirmAllBystanders(in: model)
+        model.activateClearZone()
+        model.receiveAnalysisOutcome(.noShock)
+
+        try await Task.sleep(for: .milliseconds(210))
         model.setPaused(true)
-        try await Task.sleep(for: .milliseconds(70))
+        let pausedRemaining = model.resumeCoachingSecondsRemaining
+        try await Task.sleep(for: .milliseconds(350))
         XCTAssertTrue(model.criticalFailures.isEmpty)
+        XCTAssertEqual(model.resumeCoachingSecondsRemaining, pausedRemaining)
 
         model.setPaused(false)
-        try await Task.sleep(for: .milliseconds(70))
+        try await Task.sleep(for: .milliseconds(180))
         XCTAssertEqual(model.criticalFailures, [.cprNotResumed])
         model.resumeCompressions()
         model.finish()
@@ -274,6 +349,9 @@ final class AEDPracticeSessionModelTests: XCTestCase {
         let model = AEDPracticeSessionModel(resumeCoachingDelay: .seconds(60))
         model.prepare()
         XCTAssertEqual(model.loadState, .ready)
+        XCTAssertEqual(model.state, .powerOn)
+        model.pressPowerButton()
+        XCTAssertEqual(model.state, .awaitingPads)
         return model
     }
 
@@ -283,6 +361,7 @@ final class AEDPracticeSessionModelTests: XCTestCase {
         let model = AEDPracticeSessionModel(resumeCoachingDelay: resumeCoachingDelay)
         model.prepare()
         XCTAssertEqual(model.loadState, .ready)
+        model.pressPowerButton()
         completePreparation(in: model)
         placeCorrectPads(in: model)
         XCTAssertEqual(model.state, .padsCorrect)

@@ -6,6 +6,9 @@ import simd
 /// The detector retains only small filter state and timestamps of already-detected compression
 /// events. It never retains an ARKit anchor, skeleton, joint collection, or frame stream.
 struct HandSignalDetector: Sendable {
+    /// Product-authored transient-signal filter. This is not a clinical timing threshold.
+    static let criticalPlacementDwellSeconds = 0.4
+
     private struct RecentPalm: Sendable {
         let timestampSeconds: Double
         let worldPosition: SIMD3<Float>
@@ -25,6 +28,8 @@ struct HandSignalDetector: Sendable {
     private var latestPlacement: CPRHandPlacementZone?
     private var latestStacking: CPRHandStackingHeuristic?
     private var contactChirality: TrackedHandChirality?
+    private var criticalPlacementStartedAt: Double?
+    private var criticalPlacementDwellEmitted = false
 
     private var motionPhase: MotionPhase = .unknown
     private var smoothedHeight: Float?
@@ -94,6 +99,7 @@ struct HandSignalDetector: Sendable {
         latestPlacement = nil
         latestStacking = nil
         contactChirality = nil
+        resetCriticalPlacementDwell()
         resetMotion()
         lastCompressionTimestamp = nil
         recentCompressionTimestamps.removeAll(keepingCapacity: false)
@@ -131,6 +137,7 @@ struct HandSignalDetector: Sendable {
                 into: &events
             )
             contactChirality = nil
+            resetCriticalPlacementDwell()
             resetMotion()
             lastCompressionTimestamp = nil
             recentCompressionTimestamps.removeAll(keepingCapacity: false)
@@ -149,14 +156,21 @@ struct HandSignalDetector: Sendable {
 
         guard isWithinTrackingCorridor else {
             contactChirality = contact.chirality
+            resetCriticalPlacementDwell()
             resetMotion()
             return events
         }
 
         if contactChirality != contact.chirality {
             contactChirality = contact.chirality
+            resetCriticalPlacementDwell()
             resetMotion()
         }
+
+        events.append(contentsOf: criticalPlacementDwellEvents(
+            placement: placement,
+            timestampSeconds: timestampSeconds
+        ))
 
         events.append(contentsOf: processMotion(
             height: offset.y,
@@ -439,6 +453,32 @@ struct HandSignalDetector: Sendable {
         troughPlacement = .unavailable
         troughStacking = .indeterminate
         ascentPeakHeight = nil
+    }
+
+    private mutating func criticalPlacementDwellEvents(
+        placement: CPRHandPlacementZone,
+        timestampSeconds: Double
+    ) -> [HandTrackingDerivedEvent] {
+        guard placement == .xiphoidAvoidZone else {
+            resetCriticalPlacementDwell()
+            return []
+        }
+        guard let criticalPlacementStartedAt else {
+            self.criticalPlacementStartedAt = timestampSeconds
+            criticalPlacementDwellEmitted = false
+            return []
+        }
+        guard !criticalPlacementDwellEmitted,
+              timestampSeconds - criticalPlacementStartedAt >=
+                Self.criticalPlacementDwellSeconds
+        else { return [] }
+        criticalPlacementDwellEmitted = true
+        return [.placementDwellConfirmed(.xiphoidAvoidZone)]
+    }
+
+    private mutating func resetCriticalPlacementDwell() {
+        criticalPlacementStartedAt = nil
+        criticalPlacementDwellEmitted = false
     }
 }
 

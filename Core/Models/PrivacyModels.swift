@@ -44,6 +44,53 @@ struct RetentionConfiguration: Codable, Sendable, Equatable {
     )
 }
 
+enum RetentionPreferenceKeys {
+    static let progressDays = "academy.retention.progressDays"
+    static let attemptDays = "academy.retention.attemptDays"
+    static let feedbackDays = "academy.retention.feedbackDays"
+    static let learningEventDays = "academy.retention.learningEventDays"
+    static let offlineQueueDays = "academy.retention.offlineQueueDays"
+    static let revokedConsentDays = "academy.retention.revokedConsentDays"
+}
+
+protocol RetentionConfigurationProviding: Sendable {
+    func configuration() -> RetentionConfiguration
+}
+
+/// Reads administrator-managed values at enforcement time so automatic purges do not
+/// retain a stale configuration. Missing values use the documented standard policy.
+struct UserDefaultsRetentionConfigurationStore: RetentionConfigurationProviding,
+    @unchecked Sendable
+{
+    private let defaults: UserDefaults
+
+    init(defaults: UserDefaults = .standard) {
+        self.defaults = defaults
+    }
+
+    func configuration() -> RetentionConfiguration {
+        let fallback = RetentionConfiguration.standard
+        return RetentionConfiguration(
+            progressDays: integer(for: RetentionPreferenceKeys.progressDays)
+                ?? fallback.progressDays,
+            attemptDays: integer(for: RetentionPreferenceKeys.attemptDays)
+                ?? fallback.attemptDays,
+            feedbackDays: integer(for: RetentionPreferenceKeys.feedbackDays)
+                ?? fallback.feedbackDays,
+            learningEventDays: integer(for: RetentionPreferenceKeys.learningEventDays)
+                ?? fallback.learningEventDays,
+            offlineQueueDays: integer(for: RetentionPreferenceKeys.offlineQueueDays)
+                ?? fallback.offlineQueueDays,
+            revokedConsentDays: integer(for: RetentionPreferenceKeys.revokedConsentDays)
+                ?? fallback.revokedConsentDays
+        )
+    }
+
+    private func integer(for key: String) -> Int? {
+        (defaults.object(forKey: key) as? NSNumber)?.intValue
+    }
+}
+
 struct RetentionReport: Codable, Sendable, Equatable {
     let completedAt: Date
     let purgedRecordCount: Int

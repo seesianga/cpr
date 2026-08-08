@@ -566,6 +566,7 @@ private struct LessonCaptionOverlay: View {
                     .multilineTextAlignment(.center)
                     .frame(maxWidth: 680)
                     .padding(14)
+                    .lifesaverCaptionSurface()
                     .glassBackgroundEffect()
                     .accessibilityLabel("Caption: \(captionText)")
             }
