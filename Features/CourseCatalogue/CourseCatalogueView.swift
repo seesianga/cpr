@@ -3,6 +3,7 @@ import SwiftUI
 
 /// Source-backed catalogue whose availability comes only from `CourseEngine`.
 struct CourseCatalogueView: View {
+    @Environment(AppModel.self) private var appModel
     @Environment(AuthenticationModel.self) private var authenticationModel
     @Environment(\.modelContext) private var modelContext
 
@@ -41,16 +42,45 @@ struct CourseCatalogueView: View {
                 LazyVStack(spacing: 16) {
                     catalogueHeader(model)
                     ForEach(model.modules) { item in
-                        ModuleCatalogueCard(
-                            item: item,
-                            isCompleted: model.completedModuleIDs.contains(item.id)
-                        )
+                        moduleEntry(item, model: model)
                     }
                 }
                 .padding(28)
             }
         case let .failed(message):
             unavailableContent(message: message)
+        }
+    }
+
+    @ViewBuilder
+    private func moduleEntry(
+        _ item: PresentedCourseModule,
+        model: ModulePresentationModel
+    ) -> some View {
+        if let route = model.lessonPlayerRoute(moduleID: item.id, learnerID: learnerID) {
+            NavigationLink {
+                LessonPlayerView(
+                    route: route,
+                    audioDirector: appModel.audioDirector,
+                    assessmentProvider: CourseEngineLessonAssessmentProvider(
+                        modelContainer: modelContext.container
+                    )
+                )
+            } label: {
+                ModuleCatalogueCard(
+                    item: item,
+                    isCompleted: model.completedModuleIDs.contains(item.id)
+                )
+            }
+            .buttonStyle(.plain)
+            .accessibilityIdentifier("module-open-\(item.id)")
+            .accessibilityHint("Opens the source-backed lesson player")
+        } else {
+            ModuleCatalogueCard(
+                item: item,
+                isCompleted: model.completedModuleIDs.contains(item.id)
+            )
+            .accessibilityIdentifier("module-card-\(item.id)")
         }
     }
 
@@ -158,9 +188,11 @@ private struct ModuleCatalogueCard: View {
         if item.isPresentable {
             Label("Available", systemImage: "checkmark.circle.fill")
                 .foregroundStyle(.green)
+                .accessibilityIdentifier("module-available-\(item.id)")
         } else {
             Label("Locked", systemImage: "lock.fill")
                 .foregroundStyle(.orange)
+                .accessibilityIdentifier("module-lock-\(item.id)")
         }
     }
 }

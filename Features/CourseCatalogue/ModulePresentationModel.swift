@@ -90,6 +90,7 @@ final class ModulePresentationModel {
     private let bundle: Bundle
 
     private(set) var state: ModulePresentationLoadState = .idle
+    private(set) var courseID = ""
     private(set) var courseTitle = ""
     private(set) var contentVersion = ""
     private(set) var completedModuleIDs: Set<String> = []
@@ -189,6 +190,7 @@ final class ModulePresentationModel {
             let presentableIDs = Set(presentableModules.map(\.id))
             let evaluator = ModuleAccessEvaluator()
 
+            courseID = course.id
             courseTitle = course.title
             contentVersion = course.version.contentVersion
             completedModuleIDs = completedIDs
@@ -213,6 +215,7 @@ final class ModulePresentationModel {
                 }
             state = .loaded
         } catch {
+            courseID = ""
             courseTitle = ""
             contentVersion = ""
             completedModuleIDs = []
