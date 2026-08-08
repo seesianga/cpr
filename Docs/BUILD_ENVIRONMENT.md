@@ -50,7 +50,8 @@ storage is slow and can corrupt incremental state.
   pre-existing on-disk assets are reused.
 - `Reality Composer Pro 3 Beta` as named in the assignment: the installed RCP is the
   version bundled with Xcode 26.6 on this machine. All RCP work uses this installation;
-  the exact app version is recorded in `Docs/REALITY_COMPOSER_PRO_WORKFLOW.md`.
+  its identity is recorded as "bundled with Xcode 26.6 (17F113)" — no separate RCP
+  marketing-version number was recorded, and none is invented.
 - GUI-only steps (RCP Live Preview on device, AIVU device review) cannot be executed
   headlessly; they are documented as operator checklists and marked
   "requires operator verification" rather than claimed as done.
