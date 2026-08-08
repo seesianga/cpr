@@ -6,12 +6,21 @@ struct CourseCatalogueView: View {
     @Environment(AppModel.self) private var appModel
     @Environment(AuthenticationModel.self) private var authenticationModel
     @Environment(\.modelContext) private var modelContext
+    @Query private var progressRecords: [ProgressRecord]
 
     @State private var presentationModel: ModulePresentationModel?
     @State private var setupErrorMessage: String?
 
     private var learnerID: String {
         authenticationModel.currentUser?.id ?? ""
+    }
+
+    private var progressRevision: String {
+        progressRecords
+            .filter { $0.learnerID == learnerID }
+            .map { "\($0.contentVersion)#\($0.updatedAt.timeIntervalSinceReferenceDate)" }
+            .sorted()
+            .joined(separator: "|")
     }
 
     var body: some View {
@@ -26,7 +35,7 @@ struct CourseCatalogueView: View {
             }
         }
         .navigationTitle("Courses")
-        .task(id: learnerID) {
+        .task(id: "\(learnerID)#\(progressRevision)") {
             await prepareCatalogue()
         }
     }

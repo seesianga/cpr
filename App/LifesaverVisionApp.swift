@@ -10,7 +10,23 @@ struct LifesaverVisionApp: App {
 
     init() {
         modelContainer = AppPersistence.makeContainer()
-        let service = LocalAuthenticationService()
+        let service: any AuthenticationService
+        #if UITEST
+        if ProcessInfo.processInfo.arguments.contains("--ui-test-authenticated-learner") {
+            service = InMemoryAuthenticationService(
+                currentUser: AuthenticatedUser(
+                    id: "ui-test-learner",
+                    displayName: "UI Test Learner",
+                    role: .learner,
+                    sessionKind: .guest
+                )
+            )
+        } else {
+            service = LocalAuthenticationService()
+        }
+        #else
+        service = LocalAuthenticationService()
+        #endif
         _authenticationModel = State(
             initialValue: AuthenticationModel(service: service)
         )
@@ -30,9 +46,20 @@ struct LifesaverVisionApp: App {
         .windowStyle(.volumetric)
         .defaultSize(width: 1.0, height: 0.72, depth: 0.60, in: .meters)
 
+        WindowGroup("Achievement Gallery", id: AppModel.achievementGalleryWindowID) {
+            AchievementGalleryRootView()
+                .environment(appModel)
+                .environment(authenticationModel)
+                .modelContainer(modelContainer)
+        }
+        .windowStyle(.volumetric)
+        .defaultSize(width: 1.0, height: 0.72, depth: 0.70, in: .meters)
+
         ImmersiveSpace(id: AppModel.simulationSpaceID) {
             SimulationSpaceRootView()
                 .environment(appModel)
+                .environment(authenticationModel)
+                .modelContainer(modelContainer)
         }
         .immersionStyle(selection: $immersionStyle, in: .mixed)
     }

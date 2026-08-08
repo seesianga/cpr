@@ -15,17 +15,20 @@ struct LessonPlayerRoute: Identifiable, Sendable, Equatable, Hashable {
     let courseID: String
     let contentVersion: String
     let module: Module
+    let courseLessonIDs: Set<String>
 
     fileprivate init(
         learnerID: String,
         courseID: String,
         contentVersion: String,
-        module: Module
+        module: Module,
+        courseLessonIDs: Set<String>
     ) {
         self.learnerID = learnerID
         self.courseID = courseID
         self.contentVersion = contentVersion
         self.module = module
+        self.courseLessonIDs = courseLessonIDs
     }
 
     var id: String {
@@ -67,7 +70,12 @@ struct LessonPlayerRouteResolver: Sendable {
             learnerID: learnerID,
             courseID: courseID,
             contentVersion: contentVersion,
-            module: item.module
+            module: item.module,
+            courseLessonIDs: Set(
+                authoritativeModules
+                    .flatMap(\.module.lessons)
+                    .map(\.id)
+            )
         )
     }
 }
@@ -183,6 +191,150 @@ struct LessonResumeStore: @unchecked Sendable {
             .replacingOccurrences(of: "+", with: "-")
             .replacingOccurrences(of: "/", with: "_")
             .replacingOccurrences(of: "=", with: "")
+    }
+}
+
+struct LessonProgressScope: Sendable, Equatable {
+    let learnerID: String
+    let courseID: String
+    let contentVersion: String
+}
+
+struct StoredLessonProgress: Sendable, Equatable {
+    let completedLessonIDs: Set<String>
+    let lastLessonID: String?
+    let completionFraction: Double
+}
+
+struct LessonCompletionRequest: Sendable, Equatable {
+    let scope: LessonProgressScope
+    let lessonID: String
+    let moduleLessonIDs: Set<String>
+    let courseLessonIDs: Set<String>
+    let completedAt: Date
+}
+
+struct LessonCompletionOutcome: Sendable, Equatable {
+    let completedLessonIDs: Set<String>
+    let lastLessonID: String
+    let completionFraction: Double
+    let didAddLesson: Bool
+    let isModuleComplete: Bool
+}
+
+enum LessonProgressWriteError: Error, Sendable, Equatable {
+    case invalidScope
+    case lessonOutsideModule
+    case lessonOutsideCourse
+}
+
+protocol LessonProgressWriting: Sendable {
+    func storedProgress(for scope: LessonProgressScope) async throws -> StoredLessonProgress?
+    func finishLesson(_ request: LessonCompletionRequest) async throws -> LessonCompletionOutcome
+}
+
+/// Version-aware SwiftData writer for lesson completion. The shared `LearnerProgress`
+/// repository value does not expose `lastLessonID` or `completionFraction`, so this narrow
+/// feature repository updates the complete `ProgressRecord` without discarding either field.
+@ModelActor
+actor SwiftDataLessonProgressWriter: LessonProgressWriting {
+    func storedProgress(
+        for scope: LessonProgressScope
+    ) async throws -> StoredLessonProgress? {
+        guard Self.isValid(scope) else { throw LessonProgressWriteError.invalidScope }
+        return try record(for: scope).map(Self.snapshot)
+    }
+
+    func finishLesson(
+        _ request: LessonCompletionRequest
+    ) async throws -> LessonCompletionOutcome {
+        guard Self.isValid(request.scope) else {
+            throw LessonProgressWriteError.invalidScope
+        }
+        guard request.moduleLessonIDs.contains(request.lessonID) else {
+            throw LessonProgressWriteError.lessonOutsideModule
+        }
+        guard request.courseLessonIDs.contains(request.lessonID) else {
+            throw LessonProgressWriteError.lessonOutsideCourse
+        }
+
+        let stored = try record(for: request.scope)
+        var completedLessonIDs = Set(stored?.completedLessonIDs ?? [])
+        let didAddLesson = completedLessonIDs.insert(request.lessonID).inserted
+        let completionFraction = Self.completionFraction(
+            completedLessonIDs: completedLessonIDs,
+            courseLessonIDs: request.courseLessonIDs
+        )
+
+        if let stored {
+            stored.completedLessonIDs = completedLessonIDs.sorted()
+            stored.lastLessonID = request.lessonID
+            stored.completionFraction = completionFraction
+            stored.updatedAt = request.completedAt
+        } else {
+            modelContext.insert(
+                ProgressRecord(
+                    id: [
+                        request.scope.learnerID,
+                        request.scope.courseID,
+                        request.scope.contentVersion
+                    ].joined(separator: "#"),
+                    learnerID: request.scope.learnerID,
+                    courseID: request.scope.courseID,
+                    contentVersion: request.scope.contentVersion,
+                    completedLessonIDs: completedLessonIDs.sorted(),
+                    lastLessonID: request.lessonID,
+                    completionFraction: completionFraction,
+                    updatedAt: request.completedAt
+                )
+            )
+        }
+        try modelContext.save()
+
+        return LessonCompletionOutcome(
+            completedLessonIDs: completedLessonIDs,
+            lastLessonID: request.lessonID,
+            completionFraction: completionFraction,
+            didAddLesson: didAddLesson,
+            isModuleComplete: request.moduleLessonIDs.isSubset(of: completedLessonIDs)
+        )
+    }
+
+    private func record(for scope: LessonProgressScope) throws -> ProgressRecord? {
+        let learnerID = scope.learnerID
+        let courseID = scope.courseID
+        let contentVersion = scope.contentVersion
+        var descriptor = FetchDescriptor<ProgressRecord>(
+            predicate: #Predicate {
+                $0.learnerID == learnerID &&
+                    $0.courseID == courseID &&
+                    $0.contentVersion == contentVersion
+            },
+            sortBy: [SortDescriptor(\.updatedAt, order: .reverse)]
+        )
+        descriptor.fetchLimit = 1
+        return try modelContext.fetch(descriptor).first
+    }
+
+    private static func snapshot(_ record: ProgressRecord) -> StoredLessonProgress {
+        StoredLessonProgress(
+            completedLessonIDs: Set(record.completedLessonIDs),
+            lastLessonID: record.lastLessonID,
+            completionFraction: record.completionFraction
+        )
+    }
+
+    private static func isValid(_ scope: LessonProgressScope) -> Bool {
+        !scope.learnerID.isEmpty && !scope.courseID.isEmpty && !scope.contentVersion.isEmpty
+    }
+
+    private static func completionFraction(
+        completedLessonIDs: Set<String>,
+        courseLessonIDs: Set<String>
+    ) -> Double {
+        guard !courseLessonIDs.isEmpty else { return 0 }
+        let completedAuthoredLessons = completedLessonIDs.intersection(courseLessonIDs).count
+        return min(1, max(0, Double(completedAuthoredLessons) / Double(courseLessonIDs.count)))
     }
 }
 
@@ -318,6 +470,10 @@ final class LessonPlayerSessionModel {
     private(set) var assessmentNotice: String?
     private(set) var quizLaunch: LessonQuizLaunch?
     private(set) var narrationSpeed: Double
+    private(set) var completedLessonIDs: Set<String> = []
+    private(set) var isSavingCompletion = false
+    private(set) var completionNotice: String?
+    private(set) var completionSaveFailed = false
 
     init(
         route: LessonPlayerRoute,
@@ -394,9 +550,82 @@ final class LessonPlayerSessionModel {
         return playbackSnapshot.activeCue == cue && playbackSnapshot.isPlaying
     }
 
-    func prepare() async {
+    var isCurrentLessonComplete: Bool {
+        guard let currentLesson else { return false }
+        return completedLessonIDs.contains(currentLesson.id)
+    }
+
+    var isAtEndOfCurrentLesson: Bool {
+        guard let location = currentLocation else { return false }
+        return location.blockIndex == lessons[location.lessonIndex].contentBlocks.count - 1
+    }
+
+    func prepare(progressWriter: any LessonProgressWriting) async {
         try? await audioDirector.prepare()
+        await loadProgress(using: progressWriter)
         await refreshPlayback()
+    }
+
+    func loadProgress(using writer: any LessonProgressWriting) async {
+        do {
+            let stored = try await writer.storedProgress(for: progressScope)
+            completedLessonIDs = stored?.completedLessonIDs ?? []
+            completionSaveFailed = false
+        } catch {
+            completionSaveFailed = true
+            completionNotice = "Saved lesson progress could not be loaded. You can still read this lesson and try again later."
+        }
+    }
+
+    func finishCurrentLesson(
+        using writer: any LessonProgressWriting,
+        completedAt: Date = .now
+    ) async {
+        guard let lesson = currentLesson, !isSavingCompletion else { return }
+        if completedLessonIDs.contains(lesson.id) {
+            completionNotice = "This lesson is already recorded as finished for content version \(route.contentVersion)."
+            completionSaveFailed = false
+            return
+        }
+
+        isSavingCompletion = true
+        completionNotice = nil
+        completionSaveFailed = false
+        defer { isSavingCompletion = false }
+
+        do {
+            let outcome = try await writer.finishLesson(
+                LessonCompletionRequest(
+                    scope: progressScope,
+                    lessonID: lesson.id,
+                    moduleLessonIDs: Set(lessons.map(\.id)),
+                    courseLessonIDs: route.courseLessonIDs,
+                    completedAt: completedAt
+                )
+            )
+            completedLessonIDs = outcome.completedLessonIDs
+            persistPosition()
+
+            if outcome.isModuleComplete {
+                completionNotice = "Lesson finished. Every lesson in \(route.module.title) is now complete."
+                if outcome.didAddLesson {
+                    _ = await audioDirector.play(
+                        AudioPlaybackRequest(
+                            cue: AudioCue(rawValue: "sfx.module_complete"),
+                            channel: .soundEffects,
+                            context: .sharedSpace,
+                            autoplay: false
+                        )
+                    )
+                    await refreshPlayback()
+                }
+            } else {
+                completionNotice = "Lesson finished and saved for content version \(route.contentVersion)."
+            }
+        } catch {
+            completionSaveFailed = true
+            completionNotice = "Lesson completion could not be saved. Your existing progress was not replaced. Try again."
+        }
     }
 
     func movePrevious() async {
@@ -537,7 +766,17 @@ final class LessonPlayerSessionModel {
         playbackSnapshot = .idle
         narrationNotice = nil
         assessmentNotice = nil
+        completionNotice = nil
+        completionSaveFailed = false
         persistPosition()
+    }
+
+    private var progressScope: LessonProgressScope {
+        LessonProgressScope(
+            learnerID: route.learnerID,
+            courseID: route.courseID,
+            contentVersion: route.contentVersion
+        )
     }
 
     private func startNarration(_ cue: AudioCue) async {

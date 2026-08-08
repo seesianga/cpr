@@ -4,13 +4,16 @@ import UniformTypeIdentifiers
 
 /// Learner-facing overview of enrolment, progress and internal completion records.
 struct DashboardView: View {
+    @Environment(AppModel.self) private var appModel
     @Environment(AuthenticationModel.self) private var authenticationModel
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.openWindow) private var openWindow
 
     @Query private var profiles: [LearnerProfile]
     @Query private var enrolments: [Enrollment]
     @Query private var progressRecords: [ProgressRecord]
     @Query private var badgeAwards: [BadgeAward]
+    @Query private var attemptRecords: [AttemptRecord]
     @Query private var feedbackRecords: [InstructorFeedback]
     @Query private var signOffs: [PracticalSignOff]
 
@@ -18,6 +21,8 @@ struct DashboardView: View {
     @State private var isExporting = false
     @State private var isConfirmingDeletion = false
     @State private var statusMessage: String?
+    @State private var modulePresentationModel: ModulePresentationModel?
+    @State private var activeLessonRoute: LessonPlayerRoute?
 
     private var learnerID: String {
         authenticationModel.currentUser?.id ?? ""
@@ -47,6 +52,44 @@ struct DashboardView: View {
             .sorted { $0.updatedAt > $1.updatedAt }
     }
 
+    private var learnerAttempts: [AttemptRecord] {
+        attemptRecords.filter { $0.learnerID == learnerID }
+    }
+
+    private var attemptEvidence: [PracticeAttemptEvidence] {
+        learnerAttempts.map {
+            PracticeAttemptEvidence(
+                id: $0.id,
+                activityID: $0.activityID,
+                attemptKind: $0.attemptKind,
+                completedAt: $0.completedAt,
+                score: $0.score,
+                passed: $0.passed,
+                criticalErrorCodes: $0.criticalErrorCodes
+            )
+        }
+    }
+
+    private var practiceSummary: PracticeDashboardSummary {
+        .make(attempts: attemptEvidence, through: .now, calendar: .current)
+    }
+
+    private var masteryRows: [MasteryRow] {
+        guard let model = modulePresentationModel else { return [] }
+        return MasteryMatrixBuilder().build(
+            modules: model.modules,
+            completedModuleIDs: liveCompletedModuleIDs(for: model),
+            attempts: attemptEvidence
+        )
+    }
+
+    private var progressRevision: String {
+        learnerProgress
+            .map { "\($0.contentVersion)#\($0.updatedAt.timeIntervalSinceReferenceDate)" }
+            .sorted()
+            .joined(separator: "|")
+    }
+
     private var approvedSignOffs: [PracticalSignOff] {
         signOffs.filter {
             $0.learnerID == learnerID &&
@@ -62,6 +105,7 @@ struct DashboardView: View {
             ) {
                 enrolmentCard
                 progressCard
+                practiceCard
                 masteryCard
                 achievementCard
                 feedbackCard
@@ -70,8 +114,18 @@ struct DashboardView: View {
             .padding(28)
         }
         .navigationTitle("Dashboard")
-        .task(id: learnerID) {
+        .navigationDestination(item: $activeLessonRoute) { route in
+            LessonPlayerView(
+                route: route,
+                audioDirector: appModel.audioDirector,
+                assessmentProvider: CourseEngineLessonAssessmentProvider(
+                    modelContainer: modelContext.container
+                )
+            )
+        }
+        .task(id: "\(learnerID)#\(progressRevision)") {
             ensureLearnerProfile()
+            await loadAuthoritativeModules()
         }
         .fileExporter(
             isPresented: $isExporting,
@@ -100,6 +154,25 @@ struct DashboardView: View {
         }
     }
 
+    private func liveCompletedModuleIDs(
+        for model: ModulePresentationModel
+    ) -> Set<String> {
+        guard let progress = learnerProgress.first(where: {
+            $0.courseID == model.courseID &&
+                $0.contentVersion == model.contentVersion
+        }) else {
+            return model.completedModuleIDs
+        }
+        let completedLessonIDs = Set(progress.completedLessonIDs)
+        return Set(model.modules.compactMap { presented in
+            let requiredLessonIDs = Set(presented.module.lessons.map(\.id))
+            guard !requiredLessonIDs.isEmpty,
+                  requiredLessonIDs.isSubset(of: completedLessonIDs)
+            else { return nil }
+            return presented.id
+        })
+    }
+
     private var enrolmentCard: some View {
         LearnerDashboardCard(title: "Enrolment", systemImage: "books.vertical") {
             if activeEnrolments.isEmpty {
@@ -118,7 +191,10 @@ struct DashboardView: View {
                             .foregroundStyle(.secondary)
                         if let lastLessonID = progress?.lastLessonID {
                             Button("Resume \(lastLessonID)", systemImage: "play.fill") {
-                                statusMessage = "Ready to resume \(lastLessonID)."
+                                openAuthorisedLesson(
+                                    lastLessonID: lastLessonID,
+                                    progress: progress
+                                )
                             }
                             .accessibilityHint("Returns to your last saved position")
                         } else {
@@ -167,11 +243,79 @@ struct DashboardView: View {
 
     private var masteryCard: some View {
         LearnerDashboardCard(title: "Mastery Map", systemImage: "point.3.connected.trianglepath.dotted") {
-            ContentUnavailableView(
-                "Mastery map coming later",
-                systemImage: "map",
-                description: Text("This placeholder will connect theory, practice and scenario evidence without implying physical depth or force measurement.")
-            )
+            if masteryRows.isEmpty {
+                ProgressView("Loading authorised modules…")
+            } else {
+                ScrollView(.horizontal) {
+                    Grid(alignment: .leading, horizontalSpacing: 14, verticalSpacing: 12) {
+                        GridRow {
+                            Text("Module").font(.caption.bold())
+                            ForEach(MasterySkill.allCases) { skill in
+                                Text(skill.rawValue)
+                                    .font(.caption.bold())
+                                    .frame(minWidth: 118, alignment: .leading)
+                            }
+                        }
+                        Divider()
+                        ForEach(masteryRows) { row in
+                            GridRow {
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(row.moduleID).font(.caption.monospaced().bold())
+                                    Text(row.moduleTitle).font(.caption2).lineLimit(2)
+                                }
+                                .frame(width: 150, alignment: .leading)
+                                ForEach(row.cells) { cell in
+                                    Label(cell.status.label, systemImage: cell.status.symbolName)
+                                        .font(.caption2)
+                                        .frame(minWidth: 118, alignment: .leading)
+                                        .accessibilityLabel("\(row.moduleID), \(cell.skill.rawValue): \(cell.status.label)")
+                                }
+                            }
+                        }
+                    }
+                    .padding(.vertical, 4)
+                }
+                Text("The map separates completed learning from recorded safe practice. It does not assess physical compression depth or force.")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+            }
+        }
+    }
+
+    private var practiceCard: some View {
+        LearnerDashboardCard(title: "Practice Rhythm", systemImage: "calendar.badge.clock") {
+            if practiceSummary.successfulAttemptCount == 0 {
+                Text("No completed safe practice evidence has been recorded yet.")
+                    .foregroundStyle(.secondary)
+            } else {
+                Label(
+                    "\(practiceSummary.practiceStreak)-day practice streak",
+                    systemImage: "flame.fill"
+                )
+                Text("\(practiceSummary.successfulAttemptCount) safe completed practice attempts · \(practiceSummary.derivedXP) learning XP")
+                    .foregroundStyle(.secondary)
+                if let nextReviewDate = practiceSummary.nextReviewDate {
+                    Label(
+                        "Next recommended practice: \(nextReviewDate.formatted(date: .abbreviated, time: .omitted))",
+                        systemImage: "arrow.triangle.2.circlepath"
+                    )
+                    .accessibilityLabel("Next recommended practice \(nextReviewDate.formatted(date: .long, time: .omitted))")
+                }
+                if !practiceSummary.personalBests.isEmpty {
+                    Text("Personal bests").font(.headline)
+                    ForEach(practiceSummary.personalBests.prefix(4)) { best in
+                        HStack {
+                            Text(best.activityID)
+                            Spacer()
+                            Text(
+                                best.score > 1 ? best.score / 100 : best.score,
+                                format: .percent.precision(.fractionLength(0))
+                            )
+                                .monospacedDigit()
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -195,6 +339,12 @@ struct DashboardView: View {
                     .accessibilityElement(children: .combine)
                 }
             }
+
+            Button("Open Achievement Gallery", systemImage: "sparkles.rectangle.stack") {
+                openWindow(id: AppModel.achievementGalleryWindowID)
+            }
+            .buttonStyle(.borderedProminent)
+            .accessibilityHint("Opens earned badges and grey placeholders in a volumetric gallery")
         }
     }
 
@@ -260,6 +410,23 @@ struct DashboardView: View {
     }
 
     @MainActor
+    private func loadAuthoritativeModules() async {
+        guard !learnerID.isEmpty else { return }
+        do {
+            let model = try ModulePresentationModel.production(
+                modelContainer: modelContext.container
+            )
+            modulePresentationModel = model
+            await model.load(learnerID: learnerID)
+            if case let .failed(message) = model.state {
+                statusMessage = message
+            }
+        } catch {
+            statusMessage = "The authorised module mastery map could not be loaded."
+        }
+    }
+
+    @MainActor
     private func prepareExport() async {
         guard !learnerID.isEmpty else { return }
         let repository = SwiftDataRepositoryStore(modelContainer: modelContext.container)
@@ -287,6 +454,7 @@ struct DashboardView: View {
         )
         do {
             _ = try await privacy.requestAccountDeletion(learnerID: learnerID)
+            OnboardingCompletionStore().clear(learnerID: learnerID)
             await authenticationModel.signOut()
         } catch {
             statusMessage = "The account deletion could not be completed. Please try again."
@@ -299,6 +467,26 @@ struct DashboardView: View {
             .split(separator: " ")
             .map { $0.capitalized }
             .joined(separator: " ")
+    }
+
+    private func openAuthorisedLesson(
+        lastLessonID: String,
+        progress: ProgressRecord?
+    ) {
+        guard let model = modulePresentationModel,
+              progress?.contentVersion == model.contentVersion,
+              let item = model.modules.first(where: {
+                  $0.module.lessons.contains(where: { $0.id == lastLessonID })
+              }),
+              let route = model.lessonPlayerRoute(
+                  moduleID: item.id,
+                  learnerID: learnerID
+              )
+        else {
+            statusMessage = "This saved lesson is not currently available from the authoritative course access gate."
+            return
+        }
+        activeLessonRoute = route
     }
 }
 

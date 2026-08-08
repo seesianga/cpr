@@ -1,3 +1,4 @@
+import SwiftData
 import SwiftUI
 
 /// Source-backed, non-timed lesson reader. The route has already passed the authoritative
@@ -5,6 +6,7 @@ import SwiftUI
 @MainActor
 struct LessonPlayerView: View {
     @Environment(\.openWindow) private var openWindow
+    @Environment(\.modelContext) private var modelContext
     @State private var model: LessonPlayerSessionModel
 
     init(
@@ -47,6 +49,7 @@ struct LessonPlayerView: View {
                 }
 
                 lessonNavigation
+                finishLessonCard
                 activities
                 assessments
             }
@@ -76,7 +79,10 @@ struct LessonPlayerView: View {
             )
         }
         .task {
-            await model.prepare()
+            let progressWriter = SwiftDataLessonProgressWriter(
+                modelContainer: modelContext.container
+            )
+            await model.prepare(progressWriter: progressWriter)
             while !Task.isCancelled {
                 await model.refreshPlayback()
                 try? await Task.sleep(for: .milliseconds(100))
@@ -242,6 +248,67 @@ struct LessonPlayerView: View {
             .buttonStyle(.borderedProminent)
             .disabled(!model.canMoveNext)
         }
+        .padding(18)
+        .background(.thinMaterial, in: .rect(cornerRadius: 16))
+    }
+
+    private var finishLessonCard: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Finish this lesson")
+                .font(.title2.bold())
+                .accessibilityAddTraits(.isHeader)
+            Text("This action is untimed. It records this authored lesson for your learner, course and content version without replacing earlier completions.")
+                .foregroundStyle(.secondary)
+
+            Button(
+                model.isCurrentLessonComplete ? "Lesson Finished" : "Finish Lesson",
+                systemImage: model.isCurrentLessonComplete
+                    ? "checkmark.circle.fill"
+                    : "checkmark.circle"
+            ) {
+                let progressWriter = SwiftDataLessonProgressWriter(
+                    modelContainer: modelContext.container
+                )
+                Task { await model.finishCurrentLesson(using: progressWriter) }
+            }
+            .buttonStyle(.borderedProminent)
+            .disabled(
+                model.isSavingCompletion ||
+                    model.isCurrentLessonComplete ||
+                    !model.isAtEndOfCurrentLesson
+            )
+            .accessibilityIdentifier("lesson-finish-\(model.currentLesson?.id ?? "unavailable")")
+            .accessibilityHint(
+                model.isAtEndOfCurrentLesson
+                    ? "Saves this lesson as complete for the current content version"
+                    : "Navigate to the final authored block before finishing this lesson"
+            )
+
+            if !model.isAtEndOfCurrentLesson, !model.isCurrentLessonComplete {
+                Label(
+                    "Continue to the final authored block to enable Finish Lesson.",
+                    systemImage: "arrow.right.circle"
+                )
+                .foregroundStyle(.secondary)
+            }
+
+            if model.isSavingCompletion {
+                ProgressView("Saving lesson completion…")
+                    .accessibilityLabel("Saving lesson completion")
+            }
+
+            if let notice = model.completionNotice {
+                Label(
+                    notice,
+                    systemImage: model.completionSaveFailed
+                        ? "exclamationmark.triangle.fill"
+                        : "checkmark.circle.fill"
+                )
+                .foregroundStyle(model.completionSaveFailed ? .orange : .green)
+                .accessibilityLabel("Lesson completion status: \(notice)")
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
         .padding(18)
         .background(.thinMaterial, in: .rect(cornerRadius: 16))
     }
