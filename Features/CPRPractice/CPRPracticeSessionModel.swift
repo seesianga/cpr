@@ -377,7 +377,7 @@ final class CPRPracticeSessionModel {
             if machine?.state == .landmarkCheck {
                 submit(.classifyHandPlacement(zone))
             }
-        case .handStackingChanged, .cadenceUpdated:
+        case .handStackingChanged, .cadenceUpdated, .grabInteractionChanged:
             break
         case .interruptionMeasured:
             if let event = signal.cprPracticeEvent {

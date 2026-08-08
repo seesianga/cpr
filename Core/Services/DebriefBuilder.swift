@@ -62,6 +62,31 @@ enum DebriefBuilder {
             )
         }
 
+        let scoringEngine = ScoringEngine()
+        let physicalPerformance = try Self.physicalEvidence(from: eventLog).flatMap {
+            try scoringEngine.physicalPerformanceBreakdown(from: $0)
+        }
+        if let physicalPerformance {
+            let cprPhysicalScores = [
+                physicalPerformance.cprLocationAccuracyPercentage,
+                physicalPerformance.tempoAccuracyPercentage
+            ].compactMap { $0 }.map { $0 / 100 }
+            if !cprPhysicalScores.isEmpty {
+                let cprPhysicalScore = cprPhysicalScores.reduce(0, +) /
+                    Double(cprPhysicalScores.count)
+                dimensionScores[.cprSequenceAndRhythm] = min(
+                    dimensionScores[.cprSequenceAndRhythm] ?? 1,
+                    cprPhysicalScore
+                )
+            }
+            if let padScore = physicalPerformance.padPlacementAccuracyPercentage {
+                dimensionScores[.aedPreparationAndPlacement] = min(
+                    dimensionScores[.aedPreparationAndPlacement] ?? 1,
+                    padScore / 100
+                )
+            }
+        }
+
         var debriefFeedback: [ScenarioDebriefFeedback] = []
         var criticalErrors: [CriticalError] = []
         var seenErrorIDs: Set<String> = []
@@ -89,7 +114,7 @@ enum DebriefBuilder {
             )
         }
 
-        let scoreOutcome = try ScoringEngine().evaluate(
+        let scoreOutcome = try scoringEngine.evaluate(
             ScenarioScoreInput(
                 attemptID: "\(first.scenarioID)-event-log",
                 contentVersion: contentVersion,
@@ -119,6 +144,7 @@ enum DebriefBuilder {
             recommendedXP: recommendedXP,
             cprCadenceAccuracy: cprEvidence.cadenceAccuracy,
             longestCompressionGapSeconds: cprEvidence.longestGap,
+            physicalPerformance: physicalPerformance,
             practiceRecommendation: recommendation(
                 score: scoreOutcome,
                 feedback: debriefFeedback
@@ -216,6 +242,34 @@ enum DebriefBuilder {
         return (
             Double(inBand) / Double(gaps.count),
             gaps.max()
+        )
+    }
+
+    /// Physical performance is opt-in: the typed physical-pad event is the provenance
+    /// marker. An all-accessible attempt therefore retains its existing category score and
+    /// never receives a fabricated physical zero.
+    private static func physicalEvidence(
+        from eventLog: [IntegratedScenarioEventRecord]
+    ) -> PhysicalPerformanceEvidence? {
+        let padPlacements = eventLog.compactMap { record -> AEDPhysicalPadPlacement? in
+            guard record.wasAccepted,
+                  case let .aed(.placePhysicalPad(placement)) = record.event
+            else { return nil }
+            return placement
+        }
+        guard !padPlacements.isEmpty else { return nil }
+
+        let compressions = eventLog.compactMap {
+            record -> (timestamp: Double, placement: CPRHandPlacementZone)? in
+            guard record.wasAccepted,
+                  case let .cpr(.compressionDetected(timestamp, placement, _)) = record.event
+            else { return nil }
+            return (timestamp, placement)
+        }
+        return PhysicalPerformanceEvidence(
+            compressionPlacements: compressions.map(\.placement),
+            compressionTimestamps: compressions.map(\.timestamp),
+            padPlacements: padPlacements
         )
     }
 

@@ -132,6 +132,7 @@ final class ScenarioScoringGateTests: XCTestCase {
             recommendedXP: original.recommendedXP,
             cprCadenceAccuracy: original.cprCadenceAccuracy,
             longestCompressionGapSeconds: original.longestCompressionGapSeconds,
+            physicalPerformance: original.physicalPerformance,
             practiceRecommendation: original.practiceRecommendation
         )
 

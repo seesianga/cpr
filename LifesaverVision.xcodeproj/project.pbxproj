@@ -85,6 +85,13 @@
 		29C014E49374ECB904375798 /* AEDPadDropZoneClassifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4196DB5D0A4F2556D7E89D52 /* AEDPadDropZoneClassifier.swift */; };
 		2A611C32864BAB776D35FCFC /* AuthenticationAndReportTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FCAE7B9F3C70C6F8FCD16F3 /* AuthenticationAndReportTests.swift */; };
 		2BBB67E39148B8B1D95E1DD2 /* HandSignalDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05FE4974ED8B8C4D14D6AF6D /* HandSignalDetector.swift */; };
+		BD200001A1B2C3D4E5F60001 /* TorsoGridMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD100001A1B2C3D4E5F60001 /* TorsoGridMap.swift */; };
+		BD200002A1B2C3D4E5F60002 /* TorsoGridDebugOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD100002A1B2C3D4E5F60002 /* TorsoGridDebugOverlay.swift */; };
+		BD200003A1B2C3D4E5F60003 /* ComposedHandSignalDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD100003A1B2C3D4E5F60003 /* ComposedHandSignalDetector.swift */; };
+		BD200004A1B2C3D4E5F60004 /* FingerContactCompressionDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD100004A1B2C3D4E5F60004 /* FingerContactCompressionDetector.swift */; };
+		BD200005A1B2C3D4E5F60005 /* PinchGrabTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD100005A1B2C3D4E5F60005 /* PinchGrabTracker.swift */; };
+		BD200006A1B2C3D4E5F60006 /* PracticeAssetDescriptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD100006A1B2C3D4E5F60006 /* PracticeAssetDescriptor.swift */; };
+		BD200007A1B2C3D4E5F60007 /* GridGestureTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD100007A1B2C3D4E5F60007 /* GridGestureTests.swift */; };
 		2C0BE92C06D53549C6E5151B /* nar.M2-B2.vtt in Resources */ = {isa = PBXBuildFile; fileRef = 74E3AE3254267EBD1C65165A /* nar.M2-B2.vtt */; };
 		2CD8857302B9E609DCFBB356 /* PersistenceBootstrap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F67C420CD18EFAD3A3FFF70 /* PersistenceBootstrap.swift */; };
 		2D0EED1A35F643F87192D89F /* nar.M9-B7.vtt in Resources */ = {isa = PBXBuildFile; fileRef = A44FC842D2D24BEB72E9AEEE /* nar.M9-B7.vtt */; };
@@ -464,6 +471,13 @@
 		0197C71B9FC9335FACB534D4 /* nar.M8-B1.m4a */ = {isa = PBXFileReference; path = "nar.M8-B1.m4a"; sourceTree = "<group>"; };
 		04735E7DF396D39660549FEF /* ScenarioEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScenarioEngineTests.swift; sourceTree = "<group>"; };
 		05FE4974ED8B8C4D14D6AF6D /* HandSignalDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HandSignalDetector.swift; sourceTree = "<group>"; };
+		BD100001A1B2C3D4E5F60001 /* TorsoGridMap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TorsoGridMap.swift; sourceTree = "<group>"; };
+		BD100002A1B2C3D4E5F60002 /* TorsoGridDebugOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TorsoGridDebugOverlay.swift; sourceTree = "<group>"; };
+		BD100003A1B2C3D4E5F60003 /* ComposedHandSignalDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposedHandSignalDetector.swift; sourceTree = "<group>"; };
+		BD100004A1B2C3D4E5F60004 /* FingerContactCompressionDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FingerContactCompressionDetector.swift; sourceTree = "<group>"; };
+		BD100005A1B2C3D4E5F60005 /* PinchGrabTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinchGrabTracker.swift; sourceTree = "<group>"; };
+		BD100006A1B2C3D4E5F60006 /* PracticeAssetDescriptor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PracticeAssetDescriptor.swift; sourceTree = "<group>"; };
+		BD100007A1B2C3D4E5F60007 /* GridGestureTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GridGestureTests.swift; sourceTree = "<group>"; };
 		0694581CDDC98A836FB0BE35 /* accessibility-switch-puck.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "accessibility-switch-puck.usdz"; sourceTree = "<group>"; };
 		0719E97B18BAFDC3E37E429D /* StateMachineCoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StateMachineCoreTests.swift; sourceTree = "<group>"; };
 		088100D062186324E946AF5F /* LifesaverVisionUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LifesaverVisionUITests.swift; sourceTree = "<group>"; };
@@ -862,9 +876,19 @@
 			children = (
 				D7D7FEBFB29DD1315ECDB39D /* AssetRegistry.swift */,
 				46DD3EFA951686E5546DCBF7 /* AssetRegistry+HandTrackingTargets.swift */,
+				BD100006A1B2C3D4E5F60006 /* PracticeAssetDescriptor.swift */,
 				FB1547039F983C313AA2675E /* SpatialRealityKit.swift */,
 			);
 			path = RealityKit;
+			sourceTree = "<group>";
+		};
+		BD300001A1B2C3D4E5F60008 /* BodyGrid */ = {
+			isa = PBXGroup;
+			children = (
+				BD100002A1B2C3D4E5F60002 /* TorsoGridDebugOverlay.swift */,
+				BD100001A1B2C3D4E5F60001 /* TorsoGridMap.swift */,
+			);
+			path = BodyGrid;
 			sourceTree = "<group>";
 		};
 		07EB135ECE5606920FA2C1AC /* Persistence */ = {
@@ -1083,6 +1107,7 @@
 			isa = PBXGroup;
 			children = (
 				AD13EEA02B8CB0687EB39CFF /* Accessibility */,
+				BD300001A1B2C3D4E5F60008 /* BodyGrid */,
 				B68924854E91ED4544038B3B /* HandTracking */,
 				B69D7A6C923C2A4D4C3B58D3 /* Interactions */,
 				04EE0DEEE50081F5C3A8ED2B /* RealityKit */,
@@ -1278,6 +1303,7 @@
 				97CE72015BC303A436C9AEAE /* CourseContentValidationTests.swift */,
 				F69F1BA2EDAC8DEA2DEC5726 /* CPRPracticeSessionModelTests.swift */,
 				E5C15D8E97AB0A1174FD2A4C /* DRSABCPracticeSessionModelTests.swift */,
+				BD100007A1B2C3D4E5F60007 /* GridGestureTests.swift */,
 				A8C08A09123456789ABCDEF0 /* HandNavigationRemediationTests.swift */,
 				B60CF26E226FA9076209F80F /* HandTrackingTests.swift */,
 				09B2727DDBFA417FE5887075 /* LessonPlayerTests.swift */,
@@ -1452,9 +1478,12 @@
 		B68924854E91ED4544038B3B /* HandTracking */ = {
 			isa = PBXGroup;
 			children = (
+				BD100003A1B2C3D4E5F60003 /* ComposedHandSignalDetector.swift */,
+				BD100004A1B2C3D4E5F60004 /* FingerContactCompressionDetector.swift */,
 				05FE4974ED8B8C4D14D6AF6D /* HandSignalDetector.swift */,
 				D61ED22B228D5B8974D8543B /* HandTrackingModels.swift */,
 				92385E507D55CA1777A3F4C7 /* HandTrackingService.swift */,
+				BD100005A1B2C3D4E5F60005 /* PinchGrabTracker.swift */,
 				637F9DE711EB0481788FF8A3 /* SimulatedHandInput.swift */,
 			);
 			path = HandTracking;
@@ -2012,6 +2041,12 @@
 				C456EC2B1DBA2B0B55537D79 /* GamificationPresentationModels.swift in Sources */,
 				74C6876CEE0B238317F4286C /* GamificationView.swift in Sources */,
 				2BBB67E39148B8B1D95E1DD2 /* HandSignalDetector.swift in Sources */,
+				BD200001A1B2C3D4E5F60001 /* TorsoGridMap.swift in Sources */,
+				BD200002A1B2C3D4E5F60002 /* TorsoGridDebugOverlay.swift in Sources */,
+				BD200003A1B2C3D4E5F60003 /* ComposedHandSignalDetector.swift in Sources */,
+				BD200004A1B2C3D4E5F60004 /* FingerContactCompressionDetector.swift in Sources */,
+				BD200005A1B2C3D4E5F60005 /* PinchGrabTracker.swift in Sources */,
+				BD200006A1B2C3D4E5F60006 /* PracticeAssetDescriptor.swift in Sources */,
 				EDF1392B22811817BF1CAAF4 /* HandTrackingModels.swift in Sources */,
 				BFDFC3D2C7F42382E07C8FAD /* HandTrackingService.swift in Sources */,
 				F26B71208E2C08B006762FB3 /* InMemoryRepositories.swift in Sources */,
@@ -2074,6 +2109,7 @@
 				08C51299235D3B308BA92E67 /* ClinicalContentAndExportTests.swift in Sources */,
 				55F54844E539B713CB9D405A /* CourseContentValidationTests.swift in Sources */,
 				E84C8175EC02BE3C05480946 /* DRSABCPracticeSessionModelTests.swift in Sources */,
+				BD200007A1B2C3D4E5F60007 /* GridGestureTests.swift in Sources */,
 				A8C08A08123456789ABCDEF0 /* HandNavigationRemediationTests.swift in Sources */,
 				FFF32A00F806449751C7DA87 /* HandTrackingTests.swift in Sources */,
 				98631A592C5ED8CCFADA99E7 /* LessonPlayerTests.swift in Sources */,

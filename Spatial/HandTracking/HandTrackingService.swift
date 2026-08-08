@@ -26,6 +26,12 @@ protocol HandTrackingServicing: AnyObject {
     func start() async
     func pause()
     func stop()
+    func updateGrabbableItems(_ items: [PinchGrabItem])
+}
+
+extension HandTrackingServicing {
+    /// Pinch-grab is optional; services without gesture composition ignore item updates.
+    func updateGrabbableItems(_ items: [PinchGrabItem]) {}
 }
 
 enum HandTrackingAuthorizationDecision: Sendable, Equatable {
@@ -109,6 +115,7 @@ final class HandTrackingService: HandTrackingServicing {
     private(set) var state: HandTrackingState = .idle
 
     private var targets: HandTrackingTargets?
+    private var grabbableItems: [PinchGrabItem] = []
     private var currentSession: ARKitSession?
     private var currentProvider: HandTrackingProvider?
     private var processor: HandSignalProcessor?
@@ -132,6 +139,12 @@ final class HandTrackingService: HandTrackingServicing {
             pause()
         }
         self.targets = targets
+    }
+
+    func updateGrabbableItems(_ items: [PinchGrabItem]) {
+        grabbableItems = items
+        guard let processor else { return }
+        Task { await processor.updateItems(items) }
     }
 
     func start() async {
@@ -188,7 +201,8 @@ final class HandTrackingService: HandTrackingServicing {
         case .allowed:
             do {
                 let processor = HandSignalProcessor(
-                    detector: HandSignalDetector(targets: targets)
+                    detector: ComposedHandSignalDetector(targets: targets),
+                    grabbableItems: grabbableItems
                 )
                 try await runtime.run(session, provider)
                 guard !Task.isCancelled else {
@@ -261,7 +275,7 @@ final class HandTrackingService: HandTrackingServicing {
     ) {
         cancelAnchorTasks()
         let reducedObservations = AsyncStream.makeStream(
-            of: TrackedPalmObservation.self,
+            of: TrackedHandReducedFrame.self,
             bufferingPolicy: .bufferingNewest(32)
         )
 
@@ -272,15 +286,15 @@ final class HandTrackingService: HandTrackingServicing {
             for await update in provider.anchorUpdates {
                 guard !Task.isCancelled else { return }
                 reducedObservations.continuation.yield(
-                    ARKitPalmObservationExtractor.observation(from: update)
+                    ARKitPalmObservationExtractor.reducedFrame(from: update)
                 )
             }
         }
 
         anchorUpdateTask = Task.detached(priority: .userInitiated) { [weak self] in
-            for await observation in reducedObservations.stream {
+            for await frame in reducedObservations.stream {
                 guard !Task.isCancelled else { return }
-                let events = await processor.process(observation)
+                let events = await processor.process(frame)
                 guard !Task.isCancelled else { return }
                 await self?.publish(events, for: runGeneration)
             }
@@ -469,14 +483,20 @@ final class HandTrackingService: HandTrackingServicing {
 }
 
 private actor HandSignalProcessor {
-    private var detector: HandSignalDetector
+    private var detector: ComposedHandSignalDetector
 
-    init(detector: HandSignalDetector) {
-        self.detector = detector
+    init(detector: ComposedHandSignalDetector, grabbableItems: [PinchGrabItem]) {
+        var seeded = detector
+        seeded.updateGrabbableItems(grabbableItems)
+        self.detector = seeded
     }
 
-    func process(_ observation: TrackedPalmObservation) -> [HandTrackingDerivedEvent] {
-        detector.process(observation)
+    func process(_ frame: TrackedHandReducedFrame) -> [HandTrackingDerivedEvent] {
+        detector.process(frame)
+    }
+
+    func updateItems(_ items: [PinchGrabItem]) {
+        detector.updateGrabbableItems(items)
     }
 }
 
@@ -490,9 +510,11 @@ private enum ARKitPalmObservationExtractor {
     ]
     private static let minimumTrackedJointCount = 3
 
-    static func observation(
+    /// Reduces one anchor update to the palm centroid plus named finger nodes. The
+    /// skeleton never leaves this function.
+    static func reducedFrame(
         from update: AnchorUpdate<HandAnchor>
-    ) -> TrackedPalmObservation {
+    ) -> TrackedHandReducedFrame {
         let anchor = update.anchor
         let chirality: TrackedHandChirality = switch anchor.chirality {
         case .left: .left
@@ -504,14 +526,23 @@ private enum ARKitPalmObservationExtractor {
               anchor.isTracked,
               let skeleton = anchor.handSkeleton
         else {
-            return TrackedPalmObservation(
-                timestampSeconds: update.timestamp,
-                chirality: chirality,
-                palmCentroidWorld: nil
+            return TrackedHandReducedFrame(
+                palm: TrackedPalmObservation(
+                    timestampSeconds: update.timestamp,
+                    chirality: chirality,
+                    palmCentroidWorld: nil
+                ),
+                nodes: TrackedHandNodesObservation(
+                    timestampSeconds: update.timestamp,
+                    chirality: chirality,
+                    nodes: nil
+                )
             )
         }
 
-        let trackedPoints = palmJointNames.compactMap { jointName -> SIMD3<Float>? in
+        func trackedWorldPosition(
+            _ jointName: HandSkeleton.JointName
+        ) -> SIMD3<Float>? {
             let joint = skeleton.joint(jointName)
             guard joint.isTracked else { return nil }
             let worldFromJoint = anchor.originFromAnchorTransform *
@@ -519,20 +550,39 @@ private enum ARKitPalmObservationExtractor {
             let translation = worldFromJoint.columns.3
             return SIMD3<Float>(translation.x, translation.y, translation.z)
         }
-        guard trackedPoints.count >= minimumTrackedJointCount else {
-            return TrackedPalmObservation(
-                timestampSeconds: update.timestamp,
-                chirality: chirality,
-                palmCentroidWorld: nil
+
+        let trackedPoints = palmJointNames.compactMap(trackedWorldPosition)
+        let palmCentroid: SIMD3<Float>? = trackedPoints.count >= minimumTrackedJointCount
+            ? trackedPoints.reduce(SIMD3<Float>.zero, +) / Float(trackedPoints.count)
+            : nil
+
+        var nodes: TrackedHandNodes?
+        if let thumbTip = trackedWorldPosition(.thumbTip),
+           let indexTip = trackedWorldPosition(.indexFingerTip),
+           let middleMetacarpal = trackedWorldPosition(.middleFingerMetacarpal),
+           let wrist = trackedWorldPosition(.wrist) {
+            nodes = TrackedHandNodes(
+                thumbTip: thumbTip,
+                indexTip: indexTip,
+                middleMetacarpal: middleMetacarpal,
+                wrist: wrist,
+                middleTip: trackedWorldPosition(.middleFingerTip),
+                ringTip: trackedWorldPosition(.ringFingerTip),
+                littleTip: trackedWorldPosition(.littleFingerTip)
             )
         }
 
-        let centroid = trackedPoints.reduce(SIMD3<Float>.zero, +) /
-            Float(trackedPoints.count)
-        return TrackedPalmObservation(
-            timestampSeconds: update.timestamp,
-            chirality: chirality,
-            palmCentroidWorld: centroid
+        return TrackedHandReducedFrame(
+            palm: TrackedPalmObservation(
+                timestampSeconds: update.timestamp,
+                chirality: chirality,
+                palmCentroidWorld: palmCentroid
+            ),
+            nodes: TrackedHandNodesObservation(
+                timestampSeconds: update.timestamp,
+                chirality: chirality,
+                nodes: nodes
+            )
         )
     }
 }

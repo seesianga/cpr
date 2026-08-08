@@ -19,6 +19,12 @@ struct AEDPracticeImmersivePanel: View {
             Text(model.guidanceBody)
                 .foregroundStyle(.secondary)
 
+            if let explanation = model.handTrackingFallbackExplanation {
+                Label(explanation, systemImage: "hand.raised.slash")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+            }
+
             switch model.loadState {
             case .idle:
                 ProgressView("Loading source-backed AED practice…")
@@ -178,10 +184,35 @@ struct AEDPracticeImmersivePanel: View {
             }
 
         case .resumeCompressions:
-            Button("Finish AED practice", systemImage: "checkmark.seal") {
-                model.finish()
+            VStack(alignment: .leading, spacing: 9) {
+                HStack(spacing: 16) {
+                    VStack(alignment: .leading) {
+                        Text("Contact cycles").font(.caption).foregroundStyle(.secondary)
+                        Text("\(model.guidedCompressionCount)")
+                            .font(.title3.monospacedDigit())
+                    }
+                    VStack(alignment: .leading) {
+                        Text("Interaction cadence")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                        Text(guidedCadenceText)
+                            .font(.title3.monospacedDigit())
+                    }
+                    Circle()
+                        .fill(model.visualMetronomePulse ? Color.red : Color.blue)
+                        .frame(width: model.visualMetronomePulse ? 32 : 24)
+                        .accessibilityLabel(
+                            "Visual metronome at \(Int(CPRPracticePolicy.sourceBacked.practiceTempoPerMinute)) compressions per minute"
+                        )
+                }
+                Text("Target cadence: \(model.targetRateText). Depth, force, and recoil are Not physically assessed.")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                Button("Finish AED practice", systemImage: "checkmark.seal") {
+                    model.finish()
+                }
+                .buttonStyle(.borderedProminent)
             }
-            .buttonStyle(.borderedProminent)
 
         case .complete:
             VStack(alignment: .leading, spacing: 6) {
@@ -263,5 +294,12 @@ struct AEDPracticeImmersivePanel: View {
         case .medicationPatchAtPadSite: "Remove simulated patch"
         case .wetChest: "Dry simulated chest"
         }
+    }
+
+    private var guidedCadenceText: String {
+        guard let cadence = model.guidedCadencePerMinute else {
+            return model.targetRateText
+        }
+        return "\(Int(cadence.rounded()))/min"
     }
 }

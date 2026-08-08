@@ -144,6 +144,7 @@ struct ScenarioDebrief: Codable, Sendable, Equatable {
     let recommendedXP: Int
     let cprCadenceAccuracy: Double?
     let longestCompressionGapSeconds: Double?
+    let physicalPerformance: PhysicalPerformanceBreakdown?
     let practiceRecommendation: ScenarioPracticeRecommendation
 }
 

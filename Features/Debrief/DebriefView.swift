@@ -62,6 +62,47 @@ struct DebriefView: View {
                     }
                 }
 
+                GroupBox("Physical interaction feedback") {
+                    VStack(alignment: .leading, spacing: 10) {
+                        if let breakdown = debrief.physicalPerformance {
+                            performanceRow(
+                                "CPR location accuracy",
+                                percentage: breakdown.cprLocationAccuracyPercentage
+                            )
+                            performanceRow(
+                                "AED pad placement accuracy",
+                                percentage: breakdown.padPlacementAccuracyPercentage
+                            )
+                            performanceRow(
+                                "CPR tempo accuracy",
+                                percentage: breakdown.tempoAccuracyPercentage
+                            )
+                            Divider()
+                            performanceRow(
+                                "Composite interaction score",
+                                percentage: breakdown.compositePercentage
+                            )
+                            DisclosureGroup("Source references") {
+                                ForEach(breakdown.sourceReferences) { reference in
+                                    Text("\(reference.document), \(reference.edition), \(reference.section), p. \(reference.page)")
+                                        .font(.footnote)
+                                }
+                            }
+                        } else {
+                            Text("No physical pad-placement evidence was recorded. Accessible completion remains fully supported and is not scored as zero.")
+                                .foregroundStyle(.secondary)
+                        }
+
+                        Divider()
+                        Label("Depth: Not physically assessed", systemImage: "ruler")
+                        Label(
+                            "Force: Not physically assessed",
+                            systemImage: "gauge.with.dots.needle.33percent"
+                        )
+                        Label("Recoil: Not physically assessed", systemImage: "arrow.up.and.down")
+                    }
+                }
+
                 if !debrief.feedback.isEmpty {
                     GroupBox("Guided corrections") {
                         VStack(alignment: .leading, spacing: 16) {
@@ -138,5 +179,24 @@ struct DebriefView: View {
             .font(.subheadline)
             .foregroundStyle(.orange)
         }
+    }
+
+    private func performanceRow(
+        _ title: String,
+        percentage: Double?
+    ) -> some View {
+        HStack {
+            Text(title)
+            Spacer()
+            if let percentage {
+                Text("\(percentage.formatted(.number.precision(.fractionLength(0))))%")
+                    .monospacedDigit()
+            } else {
+                Text("Not assessed from physical interaction")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+        }
+        .accessibilityElement(children: .combine)
     }
 }

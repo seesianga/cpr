@@ -98,6 +98,18 @@ struct SimulationSpaceRootView: View {
                     if !appModel.isSimulationPaused {
                         await cprSession.startHandTracking()
                     }
+                } else if appModel.selectedPracticeExperience == .aed,
+                          selectedScene == .aedPreparationRoom ||
+                          selectedScene == .aedPlacementRoom {
+                    let targets = try assetRegistry.handTrackingTargets(
+                        in: scene,
+                        for: selectedScene
+                    )
+                    aedSession.configureHandTracking(targets: targets)
+                    configureAEDPhysicalInteraction(in: scene)
+                    if !appModel.isSimulationPaused {
+                        await aedSession.startHandTracking()
+                    }
                 } else if appModel.selectedPracticeExperience == .integratedScenario,
                           Self.isIntegratedScenarioScene(selectedScene) {
                     let targets = try assetRegistry.handTrackingTargets(
@@ -111,6 +123,13 @@ struct SimulationSpaceRootView: View {
                 } else if appModel.selectedPracticeExperience == .integratedScenario {
                     integratedScenarioSession.stopHandTracking()
                 }
+
+                #if DEBUG
+                if UserDefaults.standard.bool(forKey: "developer.showTorsoGridOverlay"),
+                   let grid = assetRegistry.torsoGridMap(in: scene) {
+                    scene.addChild(TorsoGridDebugOverlay.make(from: grid))
+                }
+                #endif
             } catch is CancellationError {
                 // Dismissing or changing rooms cancels loading without surfacing an error.
             } catch {
@@ -133,6 +152,11 @@ struct SimulationSpaceRootView: View {
             if appModel.selectedPracticeExperience == .integratedScenario,
                let scene = content.entities.first(where: { $0.name == sceneName }) {
                 updateRecordedEventReplayMarker(in: scene)
+            }
+
+            if appModel.selectedPracticeExperience == .aed,
+               let scene = content.entities.first(where: { $0.name == sceneName }) {
+                applyAEDPhysicalPadPresentation(in: scene)
             }
         } attachments: {
             Attachment(id: "simulation-interface") {
@@ -735,6 +759,46 @@ struct SimulationSpaceRootView: View {
             return false
         }
         return true
+    }
+
+    /// Registers the descriptor-resolved pinch-grabbable items with the AED session.
+    /// The physical path is additive; every gaze-pinch and button control remains.
+    private func configureAEDPhysicalInteraction(in scene: Entity) {
+        let descriptor = assetRegistry.practiceAssetDescriptor
+        let itemsByIdentifier = Dictionary(
+            uniqueKeysWithValues: assetRegistry.pinchGrabItems(in: scene)
+                .map { ($0.identifier, $0) }
+        )
+        var padItems: [AEDPadSide: PinchGrabItem] = [:]
+        if let rightPad = itemsByIdentifier[descriptor.patches.rightPadEntityName] {
+            padItems[.right] = rightPad
+        }
+        if let leftPad = itemsByIdentifier[descriptor.patches.leftPadEntityName] {
+            padItems[.left] = leftPad
+        }
+        aedSession.configurePhysicalInteraction(
+            padItems: padItems,
+            powerButton: itemsByIdentifier[
+                descriptor.defibrillator.powerButtonEntityName
+            ]
+        )
+    }
+
+    /// Renders the model's physical pad state: an actively grabbed pad follows the pinch
+    /// midpoint; a released pad moves to its resolved resting position exactly once.
+    private func applyAEDPhysicalPadPresentation(in scene: Entity) {
+        if let grab = aedSession.activePadGrab,
+           let pad = assetRegistry.firstEntity(named: grab.itemIdentifier, in: scene) {
+            pad.setPosition(grab.midpointWorld, relativeTo: nil)
+        }
+        if let snap = aedSession.padSnapPresentation {
+            if let pad = assetRegistry.firstEntity(named: snap.itemIdentifier, in: scene) {
+                pad.setPosition(snap.worldPosition, relativeTo: nil)
+            }
+            Task { @MainActor in
+                aedSession.acknowledgePadSnap(snap)
+            }
+        }
     }
 
     private func nearestPadZone(to pad: Entity) -> String? {

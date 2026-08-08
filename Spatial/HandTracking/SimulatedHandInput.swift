@@ -116,6 +116,13 @@ final class SimulatedHandInput: HandTrackingServicing {
         emittedSignals.removeAll(keepingCapacity: false)
     }
 
+    /// Test hook: injects an already-derived event (e.g. a grab interaction) so feature
+    /// models can be exercised deterministically. Production code never synthesises
+    /// derived events.
+    func emit(_ event: HandTrackingDerivedEvent) {
+        yield(event)
+    }
+
     private func yield(_ event: HandTrackingDerivedEvent) {
         emittedSignals.append(event)
         signalContinuation.yield(event)

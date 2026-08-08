@@ -107,6 +107,11 @@ final class AssetRegistry {
     private var cachedManifest: SpatialAssetManifest?
     private var cachedScenes: [SpatialSceneName: Entity] = [:]
 
+    /// The active semantic-slot mapping for practice assets. Swapping in a new
+    /// manikin/defibrillator/patch set replaces this descriptor; resolution of grid,
+    /// targets, and grabbable items flows through it rather than name literals.
+    var practiceAssetDescriptor: PracticeAssetDescriptor = .placeholderDescriptor
+
     init(
         bundle: Bundle = realityKitContentBundle,
         assetBundle: Bundle = .main,

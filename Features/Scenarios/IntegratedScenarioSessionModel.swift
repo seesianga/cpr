@@ -930,7 +930,8 @@ final class IntegratedScenarioSessionModel {
              .placementDwellConfirmed,
              .handStackingChanged,
              .interruptionMeasured,
-             .cadenceUpdated:
+             .cadenceUpdated,
+             .grabInteractionChanged:
             break
         }
     }

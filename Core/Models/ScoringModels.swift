@@ -91,6 +91,98 @@ struct ScoringPolicy: Codable, Sendable, Equatable {
     )
 }
 
+/// Evidence captured from additive physical interactions. It deliberately excludes
+/// compression depth, force, and recoil; Vision hand observations cannot assess them.
+struct PhysicalPerformanceEvidence: Codable, Sendable, Equatable {
+    let compressionPlacements: [CPRHandPlacementZone]
+    let compressionTimestamps: [Double]
+    let padPlacements: [AEDPhysicalPadPlacement]
+
+    var isEmpty: Bool {
+        compressionPlacements.isEmpty &&
+            compressionTimestamps.isEmpty &&
+            padPlacements.isEmpty
+    }
+}
+
+/// Source-traceable feedback policy. The cited guidance establishes the three assessed
+/// behaviours; equal weighting is an internal feedback convention and is not presented as
+/// a clinical priority or certification rule.
+struct PhysicalPerformancePolicy: Codable, Sendable, Equatable {
+    let cprLocationWeight: Double
+    let padPlacementWeight: Double
+    let tempoWeight: Double
+    /// Region-normalized error at which a pad's location feedback reaches zero.
+    let padErrorAtZeroScore: Double
+    let sourceReferences: [SourceReference]
+
+    static let sourceBacked = PhysicalPerformancePolicy(
+        cprLocationWeight: 1.0 / 3.0,
+        padPlacementWeight: 1.0 / 3.0,
+        tempoWeight: 1.0 / 3.0,
+        padErrorAtZeroScore: 1,
+        sourceReferences: [
+            SourceReference(
+                id: "policy-physical-cpr-location-v1",
+                document: "CA-Manual-REV-1-2022.pdf",
+                edition: "2022",
+                section: "2.2 (C) Chest Compressions",
+                page: "20",
+                reviewStatus: "source_checked",
+                reviewer: nil,
+                lastClinicalReviewDate: nil,
+                contentVersion: "1.0.0",
+                clinicalFactID: "fact.compression.site"
+            ),
+            SourceReference(
+                id: "policy-physical-pad-placement-v1",
+                document: "CA-Manual-REV-1-2022.pdf",
+                edition: "2022",
+                section: "3.4 Placement of AED Electrode Pads",
+                page: "34",
+                reviewStatus: "source_checked",
+                reviewer: nil,
+                lastClinicalReviewDate: nil,
+                contentVersion: "1.0.0",
+                clinicalFactID: "fact.aed.padPlacementAdult"
+            ),
+            SourceReference(
+                id: "policy-physical-cpr-tempo-v1",
+                document: "CA-Manual-REV-1-2022.pdf",
+                edition: "2022",
+                section: "2.2 (C) Chest Compressions",
+                page: "20",
+                reviewStatus: "source_checked",
+                reviewer: nil,
+                lastClinicalReviewDate: nil,
+                contentVersion: "1.0.0",
+                clinicalFactID: "fact.compression.rate"
+            )
+        ]
+    )
+}
+
+struct PhysicalPerformanceBreakdown: Codable, Sendable, Equatable {
+    /// Percentages are in 0...100. Nil means that interaction mode supplied no evidence;
+    /// it is never converted to a fabricated zero.
+    let cprLocationAccuracyPercentage: Double?
+    let padPlacementAccuracyPercentage: Double?
+    let padPlacementAccuracyBySidePercentage: [AEDPadSide: Double]
+    let tempoAccuracyPercentage: Double?
+    let compositePercentage: Double?
+    let compressionContactCount: Int
+    let xiphoidContactCount: Int
+    let tempoIntervalCount: Int
+    let sourceReferences: [SourceReference]
+}
+
+enum PhysicalPerformanceScoringError: Error, Codable, Sendable, Equatable {
+    case invalidPolicy
+    case invalidCompressionTimestamp
+    case mismatchedCompressionEvidence
+    case invalidPadPlacementEvidence
+}
+
 /// Practice-only feedback dimensions. These are deliberately separate from the
 /// integrated-scenario dimensions: CPR practice does not fabricate scene-safety,
 /// communication, AED, or call-timing evidence that the session did not collect.

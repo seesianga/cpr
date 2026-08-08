@@ -82,10 +82,49 @@ struct AEDPreparationChecklist: Codable, Equatable, Sendable {
     }
 }
 
+enum AEDPadSide: String, Codable, CaseIterable, Hashable, Sendable {
+    case right
+    case left
+
+    var expectedRegionID: TorsoRegionID {
+        switch self {
+        case .right: .padSiteRightClavicle
+        case .left: .padSiteLeftLateral
+        }
+    }
+}
+
+/// Immutable evidence from one physical pad release. A nil region/error pair means the
+/// learner released outside the configured snap tolerance. The normalized error is
+/// scale-independent and is never a distance in metres.
+struct AEDPhysicalPadPlacement: Codable, Equatable, Sendable {
+    let padSide: AEDPadSide
+    let regionID: TorsoRegionID?
+    let normalizedPlacementError: Double?
+
+    var isInCorrectRegion: Bool {
+        regionID == padSide.expectedRegionID
+    }
+
+    var hasValidEvidence: Bool {
+        switch (regionID, normalizedPlacementError) {
+        case let (.some, .some(error)):
+            error.isFinite && error >= 0
+        case (nil, nil):
+            true
+        case (.some, nil), (nil, .some):
+            false
+        }
+    }
+}
+
 enum AEDPracticeEvent: Codable, Equatable, Sendable {
     case pressPowerControl
     case performPreparation(AEDPreparationAction)
     case placePads(rightPadCorrect: Bool, leftPadCorrect: Bool)
+    /// Additive physical path. Region correctness remains reducer-owned; the feature layer
+    /// supplies semantic placement evidence rather than a precomputed correctness Boolean.
+    case placePhysicalPad(AEDPhysicalPadPlacement)
     case retryPadPlacement
     case interactiveAnalysisClearCheck(
         clearZoneActivated: Bool,
@@ -137,6 +176,7 @@ enum AEDPracticeRejectionReason: Codable, Equatable, Sendable {
     case interactiveClearCheckRequired
     case clearCheckIncomplete
     case unsupportedAnalysisOutcome(String)
+    case invalidPhysicalPadPlacement
 }
 
 enum AEDPracticeCriticalFailure: String, Codable, CaseIterable, Sendable {
@@ -161,6 +201,7 @@ struct AEDStateMachine: EventSourcedStateMachine {
     private(set) var resumeWindowHasExpired = false
     private(set) var criticalFailures: [AEDPracticeCriticalFailure] = []
     private(set) var analysisOutcome: AEDAnalysisOutcome?
+    private(set) var physicalPadPlacements: [AEDPadSide: AEDPhysicalPadPlacement] = [:]
 
     init(requiredChestConditions: Set<AEDChestCondition> = []) {
         preparation = AEDPreparationChecklist(requiredConditions: requiredChestConditions)
@@ -208,13 +249,52 @@ struct AEDStateMachine: EventSourcedStateMachine {
                 )
                 break
             }
+            // Accessible controls carry semantic correctness without claiming a measured
+            // physical error. Clear stale physical evidence before taking that path.
+            physicalPadPlacements.removeAll(keepingCapacity: false)
             state = rightPadCorrect && leftPadCorrect ? .padsCorrect : .padsIncorrect
             let remediation: AEDPracticeRemediation? = state == .padsIncorrect
                 ? Self.remediation(.padsIncorrect)
                 : nil
             outcome = .accepted(to: state, remediation: remediation)
 
+        case let (.awaitingPads, .placePhysicalPad(placement)):
+            guard preparation.isReadyForPads else {
+                let unresolved = preparation.unresolvedConditions.sorted {
+                    $0.rawValue < $1.rawValue
+                }
+                outcome = .rejected(
+                    reason: .unresolvedPreparation(unresolved),
+                    remediation: Self.remediation(.preparationIncomplete)
+                )
+                break
+            }
+            guard placement.hasValidEvidence else {
+                outcome = .rejected(
+                    reason: .invalidPhysicalPadPlacement,
+                    remediation: Self.remediation(.eventOutOfSequence)
+                )
+                break
+            }
+
+            physicalPadPlacements[placement.padSide] = placement
+            if !placement.isInCorrectRegion {
+                state = .padsIncorrect
+                outcome = .accepted(
+                    to: state,
+                    remediation: Self.remediation(.padsIncorrect)
+                )
+            } else if AEDPadSide.allCases.allSatisfy({ side in
+                physicalPadPlacements[side]?.isInCorrectRegion == true
+            }) {
+                state = .padsCorrect
+                outcome = .accepted(to: state, remediation: nil)
+            } else {
+                outcome = .accepted(to: state, remediation: nil)
+            }
+
         case (.padsIncorrect, .retryPadPlacement):
+            physicalPadPlacements.removeAll(keepingCapacity: false)
             state = .awaitingPads
             outcome = .accepted(to: state, remediation: nil)
 
@@ -395,6 +475,21 @@ struct AEDStateMachine: EventSourcedStateMachine {
             )
         }
 
+        let sortedPhysicalPads: [(side: AEDPadSide, placement: AEDPhysicalPadPlacement)] =
+            physicalPadPlacements
+                .map { (side: $0.key, placement: $0.value) }
+                .sorted { $0.side.rawValue < $1.side.rawValue }
+        let physicalPadRegions: String = sortedPhysicalPads
+            .map { "\($0.side.rawValue):\($0.placement.regionID?.rawValue ?? "outside")" }
+            .joined(separator: ",")
+        let physicalPadErrors: String = sortedPhysicalPads
+            .map { entry -> String in
+                let errorText = entry.placement.normalizedPlacementError
+                    .map { String($0) } ?? "unavailable"
+                return "\(entry.side.rawValue):\(errorText)"
+            }
+            .joined(separator: ",")
+
         let entry = StateMachineEventLogEntry(
             sequence: eventLog.count,
             stateBefore: stateBefore,
@@ -407,6 +502,8 @@ struct AEDStateMachine: EventSourcedStateMachine {
                     .map(\.rawValue)
                     .sorted()
                     .joined(separator: ","),
+                "physicalPadRegions": physicalPadRegions,
+                "physicalPadErrors": physicalPadErrors,
                 "criticalFailures": criticalFailures.map(\.rawValue).joined(separator: ",")
             ]
         )

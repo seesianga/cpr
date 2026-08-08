@@ -32,6 +32,7 @@ struct HandSignalDetector: Sendable {
     private var criticalPlacementDwellEmitted = false
 
     private var motionPhase: MotionPhase = .unknown
+    private var corridorExitStartedAt: Double?
     private var smoothedHeight: Float?
     private var previousHeight: Float?
     private var lastMotionTimestamp: Double?
@@ -101,6 +102,7 @@ struct HandSignalDetector: Sendable {
         contactChirality = nil
         resetCriticalPlacementDwell()
         resetMotion()
+        corridorExitStartedAt = nil
         lastCompressionTimestamp = nil
         recentCompressionTimestamps.removeAll(keepingCapacity: false)
     }
@@ -139,6 +141,7 @@ struct HandSignalDetector: Sendable {
             contactChirality = nil
             resetCriticalPlacementDwell()
             resetMotion()
+            corridorExitStartedAt = nil
             lastCompressionTimestamp = nil
             recentCompressionTimestamps.removeAll(keepingCapacity: false)
             return events
@@ -154,11 +157,22 @@ struct HandSignalDetector: Sendable {
             offset.y <= configuration.maximumHeightAboveTargetMetres &&
             offset.y >= -configuration.maximumDistanceBelowTargetMetres
 
-        guard isWithinTrackingCorridor else {
+        if isWithinTrackingCorridor {
+            corridorExitStartedAt = nil
+        } else {
+            // Natural drift briefly exits the corridor mid-cycle during real stacked-hand
+            // CPR. Within the configured grace window the oscillation phase state
+            // survives; only a sustained exit resets it (grace 0 = original behaviour).
             contactChirality = contact.chirality
             resetCriticalPlacementDwell()
-            resetMotion()
-            return events
+            let exitStartedAt = corridorExitStartedAt ?? timestampSeconds
+            corridorExitStartedAt = exitStartedAt
+            guard configuration.corridorExitGraceSeconds > 0,
+                  timestampSeconds - exitStartedAt <= configuration.corridorExitGraceSeconds
+            else {
+                resetMotion()
+                return events
+            }
         }
 
         if contactChirality != contact.chirality {

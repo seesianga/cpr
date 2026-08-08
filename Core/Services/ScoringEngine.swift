@@ -111,6 +111,97 @@ struct ScoringEngine: Sendable {
         )
     }
 
+    /// Builds additive spatial-interaction feedback inside the existing scoring service.
+    /// Missing dimensions are omitted from the weighted denominator so an accessible
+    /// fallback is never treated as failed physical evidence.
+    func physicalPerformanceBreakdown(
+        from evidence: PhysicalPerformanceEvidence,
+        policy: PhysicalPerformancePolicy = .sourceBacked,
+        cprPolicy: CPRPracticePolicy = .sourceBacked
+    ) throws -> PhysicalPerformanceBreakdown? {
+        guard !evidence.isEmpty else { return nil }
+        guard Self.hasValidPhysicalPolicy(policy) else {
+            throw PhysicalPerformanceScoringError.invalidPolicy
+        }
+        guard evidence.compressionPlacements.count == evidence.compressionTimestamps.count else {
+            throw PhysicalPerformanceScoringError.mismatchedCompressionEvidence
+        }
+        guard evidence.compressionTimestamps.allSatisfy({
+            $0.isFinite && $0 >= 0
+        }), zip(
+            evidence.compressionTimestamps,
+            evidence.compressionTimestamps.dropFirst()
+        ).allSatisfy({ $0.0 < $0.1 }) else {
+            throw PhysicalPerformanceScoringError.invalidCompressionTimestamp
+        }
+        guard evidence.padPlacements.allSatisfy(\.hasValidEvidence) else {
+            throw PhysicalPerformanceScoringError.invalidPadPlacementEvidence
+        }
+
+        let locationScore: Double? = if evidence.compressionPlacements.isEmpty {
+            nil
+        } else {
+            Double(evidence.compressionPlacements.filter { $0 == .sternumTarget }.count) /
+                Double(evidence.compressionPlacements.count)
+        }
+        let xiphoidCount = evidence.compressionPlacements.filter {
+            $0 == .xiphoidAvoidZone
+        }.count
+
+        let intervals = zip(
+            evidence.compressionTimestamps.dropFirst(),
+            evidence.compressionTimestamps
+        ).map { current, previous in current - previous }
+        let tempoScore: Double? = if intervals.isEmpty {
+            nil
+        } else {
+            Double(intervals.filter { interval in
+                cprPolicy.contains(rate: 60 / interval)
+            }.count) / Double(intervals.count)
+        }
+
+        var latestPadPlacementBySide: [AEDPadSide: AEDPhysicalPadPlacement] = [:]
+        for placement in evidence.padPlacements {
+            latestPadPlacementBySide[placement.padSide] = placement
+        }
+        let padScores = latestPadPlacementBySide.mapValues { placement -> Double in
+            guard placement.isInCorrectRegion,
+                  let error = placement.normalizedPlacementError
+            else { return 0 }
+            return max(0, min(1, 1 - error / policy.padErrorAtZeroScore))
+        }
+        let padScore: Double? = if padScores.isEmpty {
+            nil
+        } else {
+            padScores.values.reduce(0, +) / Double(padScores.count)
+        }
+
+        let weightedValues: [(score: Double?, weight: Double)] = [
+            (locationScore, policy.cprLocationWeight),
+            (padScore, policy.padPlacementWeight),
+            (tempoScore, policy.tempoWeight)
+        ]
+        let assessedWeight = weightedValues.reduce(0) { partial, value in
+            partial + (value.score == nil ? 0 : value.weight)
+        }
+        let weightedScore = weightedValues.reduce(0) { partial, value in
+            partial + (value.score ?? 0) * value.weight
+        }
+        let composite = assessedWeight > 0 ? weightedScore / assessedWeight : nil
+
+        return PhysicalPerformanceBreakdown(
+            cprLocationAccuracyPercentage: locationScore.map { $0 * 100 },
+            padPlacementAccuracyPercentage: padScore.map { $0 * 100 },
+            padPlacementAccuracyBySidePercentage: padScores.mapValues { $0 * 100 },
+            tempoAccuracyPercentage: tempoScore.map { $0 * 100 },
+            compositePercentage: composite.map { $0 * 100 },
+            compressionContactCount: evidence.compressionPlacements.count,
+            xiphoidContactCount: xiphoidCount,
+            tempoIntervalCount: intervals.count,
+            sourceReferences: policy.sourceReferences
+        )
+    }
+
     /// Produces an internal practice summary. Sensor errors or unverified connections
     /// degrade safely to "Not physically assessed" and never prevent session completion.
     func summarize(
@@ -225,6 +316,19 @@ struct ScoringEngine: Sendable {
               })
         else { return false }
         return true
+    }
+
+    private static func hasValidPhysicalPolicy(_ policy: PhysicalPerformancePolicy) -> Bool {
+        let weights = [
+            policy.cprLocationWeight,
+            policy.padPlacementWeight,
+            policy.tempoWeight
+        ]
+        return weights.allSatisfy { $0.isFinite && $0 >= 0 } &&
+            abs(weights.reduce(0, +) - 1) <= 0.000_001 &&
+            policy.padErrorAtZeroScore.isFinite &&
+            policy.padErrorAtZeroScore > 0 &&
+            !policy.sourceReferences.isEmpty
     }
 
     private static func physicalAssessments(
