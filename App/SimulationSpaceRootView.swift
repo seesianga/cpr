@@ -323,6 +323,20 @@ struct SimulationSpaceRootView: View {
                 await appModel.audioDirector.presentVisualCue(request.cue)
             }
         }
+        .onChange(of: aedSession.voicePromptRequest) { _, request in
+            guard let request else { return }
+            Task { @MainActor in
+                _ = try? await spatialAudioManager.play(
+                    request.prompt.cue,
+                    route: .aedVoice
+                )
+                spatialSpeechCaption = SpatialSpeechCaptionPlayback(
+                    cue: request.prompt.cue,
+                    startedAt: .now,
+                    rate: 1
+                )
+            }
+        }
         .onChange(of: integratedScenarioSession.aedState) { _, newState in
             Task { @MainActor in
                 await playSpatialAEDCue(for: newState)

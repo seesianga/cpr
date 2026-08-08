@@ -12,7 +12,9 @@ The key never enters this repository, the manifest, or generated files.
 Content safety: every narrated sentence is text already present in the approved course
 content JSON (Resources/Courses). Blocks whose reviewStatus is not `sourceChecked`
 are SKIPPED (captions-only until clinically approved). No dispatcher dialogue is
-invented: only text present in course data is voiced.
+invented: only text present in course data is voiced. The one addition is AED_PROMPTS
+below — project-authored generic AED trainer phrasing supplied by the product owner,
+kept in sync with AEDVoicePromptScript.swift and not sampled from any commercial device.
 
 Honesty: subjective voice quality requires operator listening; manifest rows carry
 approvalStatus "pending_operator_listening" until a human signs off.
@@ -57,7 +59,43 @@ VOICES = {
         "settings": {"stability": 0.80, "similarity_boost": 0.80, "style": 0.05,
                      "use_speaker_boost": True},
     },
+    "aed_trainer": {
+        # Simulated AED device voice: flat, clear, deliberate — high stability and zero
+        # style so every prompt sounds identical, the way a real device does. Premade
+        # library voice, commercially licensed via ElevenLabs subscription.
+        "voice_id": "EXAVITQu4vr4xnSDxMaL",  # Sarah — professional, calm, clear
+        "description": "AED trainer device voice — premade 'Sarah' at maximum-consistency "
+                       "settings for flat, deliberate device-style prompts.",
+        "model": "eleven_multilingual_v2",
+        "settings": {"stability": 0.85, "similarity_boost": 0.80, "style": 0.0,
+                     "use_speaker_boost": True},
+    },
 }
+
+# Simulated AED trainer voice prompts. Project-authored generic device phrasing supplied
+# by the product owner (2026-08-08), mirroring the standard real-world AED prompt flow
+# (startup guidance -> pads -> analysis -> shock/no-shock -> CPR coaching). The text is
+# deliberately generic and is NOT sampled from or an imitation of any commercial
+# device's recordings. Must stay in sync with AEDVoicePrompt.transcript in
+# Features/AEDPractice/AEDVoicePromptScript.swift (captions drive prompt pacing).
+AED_PROMPTS = [
+    ("sys.aed.call_for_help", "Call for help. Call emergency services now."),
+    ("sys.aed.remove_clothing", "Remove all clothing from the person's bare chest."),
+    ("sys.aed.look_at_pictures", "Look at the pictures on the pads."),
+    ("sys.aed.peel_pad", "Peel one pad from the liner."),
+    ("sys.aed.apply_pads", "Apply the pads to the patient's bare chest, exactly as shown in the pictures."),
+    ("sys.aed.plug_connector", "Plug in the pad connector."),
+    ("sys.aed.do_not_touch", "Do not touch the patient."),
+    ("sys.aed.analysing", "Analyzing heart rhythm. Do not touch the patient."),
+    ("sys.aed.shock_advised", "Shock advised. Stay clear of the patient."),
+    ("sys.aed.charging", "Charging. Stay clear of the patient."),
+    ("sys.aed.press_shock_button", "Stay clear. Press the flashing shock button now."),
+    ("sys.aed.shock_delivered", "Shock delivered."),
+    ("sys.aed.no_shock_advised", "No shock advised."),
+    ("sys.aed.begin_cpr", "Begin CPR. Start chest compressions."),
+    ("sys.aed.push_hard_and_fast", "Push hard and fast."),
+    ("sys.aed.keep_rhythm", "Keep rhythm. Follow the metronome."),
+]
 
 # Loudness targets (integrated LUFS / true peak dBTP)
 LOUDNESS = {
@@ -84,6 +122,8 @@ SFX = [
     ("sfx.aed_charging", "Abstract training-device charging ramp: smooth rising synthetic tone, restrained and serious, clearly generic training audio not imitating any commercial defibrillator, approximately 3 seconds.", 3.0, 0.45, False),
     ("sfx.clear_cue", "Distinct spatial 'stand clear' cue: firm single broadband pulse with short authoritative tail, serious but not frightening, approximately 1 second.", 1.0, 0.55, False),
     ("sfx.metronome", "Single clean compression-tempo metronome tick, woodblock-like with soft body, precise transient for rhythm keeping, a single very short tick then silence, half a second total.", 0.5, 0.65, False),
+    ("sfx.aed_power_on", "Medical training device power-on: one firm plastic button click followed by a short ascending two-tone self-test beep, clearly synthetic generic trainer tone, NOT imitating any commercial defibrillator, approximately 1.5 seconds.", 1.5, 0.5, False),
+    ("sfx.aed_shock_delivered", "Abstract simulated defibrillation event for a training device: brief muted electronic thump with a soft relay click and short decay, restrained and clearly generic training audio, NOT imitating any commercial defibrillator, approximately 1 second.", 1.0, 0.5, False),
     ("sfx.paramedic_arrival", "Approaching footsteps of two people with soft equipment-bag rustle and a calm door opening, no sirens, realistic room ambience, approximately 4 seconds.", 4.0, 0.4, False),
     ("sfx.debrief_transition", "Calm scene-transition whoosh into stillness, soft airy sweep with warm settle, approximately 2 seconds, contemplative educational atmosphere.", 2.0, 0.45, False),
 ]
@@ -164,6 +204,15 @@ def master(src_wav: str, dst_wav: str, target_lufs: float, true_peak: float) -> 
                     dst_wav], check=True)
 
 
+def encode_delivery(mastered_wav: str, asset_id: str, delivery_kind: str) -> None:
+    """Encode the 48 kHz master to the bundled AAC delivery file the app resolves."""
+    delivery_dir = os.path.join(AUDIO_DIR, "Delivery", delivery_kind)
+    os.makedirs(delivery_dir, exist_ok=True)
+    subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", mastered_wav,
+                    "-c:a", "aac", "-b:a", "192k",
+                    os.path.join(delivery_dir, f"{asset_id}.m4a")], check=True)
+
+
 def sha256(path: str) -> str:
     h = hashlib.sha256()
     with open(path, "rb") as fh:
@@ -239,6 +288,9 @@ def main() -> None:
                 "assets": []}
 
     units = collect_speech_units()
+    units += [{"id": pid, "role": "aed_trainer", "kind": "dialogue",
+               "purpose": "Simulated AED trainer voice prompt",
+               "text": text} for pid, text in AED_PROMPTS]
     log(f"{len(units)} speech units, {len(SFX)} sfx, {len(MUSIC)} music tracks")
     total_chars = sum(len(u["text"]) for u in units)
     log(f"speech characters to synthesise: {total_chars}")
@@ -267,6 +319,7 @@ def main() -> None:
         mastered = os.path.join(MASTER_DIR, u["kind"], f"{u['id']}.wav")
         os.makedirs(os.path.dirname(mastered), exist_ok=True)
         master(raw, mastered, target, tp)
+        encode_delivery(mastered, u["id"], u["kind"])
         meta = measure(mastered)
         caption = os.path.join(CAPTION_DIR, f"{u['id']}.vtt")
         write_vtt(caption, u["text"], meta["durationSeconds"] or 1.0)
@@ -315,6 +368,7 @@ def main() -> None:
         mastered = os.path.join(MASTER_DIR, "sfx", f"{sid}.wav")
         os.makedirs(os.path.dirname(mastered), exist_ok=True)
         master(raw, mastered, target, tp)
+        encode_delivery(mastered, sid, "sfx")
         meta = measure(mastered)
         manifest["assets"].append({
             "assetID": sid, "filename": os.path.relpath(mastered, ROOT),
@@ -351,6 +405,7 @@ def main() -> None:
         mastered = os.path.join(MASTER_DIR, "music", f"{mid}.wav")
         os.makedirs(os.path.dirname(mastered), exist_ok=True)
         master(raw, mastered, target, tp)
+        encode_delivery(mastered, mid, "music")
         meta = measure(mastered)
         manifest["assets"].append({
             "assetID": mid, "filename": os.path.relpath(mastered, ROOT),

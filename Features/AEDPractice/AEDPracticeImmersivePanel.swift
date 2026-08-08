@@ -2,6 +2,7 @@ import SwiftUI
 
 struct AEDPracticeImmersivePanel: View {
     @Environment(\.lifesaverVisualStyle) private var visualStyle
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     let model: AEDPracticeSessionModel
     let currentScene: SpatialSceneName
     let onRequestPlacementRoom: () -> Void
@@ -18,6 +19,12 @@ struct AEDPracticeImmersivePanel: View {
                 .accessibilityAddTraits(.isHeader)
             Text(model.guidanceBody)
                 .foregroundStyle(.secondary)
+
+            if let prompt = model.activeVoicePrompt {
+                Label("“\(prompt.transcript)”", systemImage: "speaker.wave.2.fill")
+                    .font(.callout.italic())
+                    .accessibilityLabel("AED trainer says: \(prompt.transcript)")
+            }
 
             if let explanation = model.handTrackingFallbackExplanation {
                 Label(explanation, systemImage: "hand.raised.slash")
@@ -198,6 +205,18 @@ struct AEDPracticeImmersivePanel: View {
                         Text(guidedCadenceText)
                             .font(.title3.monospacedDigit())
                     }
+                    if let travel = model.guidedContactTravelAverageMetres {
+                        VStack(alignment: .leading) {
+                            Text("Contact travel (virtual)")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                            Text("\(Int((travel * 1000).rounded())) mm")
+                                .font(.title3.monospacedDigit())
+                        }
+                        .accessibilityLabel(
+                            "Average virtual contact travel \(Int((travel * 1000).rounded())) millimetres; interaction distance, not a physical depth measurement"
+                        )
+                    }
                     Circle()
                         .fill(model.visualMetronomePulse ? Color.red : Color.blue)
                         .frame(width: model.visualMetronomePulse ? 32 : 24)
@@ -276,12 +295,31 @@ struct AEDPracticeImmersivePanel: View {
             .accessibilityHint("Alternative to gazing and pinching the clear-zone ring; this does not replace checking both bystanders")
 
             if model.state == .clearConfirmation {
-                Button("Press simulated shock control", systemImage: "bolt.trianglebadge.exclamationmark.fill") {
+                let shockArmed = model.clearZoneActivated && model.allBystandersConfirmedClear
+                Button {
                     model.pressSimulatedShockControl()
+                } label: {
+                    Label(
+                        shockArmed
+                            ? "Press the flashing shock button now"
+                            : "Press simulated shock control",
+                        systemImage: "bolt.circle.fill"
+                    )
+                    .symbolEffect(
+                        .pulse.byLayer,
+                        options: .repeating,
+                        isActive: shockArmed && !reduceMotion
+                    )
                 }
                 .buttonStyle(.borderedProminent)
-                .disabled(!model.clearZoneActivated || !model.allBystandersConfirmedClear)
+                .tint(shockArmed ? .red : nil)
+                .disabled(!shockArmed)
                 .accessibilityHint("Available only after the interactive ring sweep and both bystander confirmations")
+                .accessibilityLabel(
+                    shockArmed
+                        ? "Shock button armed and flashing. Press to deliver the simulated shock."
+                        : "Simulated shock control, not yet armed"
+                )
             }
         }
     }

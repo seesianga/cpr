@@ -105,6 +105,8 @@ struct AudioVisualState: Sendable, Equatable {
             "sfx.aed_analysis": ("AED analysis active", "[AED analysing]", "from the AED trainer"),
             "sfx.aed_case_open": ("AED case open", "[AED case opens]", "from the AED trainer"),
             "sfx.aed_charging": ("AED charging active", "[AED charging]", "from the AED trainer"),
+            "sfx.aed_power_on": ("AED trainer switched on", "[AED power-on self-test tone]", "from the AED trainer"),
+            "sfx.aed_shock_delivered": ("Simulated shock delivered", "[Simulated shock tone — no electricity]", "from the AED trainer"),
             "sfx.answer_correct": ("Answer recorded as correct", "[Correct-answer tone]", nil),
             "sfx.answer_incorrect": ("Answer needs review", "[Review-answer tone]", nil),
             "sfx.badge_unlocked": ("Internal badge earned", "[Internal badge earned]", nil),

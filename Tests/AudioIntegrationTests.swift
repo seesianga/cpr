@@ -245,6 +245,7 @@ final class AudioIntegrationTests: XCTestCase {
     func testMeaningfulSFXHaveVisualAndCaptionEquivalents() {
         let required = [
             "sfx.aed_analysis", "sfx.aed_case_open", "sfx.aed_charging",
+            "sfx.aed_power_on", "sfx.aed_shock_delivered",
             "sfx.answer_correct", "sfx.answer_incorrect", "sfx.badge_unlocked",
             "sfx.clear_cue", "sfx.connector_insert", "sfx.debrief_transition",
             "sfx.electrode_packet_open", "sfx.focus_confirm", "sfx.metronome",

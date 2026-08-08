@@ -931,7 +931,9 @@ final class IntegratedScenarioSessionModel {
              .handStackingChanged,
              .interruptionMeasured,
              .cadenceUpdated,
-             .grabInteractionChanged:
+             .grabInteractionChanged,
+             .compressionDistanceMeasured,
+             .compressionThresholdAdapted:
             break
         }
     }

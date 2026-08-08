@@ -32,6 +32,11 @@ final class CPRPracticeSessionModel {
     private var accumulatedPausedSeconds = 0.0
     private var pauseStartedAt: Double?
 
+    /// Rolling cap for the session-scoped per-compression distance log.
+    static let maximumRetainedDistanceSamples = 400
+    /// Counted samples averaged for the live "contact travel" coaching figure.
+    static let recentDistanceSampleWindow = 10
+
     private(set) var loadState: CPRPracticeSessionLoadState = .idle
     private(set) var handTrackingState: HandTrackingState = .idle
     private(set) var latestFeedback: String?
@@ -40,6 +45,12 @@ final class CPRPracticeSessionModel {
     private(set) var visualMetronomePulse = false
     private(set) var liveInterruptionSeconds = 0.0
     private(set) var isPaused = false
+    /// Per-descent distance records from the contact-cycle detector. Virtual-surface
+    /// interaction distances for coaching and threshold tuning — never a physical
+    /// compression-depth measurement.
+    private(set) var compressionDistanceLog: [CompressionDistanceSample] = []
+    /// The most recent clamped detector-threshold adjustment, if any occurred.
+    private(set) var latestThresholdAdaptation: CompressionThresholdAdaptation?
 
     init(
         handTracking: any HandTrackingServicing = HandTrackingService(),
@@ -70,6 +81,16 @@ final class CPRPracticeSessionModel {
         content?.cprPolicy.preferredCompressionsPerCycle ?? 100
     }
     var handTrackingFallbackExplanation: String? { handTrackingState.fallbackExplanation }
+
+    /// Mean descent travel (metres) over the recent counted samples, for live display.
+    var recentContactTravelAverageMetres: Double? {
+        let counted = compressionDistanceLog
+            .filter(\.countedAsCompression)
+            .suffix(Self.recentDistanceSampleWindow)
+        guard !counted.isEmpty else { return nil }
+        let total = counted.reduce(0.0) { $0 + Double($1.descentDistanceMetres) }
+        return total / Double(counted.count)
+    }
 
     func setAudioDirector(_ audioDirector: any AudioDirector) {
         self.audioDirector = audioDirector
@@ -117,6 +138,8 @@ final class CPRPracticeSessionModel {
         summary = nil
         gamificationDecision = nil
         latestFeedback = nil
+        compressionDistanceLog.removeAll(keepingCapacity: false)
+        latestThresholdAdaptation = nil
         resetAttemptClocks()
         do {
             let loaded = try PracticeMachineContentContract.loadBundled(from: bundle)
@@ -391,6 +414,31 @@ final class CPRPracticeSessionModel {
                     handStacking: stacking
                 )
             )
+        case let .compressionDistanceMeasured(sample):
+            recordDistanceSample(sample)
+        case let .compressionThresholdAdapted(adaptation):
+            latestThresholdAdaptation = adaptation
+            latestFeedback = Self.thresholdAdaptationFeedback(adaptation)
+        }
+    }
+
+    private func recordDistanceSample(_ sample: CompressionDistanceSample) {
+        compressionDistanceLog.append(sample)
+        if compressionDistanceLog.count > Self.maximumRetainedDistanceSamples {
+            compressionDistanceLog.removeFirst(
+                compressionDistanceLog.count - Self.maximumRetainedDistanceSamples
+            )
+        }
+    }
+
+    private static func thresholdAdaptationFeedback(
+        _ adaptation: CompressionThresholdAdaptation
+    ) -> String {
+        switch adaptation.reason {
+        case .nearMissDescentsAboveEntryBand:
+            "Several presses stopped just above the virtual chest surface, so the trainer widened its contact-detection range. Keep pressing through to the highlighted target."
+        case .shallowCyclesBelowReleaseHysteresis:
+            "Your contact cycles were travelling a very short distance, so the trainer relaxed its release filter to keep counting your rhythm. Aim for fuller strokes with complete release."
         }
     }
 

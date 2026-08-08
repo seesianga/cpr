@@ -286,8 +286,10 @@ struct RollingCadenceEstimator: Sendable, Equatable {
     }
 }
 
-/// Derived practice signals. Deliberately absent: compression depth, force, recoil distance,
-/// raw hand transforms, and raw joint positions.
+/// Derived practice signals. Deliberately absent: physical compression depth, force,
+/// raw hand transforms, and raw joint positions. The contact-cycle distance telemetry
+/// below measures travel against the VIRTUAL torso surface for coaching feedback and
+/// detector tuning; it is interaction geometry, never a physical chest measurement.
 enum HandTrackingDerivedEvent: Codable, Equatable, Sendable {
     case trackingAvailabilityChanged(isAvailable: Bool)
     case placementChanged(CPRHandPlacementZone)
@@ -303,6 +305,12 @@ enum HandTrackingDerivedEvent: Codable, Equatable, Sendable {
     )
     case cadenceUpdated(ratePerMinute: Double)
     case grabInteractionChanged(GrabInteractionSample)
+    /// One completed (or near-miss) contact descent with its measured virtual travel,
+    /// recorded so session models can log distances and coach from them.
+    case compressionDistanceMeasured(CompressionDistanceSample)
+    /// The contact detector widened or relaxed a clamped filter because logged
+    /// distances showed real motion was being missed.
+    case compressionThresholdAdapted(CompressionThresholdAdaptation)
 
     /// The exact event accepted by the pure CPR state machine, when this signal represents a
     /// detected compression. The state machine remains authoritative for cadence and scoring.
@@ -321,7 +329,9 @@ enum HandTrackingDerivedEvent: Codable, Equatable, Sendable {
              .placementDwellConfirmed,
              .handStackingChanged,
              .cadenceUpdated,
-             .grabInteractionChanged:
+             .grabInteractionChanged,
+             .compressionDistanceMeasured,
+             .compressionThresholdAdapted:
             nil
         }
     }

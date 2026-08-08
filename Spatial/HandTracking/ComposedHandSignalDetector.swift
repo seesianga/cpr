@@ -52,7 +52,7 @@ struct ComposedHandSignalDetector: Sendable {
             oscillationEvents: oscillationEvents,
             contactCompressions: contactCompressions,
             grabSamples: grabSamples
-        )
+        ) + drainDistanceTelemetryEvents()
     }
 
     /// Atomically updates both hands for deterministic simulator and unit-test input.
@@ -89,7 +89,23 @@ struct ComposedHandSignalDetector: Sendable {
             oscillationEvents: oscillationEvents,
             contactCompressions: contactCompressions,
             grabSamples: grabSamples
+        ) + drainDistanceTelemetryEvents()
+    }
+
+    /// The rolling distance log recorded by the contact-cycle detector.
+    var compressionDistanceLog: [CompressionDistanceSample] {
+        contactDetector.distanceLog
+    }
+
+    private mutating func drainDistanceTelemetryEvents() -> [HandTrackingDerivedEvent] {
+        let telemetry = contactDetector.drainDistanceTelemetry()
+        var events = telemetry.samples.map(
+            HandTrackingDerivedEvent.compressionDistanceMeasured
         )
+        if let adaptation = telemetry.adaptation {
+            events.append(.compressionThresholdAdapted(adaptation))
+        }
+        return events
     }
 
     mutating func reset(at timestampSeconds: Double = 0) -> [HandTrackingDerivedEvent] {
@@ -130,6 +146,10 @@ struct ComposedHandSignalDetector: Sendable {
                 )
             case .interruptionMeasured, .cadenceUpdated:
                 // Re-derived below from the deduplicated compression stream.
+                break
+            case .compressionDistanceMeasured, .compressionThresholdAdapted:
+                // Contact-detector telemetry only; drained separately, never produced
+                // by the oscillation detector.
                 break
             case .trackingAvailabilityChanged,
                  .placementChanged,

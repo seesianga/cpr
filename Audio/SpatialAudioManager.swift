@@ -3,6 +3,9 @@ import RealityKit
 
 enum SpatialAudioRoute: Sendable, Equatable {
     case aedUnit
+    /// The AED trainer's spoken prompts. A separate route from `aedUnit` so device
+    /// alert tones do not cut off an in-flight voice prompt on the same emitter.
+    case aedVoice
     case companionGuide
     case roomAmbience
     case paramedicDoor
@@ -52,6 +55,21 @@ final class SpatialAudioManager {
                 )
             )
             routeEntities[.aedUnit] = aed
+
+            // Voice prompts share the AED's emitter position on a child entity so a
+            // prompt and an alert tone can overlap without stopping each other.
+            let voiceEmitter = Entity()
+            voiceEmitter.name = "aed_voice_audio_anchor"
+            voiceEmitter.components.set(
+                SpatialAudioComponent(
+                    gain: 0,
+                    directLevel: 0,
+                    reverbLevel: -9,
+                    directivity: .beam(focus: 0.45)
+                )
+            )
+            aed.addChild(voiceEmitter)
+            routeEntities[.aedVoice] = voiceEmitter
         }
 
         if let guide = firstEntity(named: "companion_orb_bot", in: root) {

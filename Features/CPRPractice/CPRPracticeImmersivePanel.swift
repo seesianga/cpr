@@ -122,6 +122,21 @@ struct CPRPracticeImmersivePanel: View {
                 Text("Compressions").font(.caption).foregroundStyle(.secondary)
                 Text("\(model.metrics.totalCompressions)").font(.title3.monospacedDigit())
             }
+            if let travel = model.recentContactTravelAverageMetres {
+                VStack(alignment: .leading) {
+                    Text("Contact travel (virtual)")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                    Text("\(Int((travel * 1000).rounded())) mm")
+                        .font(.title3.monospacedDigit())
+                    Text("Interaction distance, not physical depth")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                }
+                .accessibilityLabel(
+                    "Average virtual contact travel \(Int((travel * 1000).rounded())) millimetres; interaction distance, not a physical depth measurement"
+                )
+            }
             VStack(alignment: .leading) {
                 Text("Rate band").font(.caption).foregroundStyle(.secondary)
                 Text(rateText).font(.title3.monospacedDigit())

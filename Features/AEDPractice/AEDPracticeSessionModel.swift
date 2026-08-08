@@ -36,6 +36,13 @@ struct AEDSpatialCueRequest: Identifiable, Sendable, Equatable {
     let cue: AudioCue
 }
 
+/// A voice prompt the simulated AED trainer should speak from its unit position.
+/// A fresh identity is minted per emission so repeated prompts re-trigger playback.
+struct AEDVoicePromptRequest: Identifiable, Sendable, Equatable {
+    let id = UUID()
+    let prompt: AEDVoicePrompt
+}
+
 /// Coordinates authored AED room interactions while the pure reducer owns every safety gate.
 @MainActor
 @Observable
@@ -71,6 +78,9 @@ final class AEDPracticeSessionModel {
     private var padSidesByItemIdentifier: [String: AEDPadSide] = [:]
     private var powerButtonItemIdentifier: String?
     private var grabItemPositions: [String: SIMD3<Float>] = [:]
+    private var promptQueue: [AEDPromptStep] = []
+    private var promptTask: Task<Void, Never>?
+    private let promptStepDuration: @MainActor (AEDPromptStep) -> TimeInterval
 
     private(set) var loadState: AEDPracticeSessionLoadState = .idle
     private(set) var latestFeedback: String?
@@ -88,20 +98,54 @@ final class AEDPracticeSessionModel {
     private(set) var guidedCadencePerMinute: Double?
     private(set) var guidedInterruptionSeconds = 0.0
     private(set) var visualMetronomePulse = false
+    /// Rolling cap shared with the CPR practice distance log.
+    static let maximumRetainedDistanceSamples = 400
+    /// Per-descent distance records captured during the guided resume-compressions
+    /// coaching. Virtual-surface interaction distances — never physical depth.
+    private(set) var guidedCompressionDistanceLog: [CompressionDistanceSample] = []
+    /// The most recent clamped detector-threshold adjustment, if any occurred.
+    private(set) var latestThresholdAdaptation: CompressionThresholdAdaptation?
     /// The pad currently following a physical pinch, for the immersive view to render.
     private(set) var activePadGrab: AEDPadGrabPresentation?
     /// Set when a released pad snapped to a grid region; the view applies the position
     /// and then acknowledges it.
     private(set) var padSnapPresentation: AEDPadSnapPresentation?
+    /// The voice prompt currently being spoken from the AED unit, published for
+    /// spatial playback by the immersive root view.
+    private(set) var voicePromptRequest: AEDVoicePromptRequest?
+    /// The prompt whose transcript the panel shows while the trainer speaks.
+    private(set) var activeVoicePrompt: AEDVoicePrompt?
+    /// Ordered record of every prompt step the trainer has played this session.
+    private(set) var voicePromptHistory: [AEDPromptStep] = []
 
     init(
         handTracking: any HandTrackingServicing = HandTrackingService(),
         resumeCoachingDelay: Duration = defaultResumeCoachingDelay,
-        audioDirector: any AudioDirector = NoOpAudioDirector()
+        audioDirector: any AudioDirector = NoOpAudioDirector(),
+        promptStepDuration: (@MainActor (AEDPromptStep) -> TimeInterval)? = nil
     ) {
         self.handTracking = handTracking
         self.resumeCoachingDelay = resumeCoachingDelay
         self.audioDirector = audioDirector
+        self.promptStepDuration = promptStepDuration
+            ?? Self.captionPacedPromptStepDuration
+    }
+
+    /// Default pacing: a voice step holds the queue for its bundled caption-track
+    /// duration (plus a breathing gap); alert tones hold a fixed short interval.
+    @MainActor
+    static func captionPacedPromptStepDuration(_ step: AEDPromptStep) -> TimeInterval {
+        switch step {
+        case let .voice(prompt):
+            let trackEnd = BundleCaptionResolver()
+                .track(for: prompt.rawValue)?
+                .cues.last?
+                .endTime
+            return (trackEnd ?? AEDVoicePromptScript.fallbackVoiceStepSeconds)
+                + AEDVoicePromptScript.interPromptGapSeconds
+        case .alertTone:
+            return AEDVoicePromptScript.fallbackAlertStepSeconds
+        }
     }
 
     func setAudioDirector(_ audioDirector: any AudioDirector) {
@@ -135,6 +179,15 @@ final class AEDPracticeSessionModel {
         guard !guidedTempoBands.isEmpty else { return nil }
         let inBand = guidedTempoBands.filter { $0 == .withinSupportedBand }.count
         return Double(inBand) / Double(guidedTempoBands.count)
+    }
+    /// Mean descent travel (metres) over recent counted guided compressions.
+    var guidedContactTravelAverageMetres: Double? {
+        let counted = guidedCompressionDistanceLog
+            .filter(\.countedAsCompression)
+            .suffix(10)
+        guard !counted.isEmpty else { return nil }
+        let total = counted.reduce(0.0) { $0 + Double($1.descentDistanceMetres) }
+        return total / Double(counted.count)
     }
     var handTrackingFallbackExplanation: String? { handTrackingState.fallbackExplanation }
 
@@ -210,6 +263,8 @@ final class AEDPracticeSessionModel {
     func prepare(from bundle: Bundle = .main) {
         clearResumeCoachingTimer()
         stopMetronome()
+        stopPromptPlayback()
+        voicePromptHistory.removeAll(keepingCapacity: false)
         resetGuidedCompressionEvidence()
         do {
             let loaded = try PracticeMachineContentContract.loadBundled(from: bundle)
@@ -513,6 +568,7 @@ final class AEDPracticeSessionModel {
     func stop() {
         clearResumeCoachingTimer()
         stopMetronome()
+        stopPromptPlayback()
         signalTask?.cancel()
         signalTask = nil
         activePadGrab = nil
@@ -595,6 +651,21 @@ final class AEDPracticeSessionModel {
 
         case let .grabInteractionChanged(sample):
             handleGrabInteraction(sample)
+
+        case let .compressionDistanceMeasured(sample):
+            guard state == .noShockAdvised ||
+                    state == .simulatedShock ||
+                    state == .resumeCompressions
+            else { return }
+            guidedCompressionDistanceLog.append(sample)
+            if guidedCompressionDistanceLog.count > Self.maximumRetainedDistanceSamples {
+                guidedCompressionDistanceLog.removeFirst(
+                    guidedCompressionDistanceLog.count - Self.maximumRetainedDistanceSamples
+                )
+            }
+
+        case let .compressionThresholdAdapted(adaptation):
+            latestThresholdAdaptation = adaptation
 
         case .placementChanged,
              .placementDwellConfirmed,
@@ -732,6 +803,8 @@ final class AEDPracticeSessionModel {
         guidedCadencePerMinute = nil
         guidedInterruptionSeconds = 0
         visualMetronomePulse = false
+        guidedCompressionDistanceLog.removeAll(keepingCapacity: false)
+        latestThresholdAdaptation = nil
     }
 
     private func restartHandTrackingAfterPause() {
@@ -830,13 +903,77 @@ final class AEDPracticeSessionModel {
         let entry = machine.handle(event)
         self.machine = machine
         switch entry.outcome {
-        case let .accepted(_, remediation):
+        case let .accepted(newState, remediation):
             latestFeedback = remediation?.message
+            enqueuePromptSteps(
+                AEDVoicePromptScript.steps(for: newState, acceptedEvent: event),
+                interrupting: true
+            )
         case let .rejected(_, remediation):
             latestFeedback = remediation.message
         }
         updateAudioSafety(for: entry)
         return entry
+    }
+
+    // MARK: - AED trainer voice prompts
+
+    /// Interruption mirrors a real device: a new safety-relevant transition replaces
+    /// whatever the trainer was still saying. Steps with no content never interrupt.
+    private func enqueuePromptSteps(_ steps: [AEDPromptStep], interrupting: Bool) {
+        guard !steps.isEmpty else { return }
+        if interrupting {
+            promptTask?.cancel()
+            promptTask = nil
+            promptQueue.removeAll(keepingCapacity: true)
+        }
+        promptQueue.append(contentsOf: steps)
+        startPromptPlaybackIfNeeded()
+    }
+
+    private func startPromptPlaybackIfNeeded() {
+        guard promptTask == nil else { return }
+        promptTask = Task { [weak self] in
+            while !Task.isCancelled {
+                guard let self else { return }
+                if self.isPaused {
+                    try? await Task.sleep(for: .milliseconds(150))
+                    continue
+                }
+                guard !self.promptQueue.isEmpty else {
+                    self.activeVoicePrompt = nil
+                    self.promptTask = nil
+                    return
+                }
+                let step = self.promptQueue.removeFirst()
+                self.playPromptStep(step)
+                let holdSeconds = self.promptStepDuration(step)
+                if holdSeconds > 0 {
+                    try? await Task.sleep(for: .seconds(holdSeconds))
+                } else {
+                    await Task.yield()
+                }
+            }
+        }
+    }
+
+    private func playPromptStep(_ step: AEDPromptStep) {
+        voicePromptHistory.append(step)
+        switch step {
+        case let .voice(prompt):
+            activeVoicePrompt = prompt
+            voicePromptRequest = AEDVoicePromptRequest(prompt: prompt)
+        case let .alertTone(cue):
+            requestSpatialCue(cue.rawValue)
+        }
+    }
+
+    private func stopPromptPlayback() {
+        promptTask?.cancel()
+        promptTask = nil
+        promptQueue.removeAll(keepingCapacity: false)
+        activeVoicePrompt = nil
+        voicePromptRequest = nil
     }
 
     private func updateAudioSafety(
