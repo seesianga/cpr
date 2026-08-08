@@ -45,6 +45,8 @@ struct CPRPracticeImmersivePanel: View {
     let model: CPRPracticeSessionModel
     let reduceMotion: Bool
     let learnerID: String
+    let onRestart: () -> Void
+    let onReturnToDashboard: () -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
@@ -57,6 +59,12 @@ struct CPRPracticeImmersivePanel: View {
             Text(model.guidanceBody)
                 .foregroundStyle(.secondary)
 
+            if let explanation = model.handTrackingFallbackExplanation {
+                Label(explanation, systemImage: "hand.raised.slash")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+            }
+
             switch model.loadState {
             case .idle, .loading:
                 ProgressView("Loading source-backed practice…")
@@ -65,12 +73,6 @@ struct CPRPracticeImmersivePanel: View {
                     .lifesaverStatusChip(.critical)
             case .ready:
                 practiceContent
-            }
-
-            if let explanation = model.handTrackingFallbackExplanation {
-                Label(explanation, systemImage: "hand.raised.slash")
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
             }
 
             if model.summary == nil {
@@ -87,6 +89,7 @@ struct CPRPracticeImmersivePanel: View {
         .frame(maxWidth: 560)
         .padding(24)
         .glassBackgroundEffect()
+        .disabled(model.isPaused)
     }
 
     @ViewBuilder
@@ -94,6 +97,10 @@ struct CPRPracticeImmersivePanel: View {
         if let summary = model.summary {
             summaryView(summary)
         } else {
+            if model.state == .compressionCycles,
+               model.handTrackingState != .running {
+                recordCompressionButton
+            }
             metricsStrip
             controls
         }
@@ -185,12 +192,9 @@ struct CPRPracticeImmersivePanel: View {
 
         case .compressionCycles:
             VStack(alignment: .leading, spacing: 10) {
-                Button("Record compression", systemImage: "hand.tap.fill") {
-                    model.recordFallbackCompression()
+                if model.handTrackingState == .running {
+                    recordCompressionButton
                 }
-                .buttonStyle(.borderedProminent)
-                .controlSize(.large)
-                .accessibilityHint("Tap repeatedly for cadence feedback when hand tracking is unavailable")
                 HStack {
                     Button("Start short rest", systemImage: "timer") {
                         model.startRest()
@@ -226,30 +230,52 @@ struct CPRPracticeImmersivePanel: View {
 
     private func summaryView(_ summary: CPRPracticeSessionSummary) -> some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text(summary.recordLabel).font(.headline)
-            Text("Internal feedback score")
-                .font(.caption)
-                .foregroundStyle(.secondary)
-            Text(summary.scoreOutcome.percentage / 100, format: .percent.precision(.fractionLength(0)))
-                .font(.largeTitle.monospacedDigit())
-            Text("Compressions: \(summary.totalCompressions) · cycles: \(summary.completedCycles)")
-            if let averageCadence = summary.averageCadencePerMinute {
-                Text("Average interaction cadence: \(Int(averageCadence.rounded()))/min")
+            Group {
+                Text(summary.recordLabel).font(.headline)
+                Text("Internal feedback score")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                Text(summary.scoreOutcome.percentage / 100, format: .percent.precision(.fractionLength(0)))
+                    .font(.largeTitle.monospacedDigit())
+                Text("Compressions: \(summary.totalCompressions) · cycles: \(summary.completedCycles)")
+                if let averageCadence = summary.averageCadencePerMinute {
+                    Text("Average interaction cadence: \(Int(averageCadence.rounded()))/min")
+                }
+                Text("Longest interruption: \(summary.longestInterruptionSeconds.formatted(.number.precision(.fractionLength(1)))) s")
+                Label("Depth: \(summary.depthAssessment.statusLabel)", systemImage: "ruler")
+                Label("Force: \(summary.forceAssessment.statusLabel)", systemImage: "gauge.with.dots.needle.33percent")
+                Label("Recoil: Not physically assessed", systemImage: "arrow.up.and.down")
+                if let decision = model.gamificationDecision {
+                    Text("XP awarded by learning rules: \(decision.xpAwarded)")
+                } else {
+                    Text("No XP awarded")
+                }
+                Text(summary.certificationNotice)
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
             }
-            Text("Longest interruption: \(summary.longestInterruptionSeconds.formatted(.number.precision(.fractionLength(1)))) s")
-            Label("Depth: \(summary.depthAssessment.statusLabel)", systemImage: "ruler")
-            Label("Force: \(summary.forceAssessment.statusLabel)", systemImage: "gauge.with.dots.needle.33percent")
-            Label("Recoil: Not physically assessed", systemImage: "arrow.up.and.down")
-            if let decision = model.gamificationDecision {
-                Text("XP awarded by learning rules: \(decision.xpAwarded)")
-            } else {
-                Text("No XP awarded")
+            .accessibilityElement(children: .combine)
+
+            HStack {
+                Button("Practise again", systemImage: "arrow.counterclockwise") {
+                    onRestart()
+                }
+                .buttonStyle(.borderedProminent)
+                Button("Return to dashboard", systemImage: "rectangle.portrait.and.arrow.right") {
+                    onReturnToDashboard()
+                }
+                .buttonStyle(.bordered)
             }
-            Text(summary.certificationNotice)
-                .font(.footnote)
-                .foregroundStyle(.secondary)
         }
-        .accessibilityElement(children: .combine)
+    }
+
+    private var recordCompressionButton: some View {
+        Button("Record compression", systemImage: "hand.tap.fill") {
+            model.recordFallbackCompression()
+        }
+        .buttonStyle(.borderedProminent)
+        .controlSize(.large)
+        .accessibilityHint("Tap repeatedly for cadence feedback when hand tracking is unavailable")
     }
 
     private var rateText: String {

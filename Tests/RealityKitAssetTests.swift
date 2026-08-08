@@ -430,7 +430,13 @@ final class RealityKitAssetTests: XCTestCase {
         )
         XCTAssertEqual(
             Set(scenario.filter(\.isActionable).map(\.name)),
-            ["bystander_01", "bystander_02", "sternum_target", "xiphoid_avoid_zone"]
+            [
+                "training_manikin", "bystander_01", "bystander_02",
+                "sternum_target", "xiphoid_avoid_zone",
+                "aed_right_pad_zone", "aed_left_pad_zone", "aed_case", "aed_unit",
+                "aed_power_button", "aed_shock_button", "aed_status_light", "aed_connector",
+                "aed_left_pad", "aed_right_pad", "clear_zone"
+            ]
         )
         XCTAssertTrue(registry.aedTrainerAccessibilityContracts().allSatisfy(\.isActionable))
     }

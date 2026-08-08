@@ -22,6 +22,7 @@ struct DashboardRootView: View {
     @Environment(AuthenticationModel.self) private var authenticationModel
     @Environment(\.scenePhase) private var scenePhase
     @State private var selection: Destination? = .learnerDashboard
+    @State private var detailPath = NavigationPath()
 
     private var role: Role {
         authenticationModel.currentUser?.role ?? .learner
@@ -62,9 +63,13 @@ struct DashboardRootView: View {
             }
             .navigationTitle("Lifesaver Vision")
         } detail: {
-            NavigationStack {
+            NavigationStack(path: $detailPath) {
                 destinationView
             }
+            .id(selection)
+        }
+        .onChange(of: selection) { _, _ in
+            detailPath = NavigationPath()
         }
         .onChange(of: scenePhase, initial: true) { _, newPhase in
             appModel.handleScenePhase(newPhase)

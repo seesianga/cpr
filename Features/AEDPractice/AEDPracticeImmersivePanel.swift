@@ -5,6 +5,8 @@ struct AEDPracticeImmersivePanel: View {
     let model: AEDPracticeSessionModel
     let currentScene: SpatialSceneName
     let onRequestPlacementRoom: () -> Void
+    let onRestart: () -> Void
+    let onReturnToDashboard: () -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: 13) {
@@ -187,6 +189,16 @@ struct AEDPracticeImmersivePanel: View {
                     .lifesaverStatusChip(.success)
                 Text("This is not SRFAC certification. Practical competency requires instructor sign-off.")
                     .font(.footnote)
+                HStack {
+                    Button("Practise again", systemImage: "arrow.counterclockwise") {
+                        onRestart()
+                    }
+                    .buttonStyle(.borderedProminent)
+                    Button("Return to dashboard", systemImage: "rectangle.portrait.and.arrow.right") {
+                        onReturnToDashboard()
+                    }
+                    .buttonStyle(.bordered)
+                }
             }
 
         case nil:

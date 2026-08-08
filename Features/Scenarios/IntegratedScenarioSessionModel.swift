@@ -43,6 +43,7 @@ extension IntegratedScenarioScene {
 @MainActor
 @Observable
 final class IntegratedScenarioSessionModel {
+    private let handTracking: any HandTrackingServicing
     private(set) var engine: ScenarioEngine?
     private(set) var stage: IntegratedScenarioStage = .sceneSafety
     private(set) var correction: ScenarioCriticalCorrection?
@@ -55,6 +56,7 @@ final class IntegratedScenarioSessionModel {
     private(set) var isPaused = false
     private(set) var isLoneRescuer = false
     private(set) var cprCompressionCount = 0
+    private(set) var handTrackingState: HandTrackingState = .idle
     private(set) var scoringDecision: ScenarioScoringDecision = .practiceOnly(.notVerified)
     let requiredCompressionCount = CPRPracticePolicy.sourceBacked.preferredCompressionsPerCycle
     var selectedBystanderAssignment: ScenarioBystanderAssignment = .getAED
@@ -63,15 +65,29 @@ final class IntegratedScenarioSessionModel {
     private var cprPositioningComplete = false
     private var cprLandmarkConfirmed = false
     private var cprStartedAtUptime: TimeInterval?
+    private var handTimestampOffset: TimeInterval?
+    private var accumulatedPausedSeconds = 0.0
+    private var pauseStartedAt: TimeInterval?
     private var isAEDCycleReadyForAnalysis = false
+    private var isHandTrackingSceneActive = false
+    private var handObservationFallbackExplanation: String?
+    private var signalTask: Task<Void, Never>?
     private var audioDirector: (any AudioDirector)?
     private var audioCommandTask: Task<Void, Never>?
+
+    init(handTracking: any HandTrackingServicing = HandTrackingService()) {
+        self.handTracking = handTracking
+    }
 
     var eventLog: [IntegratedScenarioEventRecord] { engine?.eventLog ?? [] }
     var scenarioTitle: String { engine?.definition.title ?? "Integrated scenario" }
     var aedState: AEDPracticeState? { engine?.aedState }
     var selectedPatternID: String? { engine?.selectedPattern.id }
     var totalAnalysisRounds: Int { engine?.selectedPattern.analysisOutcomes.count ?? 0 }
+    var scenarioScene: IntegratedScenarioScene? { engine?.scene ?? debrief?.scene }
+    var handTrackingFallbackExplanation: String? {
+        handTrackingState.fallbackExplanation ?? handObservationFallbackExplanation
+    }
 
     func prepare(
         scenarioID: String,
@@ -80,6 +96,12 @@ final class IntegratedScenarioSessionModel {
         modelContainer: ModelContainer? = nil,
         bundle: Bundle = .main
     ) async {
+        guard !Task.isCancelled else { return }
+        audioCommandTask?.cancel()
+        audioCommandTask = nil
+        clearAttemptState()
+        self.audioDirector = audioDirector
+        startSignalConsumerIfNeeded()
         do {
             let document = try ScenarioDefinitionsCodec.load(from: bundle)
             let gate = ScenarioScoringGate()
@@ -99,30 +121,17 @@ final class IntegratedScenarioSessionModel {
                 )
             }
 
-            audioCommandTask?.cancel()
-            audioCommandTask = nil
+            guard !Task.isCancelled else {
+                stop()
+                return
+            }
+
             engine = try ScenarioEngine(
                 document: document,
                 scenarioID: scenarioID,
                 selector: DeterministicScenarioPatternSelector(patternID: patternID)
             )
             scoringDecision = decision
-            self.audioDirector = audioDirector
-            stage = .sceneSafety
-            correction = nil
-            debrief = nil
-            lastAnalysisOutcome = nil
-            analysisRound = 0
-            callAssigned = false
-            aedRetrievalAssigned = false
-            isLoneRescuer = false
-            cprPositioningComplete = false
-            cprLandmarkConfirmed = false
-            cprCompressionCount = 0
-            cprStartedAtUptime = nil
-            isAEDCycleReadyForAnalysis = false
-            isPaused = false
-            errorMessage = nil
             enqueueAudioCommand { director in
                 _ = await director.play(
                     AudioPlaybackRequest(
@@ -137,6 +146,52 @@ final class IntegratedScenarioSessionModel {
             scoringDecision = .practiceOnly(.contentUnavailable)
             errorMessage = "The approved scenario definition could not be prepared."
         }
+    }
+
+    /// Clears all attempt evidence and returns the coordinator to its launch stage.
+    /// The caller can immediately invoke `prepare` to begin a fresh in-session attempt.
+    func reset() async {
+        audioCommandTask?.cancel()
+        audioCommandTask = nil
+        let director = audioDirector
+        clearAttemptState()
+        if let director {
+            await director.setAEDSafetyState(.normal)
+            await director.setSafetyCriticalCorrectionActive(false)
+        }
+    }
+
+    func configureHandTracking(targets: HandTrackingTargets) {
+        isHandTrackingSceneActive = true
+        handTimestampOffset = nil
+        handObservationFallbackExplanation = nil
+        handTracking.configure(targets: targets)
+        handTrackingState = handTracking.state
+    }
+
+    func startHandTracking() async {
+        guard isHandTrackingSceneActive, !isPaused else { return }
+        startSignalConsumerIfNeeded()
+        await handTracking.start()
+        handTrackingState = handTracking.state
+    }
+
+    /// Stops only the current provider run. The stable signal consumer remains ready for
+    /// an in-session restart after the debrief room returns to the authored scenario room.
+    func stopHandTracking() {
+        isHandTrackingSceneActive = false
+        handTimestampOffset = nil
+        handTracking.stop()
+        handTrackingState = handTracking.state
+        handObservationFallbackExplanation = nil
+    }
+
+    func stop() {
+        stopHandTracking()
+        signalTask?.cancel()
+        signalTask = nil
+        audioCommandTask?.cancel()
+        audioCommandTask = nil
     }
 
     func assessScene(unsafeEntry: Bool) {
@@ -377,7 +432,9 @@ final class IntegratedScenarioSessionModel {
 
     func performCPR(
         unsafeXiphoidPlacement: Bool,
-        timestampSeconds: TimeInterval? = nil
+        timestampSeconds: TimeInterval? = nil,
+        handStacking: CPRHandStackingHeuristic = .likelyStacked,
+        uptimeSeconds: TimeInterval = ProcessInfo.processInfo.systemUptime
     ) {
         guard !isPaused, stage == .cpr else { return }
         guard var engine else { return }
@@ -393,7 +450,7 @@ final class IntegratedScenarioSessionModel {
         if unsafeXiphoidPlacement {
             let placement: IntegratedScenarioEventRecord
             if cprLandmarkConfirmed {
-                let now = ProcessInfo.processInfo.systemUptime
+                let now = activeClock(at: uptimeSeconds)
                 if cprStartedAtUptime == nil { cprStartedAtUptime = now }
                 let elapsed = timestampSeconds ?? max(
                     0,
@@ -403,7 +460,7 @@ final class IntegratedScenarioSessionModel {
                     CPRPracticeEvent.compressionDetected(
                         timestampSeconds: elapsed,
                         placement: .xiphoidAvoidZone,
-                        handStacking: .likelyStacked
+                        handStacking: handStacking
                     )
                 )
             } else {
@@ -432,14 +489,14 @@ final class IntegratedScenarioSessionModel {
             }
             cprLandmarkConfirmed = true
         }
-        let now = ProcessInfo.processInfo.systemUptime
+        let now = activeClock(at: uptimeSeconds)
         if cprStartedAtUptime == nil { cprStartedAtUptime = now }
         let elapsed = timestampSeconds ?? max(0, now - (cprStartedAtUptime ?? now))
         let compression = engine.submit(
             CPRPracticeEvent.compressionDetected(
                 timestampSeconds: elapsed,
                 placement: .sternumTarget,
-                handStacking: .likelyStacked
+                handStacking: handStacking
             )
         )
         guard compression.wasAccepted else {
@@ -668,6 +725,7 @@ final class IntegratedScenarioSessionModel {
             case .cpr:
                 try requireAccepted(engine.submit(CPRPracticeEvent.acknowledgeCorrection))
                 cprLandmarkConfirmed = false
+                handTimestampOffset = nil
             case .aed:
                 break
             }
@@ -792,8 +850,134 @@ final class IntegratedScenarioSessionModel {
         errorMessage = "This action could not be accepted by the source-backed scenario engine."
     }
 
-    func setPaused(_ paused: Bool) {
-        isPaused = paused
+    func setPaused(
+        _ paused: Bool,
+        at timestampSeconds: TimeInterval = ProcessInfo.processInfo.systemUptime
+    ) async {
+        guard isPaused != paused else { return }
+        if paused {
+            isPaused = true
+            pauseStartedAt = timestampSeconds
+            handTimestampOffset = nil
+        } else {
+            if let pauseStartedAt {
+                accumulatedPausedSeconds += max(0, timestampSeconds - pauseStartedAt)
+            }
+            self.pauseStartedAt = nil
+            isPaused = false
+            handTimestampOffset = nil
+        }
+        guard isHandTrackingSceneActive else { return }
+        if paused {
+            handTracking.pause()
+        } else {
+            await handTracking.start()
+        }
+        handTrackingState = handTracking.state
+    }
+
+    private func startSignalConsumerIfNeeded() {
+        guard signalTask == nil else { return }
+        let signals = handTracking.signals
+        signalTask = Task { [weak self] in
+            for await signal in signals {
+                guard !Task.isCancelled, let self else { return }
+                consume(signal)
+            }
+        }
+    }
+
+    private func consume(_ signal: HandTrackingDerivedEvent) {
+        switch signal {
+        case let .trackingAvailabilityChanged(isAvailable):
+            handTrackingState = handTracking.state
+            guard isHandTrackingSceneActive, handTrackingState != .idle else {
+                handObservationFallbackExplanation = nil
+                return
+            }
+            if isAvailable {
+                handObservationFallbackExplanation = nil
+            } else if handTrackingState.fallbackExplanation != nil {
+                handObservationFallbackExplanation = nil
+            } else {
+                handObservationFallbackExplanation = "Hand observations are temporarily unavailable. Continue with the accessible compression control."
+            }
+
+        case let .compressionDetected(timestamp, placement, stacking):
+            guard !isPaused,
+                  isHandTrackingSceneActive,
+                  handTrackingState == .running,
+                  stage == .cpr
+            else { return }
+            switch placement {
+            case .sternumTarget:
+                performCPR(
+                    unsafeXiphoidPlacement: false,
+                    timestampSeconds: normalizedHandTimestamp(timestamp),
+                    handStacking: stacking
+                )
+            case .xiphoidAvoidZone:
+                performCPR(
+                    unsafeXiphoidPlacement: true,
+                    timestampSeconds: normalizedHandTimestamp(timestamp),
+                    handStacking: stacking
+                )
+            case .outsideTarget, .unavailable:
+                break
+            }
+
+        case .placementChanged,
+             .placementDwellConfirmed,
+             .handStackingChanged,
+             .interruptionMeasured,
+             .cadenceUpdated:
+            break
+        }
+    }
+
+    private func normalizedHandTimestamp(_ sourceTimestamp: TimeInterval) -> TimeInterval {
+        let now = activeClock(at: ProcessInfo.processInfo.systemUptime)
+        if cprStartedAtUptime == nil {
+            cprStartedAtUptime = now
+        }
+        let currentElapsed = max(0, now - (cprStartedAtUptime ?? now))
+        if handTimestampOffset == nil {
+            handTimestampOffset = currentElapsed - sourceTimestamp
+        }
+        return max(0, sourceTimestamp + (handTimestampOffset ?? 0))
+    }
+
+    private func activeClock(at timestampSeconds: TimeInterval) -> TimeInterval {
+        let currentPause = pauseStartedAt.map {
+            max(0, timestampSeconds - $0)
+        } ?? 0
+        return max(0, timestampSeconds - accumulatedPausedSeconds - currentPause)
+    }
+
+    private func clearAttemptState() {
+        engine = nil
+        stage = .sceneSafety
+        stageBeforeCorrection = .sceneSafety
+        correction = nil
+        debrief = nil
+        lastAnalysisOutcome = nil
+        analysisRound = 0
+        errorMessage = nil
+        callAssigned = false
+        aedRetrievalAssigned = false
+        isPaused = false
+        isLoneRescuer = false
+        cprCompressionCount = 0
+        scoringDecision = .practiceOnly(.notVerified)
+        selectedBystanderAssignment = .getAED
+        cprPositioningComplete = false
+        cprLandmarkConfirmed = false
+        cprStartedAtUptime = nil
+        handTimestampOffset = nil
+        accumulatedPausedSeconds = 0
+        pauseStartedAt = nil
+        isAEDCycleReadyForAnalysis = false
+        handTrackingState = handTracking.state
     }
 }
 
@@ -809,6 +993,8 @@ enum BreathingPresentation: String, Sendable, CaseIterable, Identifiable {
 struct IntegratedScenarioImmersivePanel: View {
     let model: IntegratedScenarioSessionModel
     let awardState: DebriefAwardPersistenceState
+    let onRestart: () -> Void
+    let onReturnToDashboard: () -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: 13) {
@@ -844,7 +1030,22 @@ struct IntegratedScenarioImmersivePanel: View {
                     .accessibilityAddTraits(.isHeader)
             }
 
+            if let explanation = model.handTrackingFallbackExplanation {
+                Label(explanation, systemImage: "hand.raised.slash")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+            }
+
             stageContent
+
+            if model.stage != .debrief {
+                Divider()
+                Button("Restart scenario", systemImage: "arrow.counterclockwise") {
+                    onRestart()
+                }
+                .buttonStyle(.bordered)
+                .accessibilityHint("Clears this attempt and restarts the same scenario")
+            }
         }
         .frame(maxWidth: 640, alignment: .leading)
         .padding(24)
@@ -940,16 +1141,31 @@ struct IntegratedScenarioImmersivePanel: View {
 
         case .cpr:
             Text("Confirm the source-backed hand-placement zone and begin hands-only CPR. Depth and force are Not physically assessed.")
+            if model.handTrackingState != .running {
+                Button("Record a sternum compression beat", systemImage: "heart.fill") {
+                    model.performCPR(unsafeXiphoidPlacement: false)
+                }
+                .buttonStyle(.borderedProminent)
+                .controlSize(.large)
+                .accessibilityHint("Visible alternative when automatic hand observations are unavailable")
+            }
             Label(
                 "Recorded compressions: \(model.cprCompressionCount) of \(model.requiredCompressionCount)",
                 systemImage: model.cprCompressionCount >= model.requiredCompressionCount
                     ? "checkmark.circle.fill"
                     : "metronome"
             )
-            buttonGrid([
-                ("Record a sternum compression beat", "heart.fill", { model.performCPR(unsafeXiphoidPlacement: false) }),
-                ("Use xiphoid avoid zone", "exclamationmark.triangle", { model.performCPR(unsafeXiphoidPlacement: true) })
-            ])
+            if model.handTrackingState == .running {
+                buttonGrid([
+                    ("Record a sternum compression beat", "heart.fill", { model.performCPR(unsafeXiphoidPlacement: false) }),
+                    ("Use xiphoid avoid zone", "exclamationmark.triangle", { model.performCPR(unsafeXiphoidPlacement: true) })
+                ])
+            } else {
+                Button("Use xiphoid avoid zone", systemImage: "exclamationmark.triangle") {
+                    model.performCPR(unsafeXiphoidPlacement: true)
+                }
+                .buttonStyle(.bordered)
+            }
 
         case .aedPreparation:
             Text("Switch on the simulated AED first, complete the presented preparation checks, apply both simulated pads, and follow the trainer prompts.")
@@ -1049,9 +1265,29 @@ struct IntegratedScenarioImmersivePanel: View {
 
         case .debrief:
             if let debrief = model.debrief {
-                DebriefView(debrief: debrief, awardState: awardState)
-                    .frame(maxHeight: 560)
+                VStack(alignment: .leading, spacing: 12) {
+                    DebriefView(debrief: debrief, awardState: awardState)
+                        .frame(maxHeight: 480)
+                    HStack {
+                        Button("Restart scenario", systemImage: "arrow.counterclockwise") {
+                            onRestart()
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .disabled(isAwardPersistenceInFlight)
+                        Button("Return to dashboard", systemImage: "rectangle.portrait.and.arrow.right") {
+                            onReturnToDashboard()
+                        }
+                        .buttonStyle(.bordered)
+                    }
+                }
             }
+        }
+    }
+
+    private var isAwardPersistenceInFlight: Bool {
+        switch awardState {
+        case .pending, .saving: true
+        case .saved, .practiceOnly, .failed: false
         }
     }
 

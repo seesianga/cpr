@@ -20,6 +20,7 @@
 		0727B73082FADA7D1397A586 /* nar.M4-B4.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 3686A206501439E107171445 /* nar.M4-B4.m4a */; };
 		0824E2396A9F1629BFD2B4E8 /* headband.usdz in CopyFiles */ = {isa = PBXBuildFile; fileRef = 2C49E5952EB4D31B07826293 /* headband.usdz */; };
 		08C51299235D3B308BA92E67 /* ClinicalContentAndExportTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23D300E714D9A79713F4FBE5 /* ClinicalContentAndExportTests.swift */; };
+		A8C08A08123456789ABCDEF0 /* HandNavigationRemediationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8C08A09123456789ABCDEF0 /* HandNavigationRemediationTests.swift */; };
 		09AD5DF8A1F347663C2EC2B0 /* sfx.badge_unlocked.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 9498BDE72F4601D2A2EF7F39 /* sfx.badge_unlocked.m4a */; };
 		0A73E9810163DB68D273F78F /* SwiftDataModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B80330B316C610B9D0D074C /* SwiftDataModels.swift */; };
 		0BCF139548925253D9BCB44E /* badge_m04.usdz in CopyFiles */ = {isa = PBXBuildFile; fileRef = 685BB65B1E91F1215C81DBD3 /* badge_m04.usdz */; };
@@ -476,6 +477,7 @@
 		0BBD008FC1BF4E6102D306C0 /* accessibility-text-block.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "accessibility-text-block.usdz"; sourceTree = "<group>"; };
 		0C22858BC202ECBC898A8D72 /* portal_m06.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = portal_m06.usdz; sourceTree = "<group>"; };
 		0CC4C141810AE13647635AE6 /* SwiftDataRepositoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftDataRepositoryTests.swift; sourceTree = "<group>"; };
+		A8C08A09123456789ABCDEF0 /* HandNavigationRemediationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HandNavigationRemediationTests.swift; sourceTree = "<group>"; };
 		0D2AB538AFC2E0E409E650B4 /* sys.scenario-b-shopping-centre-feedback-resume.m4a */ = {isa = PBXFileReference; path = "sys.scenario-b-shopping-centre-feedback-resume.m4a"; sourceTree = "<group>"; };
 		0E060FE87F8682C4F1AD8636 /* sys.scenario-a-home-feedback-resume.m4a */ = {isa = PBXFileReference; path = "sys.scenario-a-home-feedback-resume.m4a"; sourceTree = "<group>"; };
 		0E1544059E4720A07EEB08ED /* nar.M6-B1.m4a */ = {isa = PBXFileReference; path = "nar.M6-B1.m4a"; sourceTree = "<group>"; };
@@ -1276,6 +1278,7 @@
 				97CE72015BC303A436C9AEAE /* CourseContentValidationTests.swift */,
 				F69F1BA2EDAC8DEA2DEC5726 /* CPRPracticeSessionModelTests.swift */,
 				E5C15D8E97AB0A1174FD2A4C /* DRSABCPracticeSessionModelTests.swift */,
+				A8C08A09123456789ABCDEF0 /* HandNavigationRemediationTests.swift */,
 				B60CF26E226FA9076209F80F /* HandTrackingTests.swift */,
 				09B2727DDBFA417FE5887075 /* LessonPlayerTests.swift */,
 				485EC33251720F743FA78A97 /* LifesaverVisionTests.swift */,
@@ -2071,6 +2074,7 @@
 				08C51299235D3B308BA92E67 /* ClinicalContentAndExportTests.swift in Sources */,
 				55F54844E539B713CB9D405A /* CourseContentValidationTests.swift in Sources */,
 				E84C8175EC02BE3C05480946 /* DRSABCPracticeSessionModelTests.swift in Sources */,
+				A8C08A08123456789ABCDEF0 /* HandNavigationRemediationTests.swift in Sources */,
 				FFF32A00F806449751C7DA87 /* HandTrackingTests.swift in Sources */,
 				98631A592C5ED8CCFADA99E7 /* LessonPlayerTests.swift in Sources */,
 				F47929C9FA6E10B78A66F6F3 /* LifesaverVisionTests.swift in Sources */,

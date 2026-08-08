@@ -28,6 +28,72 @@ protocol HandTrackingServicing: AnyObject {
     func stop()
 }
 
+enum HandTrackingAuthorizationDecision: Sendable, Equatable {
+    case allowed
+    case denied
+    case unavailable
+}
+
+enum HandTrackingProviderLifecycleState: Sendable, Equatable {
+    case initialized
+    case running
+    case paused
+    case stopped
+}
+
+/// Main-actor ARKit operations injected as one runtime so lifecycle behaviour can be
+/// verified on the simulator without claiming that simulator hand tracking is available.
+struct HandTrackingRuntime {
+    let observesLiveProviderStreams: Bool
+    let isSupported: @MainActor () -> Bool
+    let makeSession: @MainActor () -> ARKitSession
+    let makeProvider: @MainActor () -> HandTrackingProvider
+    let requestAuthorization: @MainActor (ARKitSession) async -> HandTrackingAuthorizationDecision
+    let run: @MainActor (ARKitSession, HandTrackingProvider) async throws -> Void
+    let stop: @MainActor (ARKitSession) -> Void
+
+    init(
+        observesLiveProviderStreams: Bool = true,
+        isSupported: @escaping @MainActor () -> Bool,
+        makeSession: @escaping @MainActor () -> ARKitSession,
+        makeProvider: @escaping @MainActor () -> HandTrackingProvider,
+        requestAuthorization: @escaping @MainActor (ARKitSession) async -> HandTrackingAuthorizationDecision,
+        run: @escaping @MainActor (ARKitSession, HandTrackingProvider) async throws -> Void,
+        stop: @escaping @MainActor (ARKitSession) -> Void
+    ) {
+        self.observesLiveProviderStreams = observesLiveProviderStreams
+        self.isSupported = isSupported
+        self.makeSession = makeSession
+        self.makeProvider = makeProvider
+        self.requestAuthorization = requestAuthorization
+        self.run = run
+        self.stop = stop
+    }
+
+    @MainActor
+    static let live = HandTrackingRuntime(
+        observesLiveProviderStreams: true,
+        isSupported: { HandTrackingProvider.isSupported },
+        makeSession: { ARKitSession() },
+        makeProvider: { HandTrackingProvider() },
+        requestAuthorization: { session in
+            let authorization = await session.requestAuthorization(for: [.handTracking])
+            return switch authorization[.handTracking] {
+            case .allowed: .allowed
+            case .denied: .denied
+            case .notDetermined, .none: .unavailable
+            @unknown default: .unavailable
+            }
+        },
+        run: { session, provider in
+            try await session.run([provider])
+        },
+        stop: { session in
+            session.stop()
+        }
+    )
+}
+
 /// Owns the real ARKit session used for optional hand-derived CPR guidance.
 ///
 /// Privacy boundary: `HandAnchor`, `HandSkeleton`, and individual joint transforms exist only
@@ -36,26 +102,23 @@ protocol HandTrackingServicing: AnyObject {
 /// persisted, audited, or exposed to feature views.
 @MainActor
 final class HandTrackingService: HandTrackingServicing {
-    private let session: ARKitSession
-    private let provider: HandTrackingProvider
+    private let runtime: HandTrackingRuntime
     private let signalContinuation: AsyncStream<HandTrackingDerivedEvent>.Continuation
 
     let signals: AsyncStream<HandTrackingDerivedEvent>
     private(set) var state: HandTrackingState = .idle
 
     private var targets: HandTrackingTargets?
+    private var currentSession: ARKitSession?
+    private var currentProvider: HandTrackingProvider?
     private var processor: HandSignalProcessor?
     private var anchorReductionTask: Task<Void, Never>?
     private var anchorUpdateTask: Task<Void, Never>?
     private var sessionEventTask: Task<Void, Never>?
     private var lifecycleGeneration = 0
 
-    init(
-        session: ARKitSession = ARKitSession(),
-        provider: HandTrackingProvider = HandTrackingProvider()
-    ) {
-        self.session = session
-        self.provider = provider
+    init(runtime: HandTrackingRuntime = .live) {
+        self.runtime = runtime
         let stream = AsyncStream.makeStream(
             of: HandTrackingDerivedEvent.self,
             bufferingPolicy: .bufferingNewest(128)
@@ -65,7 +128,7 @@ final class HandTrackingService: HandTrackingServicing {
     }
 
     func configure(targets: HandTrackingTargets) {
-        if state == .running || state == .requestingPermission {
+        if state == .running || state == .requestingPermission || currentSession != nil {
             pause()
         }
         self.targets = targets
@@ -77,77 +140,126 @@ final class HandTrackingService: HandTrackingServicing {
             transitionToFallback(.failed(message: "The CPR practice targets are unavailable."))
             return
         }
-        guard HandTrackingProvider.isSupported else {
+        guard runtime.isSupported() else {
             transitionToFallback(.unavailable)
             return
         }
 
+        // A provider-originated pause keeps its event stream alive so recovery can be
+        // observed. An explicit retry supersedes that retained run and must stop it first.
+        if currentSession != nil {
+            lifecycleGeneration &+= 1
+            cancelAnchorTasks()
+            processor = nil
+            releaseCurrentRunResources()
+        }
         lifecycleGeneration &+= 1
         let runGeneration = lifecycleGeneration
-        beginSessionEventMonitoringIfNeeded()
+        let session = runtime.makeSession()
+        let provider = runtime.makeProvider()
+        currentSession = session
+        currentProvider = provider
+        if runtime.observesLiveProviderStreams {
+            beginSessionEventMonitoring(
+                session: session,
+                provider: provider,
+                runGeneration: runGeneration
+            )
+        }
         state = .requestingPermission
-        let authorization = await session.requestAuthorization(for: [.handTracking])
-        guard runGeneration == lifecycleGeneration,
-              state == .requestingPermission
+        let authorization = await runtime.requestAuthorization(session)
+        guard !Task.isCancelled else {
+            cancelRunIfCurrent(
+                session: session,
+                provider: provider,
+                generation: runGeneration
+            )
+            return
+        }
+        guard isCurrentRunResources(
+            session: session,
+            provider: provider,
+            generation: runGeneration,
+            expectedState: .requestingPermission
+        )
         else { return }
 
-        switch authorization[.handTracking] {
+        switch authorization {
         case .allowed:
             do {
                 let processor = HandSignalProcessor(
                     detector: HandSignalDetector(targets: targets)
                 )
-                try await session.run([provider])
-                guard runGeneration == lifecycleGeneration,
-                      state == .requestingPermission
-                else {
-                    stopSessionUnlessAnotherRunStarted()
+                try await runtime.run(session, provider)
+                guard !Task.isCancelled else {
+                    cancelRunIfCurrent(
+                        session: session,
+                        provider: provider,
+                        generation: runGeneration
+                    )
                     return
                 }
+                guard isCurrentRunResources(
+                    session: session,
+                    provider: provider,
+                    generation: runGeneration,
+                    expectedState: .requestingPermission
+                ) else { return }
                 self.processor = processor
                 state = .running
-                beginAnchorUpdates(
-                    using: processor,
-                    runGeneration: runGeneration
-                )
+                if runtime.observesLiveProviderStreams {
+                    beginAnchorUpdates(
+                        provider: provider,
+                        using: processor,
+                        runGeneration: runGeneration
+                    )
+                }
             } catch {
+                if error is CancellationError || Task.isCancelled {
+                    cancelRunIfCurrent(
+                        session: session,
+                        provider: provider,
+                        generation: runGeneration
+                    )
+                    return
+                }
                 guard runGeneration == lifecycleGeneration else { return }
                 transitionToFallback(.failed(message: error.localizedDescription))
             }
         case .denied:
             transitionToFallback(.permissionDenied)
-        case .notDetermined, .none:
-            transitionToFallback(.unavailable)
-        @unknown default:
+        case .unavailable:
             transitionToFallback(.unavailable)
         }
     }
 
     func pause() {
-        guard state == .running || state == .requestingPermission else { return }
+        let hasProviderWaitingForRecovery = state == .paused && currentSession != nil
+        guard state == .running ||
+                state == .requestingPermission ||
+                hasProviderWaitingForRecovery
+        else { return }
         lifecycleGeneration &+= 1
         cancelAnchorTasks()
         processor = nil
         state = .paused
-        session.stop()
+        releaseCurrentRunResources()
     }
 
     func stop() {
         lifecycleGeneration &+= 1
         cancelAnchorTasks()
-        sessionEventTask?.cancel()
-        sessionEventTask = nil
         processor = nil
-        session.stop()
         state = .idle
+        releaseCurrentRunResources()
     }
 
     private func beginAnchorUpdates(
+        provider: HandTrackingProvider,
         using processor: HandSignalProcessor,
         runGeneration: Int
     ) {
         cancelAnchorTasks()
-        let provider = provider
         let reducedObservations = AsyncStream.makeStream(
             of: TrackedPalmObservation.self,
             bufferingPolicy: .bufferingNewest(32)
@@ -165,33 +277,39 @@ final class HandTrackingService: HandTrackingServicing {
             }
         }
 
-        let signalContinuation = signalContinuation
         anchorUpdateTask = Task.detached(priority: .userInitiated) { [weak self] in
             for await observation in reducedObservations.stream {
                 guard !Task.isCancelled else { return }
                 let events = await processor.process(observation)
-                guard !Task.isCancelled,
-                      await self?.isCurrentRun(runGeneration) == true
-                else { return }
-                for event in events {
-                    signalContinuation.yield(event)
-                }
+                guard !Task.isCancelled else { return }
+                await self?.publish(events, for: runGeneration)
             }
         }
     }
 
-    private func beginSessionEventMonitoringIfNeeded() {
-        guard sessionEventTask == nil else { return }
-        let session = session
+    private func beginSessionEventMonitoring(
+        session: ARKitSession,
+        provider: HandTrackingProvider,
+        runGeneration: Int
+    ) {
+        sessionEventTask?.cancel()
         sessionEventTask = Task { [weak self] in
             for await event in session.events {
                 guard let self, !Task.isCancelled else { return }
-                handleSessionEvent(event)
+                guard isCurrentRunResources(
+                    session: session,
+                    provider: provider,
+                    generation: runGeneration
+                ) else { return }
+                handleSessionEvent(event, provider: provider)
             }
         }
     }
 
-    private func handleSessionEvent(_ event: ARKitSession.Event) {
+    private func handleSessionEvent(
+        _ event: ARKitSession.Event,
+        provider: HandTrackingProvider
+    ) {
         switch event {
         case let .authorizationChanged(type, status):
             guard type == .handTracking else { return }
@@ -213,18 +331,16 @@ final class HandTrackingService: HandTrackingServicing {
             guard concernsHandTracking else { return }
 
             switch newState {
-            case .running, .initialized:
-                break
+            case .initialized:
+                handleProviderLifecycleChange(.initialized)
+            case .running:
+                handleProviderLifecycleChange(.running)
             case .paused:
-                guard state == .running else { return }
-                lifecycleGeneration &+= 1
-                cancelAnchorTasks()
-                processor = nil
-                state = .paused
+                handleProviderLifecycleChange(.paused)
             case .stopped:
-                guard state == .running || state == .requestingPermission else { return }
-                transitionToFallback(
-                    .failed(message: error?.localizedDescription ?? "The hand-tracking provider stopped unexpectedly.")
+                handleProviderLifecycleChange(
+                    .stopped,
+                    errorMessage: error?.localizedDescription
                 )
             @unknown default:
                 transitionToFallback(.unavailable)
@@ -234,12 +350,44 @@ final class HandTrackingService: HandTrackingServicing {
         }
     }
 
+    /// Internal adapter seam shared by live ARKit events and simulator lifecycle tests.
+    /// Live callers establish provider identity before forwarding a state change here.
+    func handleProviderLifecycleChange(
+        _ newState: HandTrackingProviderLifecycleState,
+        errorMessage: String? = nil
+    ) {
+        guard currentSession != nil, currentProvider != nil else { return }
+        switch newState {
+        case .initialized:
+            break
+        case .running:
+            guard state == .paused else { return }
+            restartAfterProviderRecovery()
+        case .paused:
+            guard state == .running || state == .requestingPermission else { return }
+            cancelAnchorTasks()
+            processor = nil
+            state = .paused
+            signalContinuation.yield(.trackingAvailabilityChanged(isAvailable: false))
+        case .stopped:
+            guard state == .running ||
+                    state == .requestingPermission ||
+                    state == .paused
+            else { return }
+            transitionToFallback(
+                .failed(
+                    message: errorMessage ?? "The hand-tracking provider stopped unexpectedly."
+                )
+            )
+        }
+    }
+
     private func transitionToFallback(_ fallbackState: HandTrackingState) {
         lifecycleGeneration &+= 1
         cancelAnchorTasks()
         processor = nil
         state = fallbackState
-        session.stop()
+        releaseCurrentRunResources()
         signalContinuation.yield(.trackingAvailabilityChanged(isAvailable: false))
     }
 
@@ -250,13 +398,73 @@ final class HandTrackingService: HandTrackingServicing {
         anchorUpdateTask = nil
     }
 
-    private func isCurrentRun(_ generation: Int) -> Bool {
-        generation == lifecycleGeneration && state == .running
+    private func publish(
+        _ events: [HandTrackingDerivedEvent],
+        for generation: Int
+    ) {
+        guard generation == lifecycleGeneration, state == .running else { return }
+        for event in events {
+            signalContinuation.yield(event)
+        }
     }
 
-    private func stopSessionUnlessAnotherRunStarted() {
-        guard state != .requestingPermission, state != .running else { return }
-        session.stop()
+    private func isCurrentRunResources(
+        session: ARKitSession,
+        provider: HandTrackingProvider,
+        generation: Int,
+        expectedState: HandTrackingState? = nil
+    ) -> Bool {
+        guard generation == lifecycleGeneration,
+              currentSession === session,
+              currentProvider === provider
+        else { return false }
+        return expectedState.map { state == $0 } ?? true
+    }
+
+    private func releaseCurrentRunResources() {
+        sessionEventTask?.cancel()
+        sessionEventTask = nil
+        let session = currentSession
+        currentSession = nil
+        currentProvider = nil
+        if let session {
+            runtime.stop(session)
+        }
+    }
+
+    private func cancelRunIfCurrent(
+        session: ARKitSession,
+        provider: HandTrackingProvider,
+        generation: Int
+    ) {
+        guard isCurrentRunResources(
+            session: session,
+            provider: provider,
+            generation: generation
+        ) else { return }
+        lifecycleGeneration &+= 1
+        cancelAnchorTasks()
+        processor = nil
+        state = .idle
+        releaseCurrentRunResources()
+    }
+
+    /// ARKit may pause a provider when observations become unavailable. Keep the event
+    /// monitor alive long enough to observe recovery, then replace the stopped run with
+    /// a new session/provider pair instead of attempting to reuse ARKit provider state.
+    private func restartAfterProviderRecovery() {
+        lifecycleGeneration &+= 1
+        let recoveryGeneration = lifecycleGeneration
+        cancelAnchorTasks()
+        processor = nil
+        releaseCurrentRunResources()
+        Task { [weak self] in
+            guard let self,
+                  lifecycleGeneration == recoveryGeneration,
+                  state == .paused
+            else { return }
+            await start()
+        }
     }
 }
 

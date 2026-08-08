@@ -650,10 +650,22 @@ private extension AssetRegistry {
             return enablingActivation(
                 manikinTargets + padPlacementTargets + aedControls + scenarioPeople + clearZone,
                 actionsByName: [
+                    "training_manikin": "Check the training manikin for responsiveness when prompted.",
                     "bystander_01": "Assign the selected simulated task to bystander one.",
                     "bystander_02": "Assign the selected simulated task to bystander two.",
                     "sternum_target": "Perform the current simulated CPR action at the placement target.",
-                    "xiphoid_avoid_zone": "Report the unsafe placement selection for immediate guided correction."
+                    "xiphoid_avoid_zone": "Report the unsafe placement selection for immediate guided correction.",
+                    "aed_case": "Complete the current simulated AED preparation step when prompted.",
+                    "aed_unit": "Continue the current simulated AED trainer prompt.",
+                    "aed_power_button": "Switch on and prepare the simulated AED when prompted.",
+                    "aed_shock_button": "Deliver the simulated shock only after the clear check permits it.",
+                    "aed_status_light": "Continue the current simulated AED trainer prompt.",
+                    "aed_connector": "Complete simulated AED preparation and pad application when prompted.",
+                    "aed_left_pad": "Complete simulated pad application when prompted.",
+                    "aed_right_pad": "Complete simulated pad application when prompted.",
+                    "aed_left_pad_zone": "Complete simulated pad application when prompted.",
+                    "aed_right_pad_zone": "Complete simulated pad application when prompted.",
+                    "clear_zone": "Confirm the current simulated AED clear check when prompted."
                 ]
             )
         case .achievementGallery:
@@ -678,9 +690,9 @@ private extension AssetRegistry {
                 .init(name: "xp_orb", label: "Learning progress orb", description: "Visualises internal learning progress.", collisionProxy: .capsule)
             ]
         case .debriefSpace:
-            return [
-                .init(name: "control_panel", label: "Debrief control panel", description: "Controls for reviewing and leaving the debrief.", collisionProxy: .box)
-            ]
+            // Restart and dashboard return are distinct labelled attachment buttons.
+            // The decorative panel has no single safe activation, so it must not hover.
+            return []
         }
     }
 }

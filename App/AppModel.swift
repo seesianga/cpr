@@ -119,6 +119,15 @@ final class AppModel {
         selectedSimulationScene = .debriefSpace
     }
 
+    func moveIntegratedScenarioBackToScene(_ scene: IntegratedScenarioScene) {
+        guard selectedPracticeExperience == .integratedScenario,
+              immersionState == .open
+        else { return }
+        let destination = scene.spatialSceneName
+        isSimulationRoomTransitionInFlight = destination != selectedSimulationScene
+        selectedSimulationScene = destination
+    }
+
     /// AED preparation and placement are one session across two independently loaded rooms.
     func moveAEDPractice(to scene: SpatialSceneName) {
         guard selectedPracticeExperience == .aed,
@@ -203,11 +212,18 @@ final class AppModel {
         }
         await dismissImmersiveSpace()
         await audioDirector.setImmersiveScene(active: false, isOpen: false)
+        simulationDismissalDidComplete()
+    }
+
+    /// Shared completion point for a successful app-requested dismissal and the
+    /// equivalent system disappearance. Kept internal so selection cleanup is directly
+    /// verifiable without constructing SwiftUI's environment-owned dismiss action.
+    func simulationDismissalDidComplete() {
         immersionState = .closed
         isSimulationRoomTransitionInFlight = false
         isSimulationPaused = false
         immersionNotice = nil
-        hasUserOptedInToImmersion = false
+        resetSimulationSelectionToLaunchDefaults()
     }
 
     /// Pauses app-owned scene activity. RealityKit rendering remains available for safe exit controls.
@@ -222,13 +238,17 @@ final class AppModel {
 
     /// Reconciles state when the system closes the immersive space independently of the exit button.
     func simulationSpaceDidDisappear() {
-        immersionState = .closed
-        isSimulationRoomTransitionInFlight = false
-        isSimulationPaused = false
-        hasUserOptedInToImmersion = false
         onboardingExitPracticeActive = false
+        simulationDismissalDidComplete()
         Task {
             await audioDirector.setImmersiveScene(active: false, isOpen: false)
         }
+    }
+
+    private func resetSimulationSelectionToLaunchDefaults() {
+        selectedPracticeExperience = .cpr
+        selectedSimulationScene = .cprPracticeRoom
+        selectedIntegratedScenarioID = nil
+        selectedIntegratedScenarioPatternID = nil
     }
 }

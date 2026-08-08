@@ -32,6 +32,8 @@ struct SimulationSpaceRootView: View {
     @State private var spatialSpeechCaption: SpatialSpeechCaptionPlayback?
     @State private var spatialAudioSceneStarted: SpatialSceneName?
     @State private var controlsAnchor: AnchorEntity?
+    @State private var restartTask: Task<Void, Never>?
+    @State private var restartGeneration = 0
 
     private var effectiveReduceMotion: Bool {
         SpatialAccessibility.effectiveReduceMotion(
@@ -63,6 +65,9 @@ struct SimulationSpaceRootView: View {
             do {
                 let selectedScene = appModel.selectedSimulationScene
                 if let loadedScene, loadedScene != selectedScene {
+                    if Self.isIntegratedScenarioScene(loadedScene) {
+                        integratedScenarioSession.stopHandTracking()
+                    }
                     assetRegistry.releaseScene(loadedScene)
                 }
                 let scene = try await assetRegistry.loadScene(selectedScene)
@@ -83,10 +88,28 @@ struct SimulationSpaceRootView: View {
                     await startSpatialSceneAudio(for: selectedScene)
                 }
 
-                if selectedScene == .cprPracticeRoom {
-                    let targets = try assetRegistry.handTrackingTargets(in: scene)
+                if appModel.selectedPracticeExperience == .cpr,
+                   selectedScene == .cprPracticeRoom {
+                    let targets = try assetRegistry.handTrackingTargets(
+                        in: scene,
+                        for: selectedScene
+                    )
                     cprSession.configureHandTracking(targets: targets)
-                    await cprSession.startHandTracking()
+                    if !appModel.isSimulationPaused {
+                        await cprSession.startHandTracking()
+                    }
+                } else if appModel.selectedPracticeExperience == .integratedScenario,
+                          Self.isIntegratedScenarioScene(selectedScene) {
+                    let targets = try assetRegistry.handTrackingTargets(
+                        in: scene,
+                        for: selectedScene
+                    )
+                    integratedScenarioSession.configureHandTracking(targets: targets)
+                    if !appModel.isSimulationPaused {
+                        await integratedScenarioSession.startHandTracking()
+                    }
+                } else if appModel.selectedPracticeExperience == .integratedScenario {
+                    integratedScenarioSession.stopHandTracking()
                 }
             } catch is CancellationError {
                 // Dismissing or changing rooms cancels loading without surfacing an error.
@@ -138,6 +161,16 @@ struct SimulationSpaceRootView: View {
             case .cpr:
                 persistedCPRAttemptID = nil
                 await cprSession.prepare()
+                guard !Task.isCancelled,
+                      appModel.immersionState == .open,
+                      appModel.selectedPracticeExperience == .cpr
+                else {
+                    await cprSession.stop()
+                    return
+                }
+                if appModel.isSimulationPaused {
+                    await cprSession.setPaused(true)
+                }
             case .aed:
                 if aedSession.state == nil {
                     persistedAEDAttemptID = nil
@@ -150,9 +183,9 @@ struct SimulationSpaceRootView: View {
                 guard let scenarioID = appModel.selectedIntegratedScenarioID,
                       let patternID = appModel.selectedIntegratedScenarioPatternID
                 else { break }
-                // Loading DebriefSpace recreates the RealityView. Retain the immutable
-                // completed session instead of preparing (and erasing) it again.
-                guard integratedScenarioSession.debrief == nil else { break }
+                // Room changes recreate the RealityView. Retain an active or completed
+                // engine; an explicit restart clears it before preparing a fresh attempt.
+                guard integratedScenarioSession.engine == nil else { break }
                 persistedScenarioAttemptID = nil
                 debriefAwardState = .pending
                 await integratedScenarioSession.prepare(
@@ -161,6 +194,18 @@ struct SimulationSpaceRootView: View {
                     audioDirector: appModel.audioDirector,
                     modelContainer: modelContext.container
                 )
+                guard !Task.isCancelled,
+                      appModel.immersionState == .open,
+                      appModel.selectedPracticeExperience == .integratedScenario,
+                      appModel.selectedIntegratedScenarioID == scenarioID,
+                      appModel.selectedIntegratedScenarioPatternID == patternID
+                else {
+                    integratedScenarioSession.stop()
+                    return
+                }
+                if appModel.isSimulationPaused {
+                    await integratedScenarioSession.setPaused(true)
+                }
             }
         }
         .task {
@@ -171,10 +216,18 @@ struct SimulationSpaceRootView: View {
             }
         }
         .onChange(of: appModel.isSimulationPaused, initial: true) { _, paused in
-            aedSession.setPaused(paused)
-            drsabcSession.setPaused(paused)
-            integratedScenarioSession.setPaused(paused)
-            Task { await cprSession.setPaused(paused) }
+            switch appModel.selectedPracticeExperience {
+            case .cpr:
+                Task { await cprSession.setPaused(paused) }
+            case .aed:
+                aedSession.setPaused(paused)
+            case .drsabc:
+                drsabcSession.setPaused(paused)
+            case .integratedScenario:
+                Task { await integratedScenarioSession.setPaused(paused) }
+            case .onboarding:
+                break
+            }
             Task {
                 for channel in AudioChannel.allCases {
                     if paused {
@@ -272,14 +325,24 @@ struct SimulationSpaceRootView: View {
         }
         .onChange(of: integratedScenarioSession.debrief) { _, debrief in
             guard let debrief else { return }
+            debriefAwardState = .saving
+            let persistenceGeneration = restartGeneration
             Task { @MainActor in
                 await persistScenarioAttempt(debrief)
+                guard restartGeneration == persistenceGeneration,
+                      appModel.immersionState == .open,
+                      appModel.selectedPracticeExperience == .integratedScenario,
+                      integratedScenarioSession.debrief == debrief
+                else { return }
                 appModel.moveIntegratedScenarioToDebrief()
             }
         }
         .onDisappear {
             if appModel.immersionState == .open,
                appModel.isSimulationRoomTransitionInFlight {
+                if let loadedScene, Self.isIntegratedScenarioScene(loadedScene) {
+                    integratedScenarioSession.stopHandTracking()
+                }
                 spatialAudioManager.stopAll()
                 spatialSpeechCaption = nil
                 spatialAudioSceneStarted = nil
@@ -291,8 +354,12 @@ struct SimulationSpaceRootView: View {
             assetRegistry.releaseAllScenes()
             loadedScene = nil
             controlsAnchor = nil
+            restartGeneration &+= 1
+            restartTask?.cancel()
+            restartTask = nil
             aedSession.stop()
             Task { await cprSession.stop() }
+            integratedScenarioSession.stop()
             comfortSession.reset()
             appModel.simulationSpaceDidDisappear()
         }
@@ -342,7 +409,9 @@ struct SimulationSpaceRootView: View {
                     CPRPracticeImmersivePanel(
                         model: cprSession,
                         reduceMotion: effectiveReduceMotion,
-                        learnerID: authenticationModel.currentUser?.id ?? ""
+                        learnerID: authenticationModel.currentUser?.id ?? "",
+                        onRestart: restartCPRPractice,
+                        onReturnToDashboard: returnToDashboard
                     )
                 case .aed:
                     AEDPracticeImmersivePanel(
@@ -350,14 +419,22 @@ struct SimulationSpaceRootView: View {
                         currentScene: appModel.selectedSimulationScene,
                         onRequestPlacementRoom: {
                             requestAEDPlacementRoom()
-                        }
+                        },
+                        onRestart: restartAEDPractice,
+                        onReturnToDashboard: returnToDashboard
                     )
                 case .drsabc:
-                    DRSABCPracticeImmersivePanel(model: drsabcSession)
+                    DRSABCPracticeImmersivePanel(
+                        model: drsabcSession,
+                        onRestart: restartDRSABCPractice,
+                        onReturnToDashboard: returnToDashboard
+                    )
                 case .integratedScenario:
                     IntegratedScenarioImmersivePanel(
                         model: integratedScenarioSession,
-                        awardState: debriefAwardState
+                        awardState: debriefAwardState,
+                        onRestart: restartIntegratedScenario,
+                        onReturnToDashboard: returnToDashboard
                     )
                 }
             }
@@ -389,6 +466,20 @@ struct SimulationSpaceRootView: View {
 
     private var safetyButtons: some View {
         HStack(spacing: 12) {
+            Button(backButtonTitle, systemImage: backButtonSystemImage) {
+                if isAEDPlacementRoom {
+                    requestAEDPreparationRoom()
+                } else {
+                    Task { await exitSimulation() }
+                }
+            }
+            .buttonStyle(.bordered)
+            .accessibilityHint(
+                isAEDPlacementRoom
+                    ? "Returns to the preparation room without clearing this AED practice session"
+                    : "Ends this session and returns to the shared-space dashboard"
+            )
+
             Button(
                 appModel.isSimulationPaused ? "Resume" : "Pause",
                 systemImage: appModel.isSimulationPaused ? "play.fill" : "pause.fill"
@@ -413,6 +504,19 @@ struct SimulationSpaceRootView: View {
             .buttonStyle(.borderedProminent)
             .accessibilityHint("Ends hand input and returns to the shared-space dashboard")
         }
+    }
+
+    private var isAEDPlacementRoom: Bool {
+        appModel.selectedPracticeExperience == .aed &&
+            appModel.selectedSimulationScene == .aedPlacementRoom
+    }
+
+    private var backButtonTitle: String {
+        isAEDPlacementRoom ? "Back to AED preparation" : "Back to dashboard"
+    }
+
+    private var backButtonSystemImage: String {
+        isAEDPlacementRoom ? "arrow.left" : "rectangle.portrait.and.arrow.right"
     }
 
     private func recentreSimulationPanel() {
@@ -563,23 +667,74 @@ struct SimulationSpaceRootView: View {
         case .integratedScenario:
             guard let target = Self.semanticAncestor(
                 of: entity,
-                matching: ["bystander_01", "bystander_02", "sternum_target", "xiphoid_avoid_zone"]
+                matching: [
+                    "training_manikin", "bystander_01", "bystander_02",
+                    "sternum_target", "xiphoid_avoid_zone",
+                    "aed_case", "aed_unit", "aed_power_button",
+                    "aed_shock_button", "aed_status_light", "aed_connector",
+                    "aed_left_pad", "aed_right_pad",
+                    "aed_left_pad_zone", "aed_right_pad_zone", "clear_zone"
+                ]
             ) else { return }
-            playInterfaceSFX("sfx.pinch_confirm")
-            switch target.name {
-            case "bystander_01", "bystander_02":
-                integratedScenarioSession.assignSelectedTask(
-                    to: target.name,
-                    method: .gazeAndPinch
-                )
-            case "sternum_target":
-                integratedScenarioSession.performCPR(unsafeXiphoidPlacement: false)
-            case "xiphoid_avoid_zone":
-                integratedScenarioSession.performCPR(unsafeXiphoidPlacement: true)
-            default:
-                break
+            if handleIntegratedScenarioTap(targetName: target.name) {
+                playInterfaceSFX("sfx.pinch_confirm")
             }
         }
+    }
+
+    @discardableResult
+    private func handleIntegratedScenarioTap(targetName: String) -> Bool {
+        switch (integratedScenarioSession.stage, targetName) {
+        case (.response, "training_manikin"):
+            integratedScenarioSession.checkResponse()
+
+        case (.delegation, "bystander_01"),
+             (.delegation, "bystander_02"):
+            integratedScenarioSession.assignSelectedTask(
+                to: targetName,
+                method: .gazeAndPinch
+            )
+
+        case (.cpr, "sternum_target"):
+            integratedScenarioSession.performCPR(unsafeXiphoidPlacement: false)
+
+        case (.cpr, "xiphoid_avoid_zone"):
+            integratedScenarioSession.performCPR(unsafeXiphoidPlacement: true)
+
+        case (.aedPreparation, "aed_case"),
+             (.aedPreparation, "aed_unit"),
+             (.aedPreparation, "aed_power_button"),
+             (.aedPreparation, "aed_connector"),
+             (.aedPreparation, "aed_left_pad"),
+             (.aedPreparation, "aed_right_pad"),
+             (.aedPreparation, "aed_left_pad_zone"),
+             (.aedPreparation, "aed_right_pad_zone"):
+            integratedScenarioSession.prepareAndApplyAED()
+
+        case (.aedAnalysisClear, "clear_zone"):
+            integratedScenarioSession.confirmClearForAEDAnalysis(anyoneTouching: false)
+
+        case (.aedAnalysingDecision, "aed_unit"),
+             (.aedAnalysingDecision, "aed_status_light"):
+            integratedScenarioSession.receiveAEDAnalysisDecision()
+
+        case (.aedCharging, "aed_unit"),
+             (.aedCharging, "aed_status_light"):
+            integratedScenarioSession.completeAEDCharging(anyoneTouching: false)
+
+        case (.aedClearConfirmation, "clear_zone"):
+            integratedScenarioSession.confirmClearBeforeSimulatedShock(anyoneTouching: false)
+
+        case (.aedSimulatedShock, "aed_shock_button"):
+            integratedScenarioSession.deliverSimulatedShock(anyoneTouching: false)
+
+        case (.aedResume, "sternum_target"):
+            integratedScenarioSession.resumeCPRAfterAEDDecision()
+
+        default:
+            return false
+        }
+        return true
     }
 
     private func nearestPadZone(to pad: Entity) -> String? {
@@ -621,6 +776,127 @@ struct SimulationSpaceRootView: View {
         isLoading = true
         loadErrorMessage = nil
         appModel.moveAEDPractice(to: .aedPlacementRoom)
+    }
+
+    private func requestAEDPreparationRoom() {
+        isLoading = true
+        loadErrorMessage = nil
+        appModel.moveAEDPractice(to: .aedPreparationRoom)
+    }
+
+    private func restartCPRPractice() {
+        guard restartTask == nil,
+              appModel.immersionState == .open,
+              !appModel.isSimulationPaused,
+              appModel.selectedPracticeExperience == .cpr
+        else { return }
+        persistedCPRAttemptID = nil
+        restartGeneration &+= 1
+        let generation = restartGeneration
+        restartTask = Task { @MainActor in
+            defer { finishRestart(generation: generation) }
+            await cprSession.prepare()
+            guard restartIsCurrent(
+                generation: generation,
+                experience: .cpr
+            ) else {
+                await cprSession.stop()
+                return
+            }
+            if appModel.isSimulationPaused {
+                await cprSession.setPaused(true)
+            } else {
+                await cprSession.startHandTracking()
+            }
+        }
+    }
+
+    private func restartAEDPractice() {
+        persistedAEDAttemptID = nil
+        aedSession.prepare()
+        if appModel.selectedSimulationScene != .aedPreparationRoom {
+            requestAEDPreparationRoom()
+        }
+    }
+
+    private func restartDRSABCPractice() {
+        persistedDRSABCAttemptID = nil
+        drsabcSession.prepare()
+    }
+
+    private func restartIntegratedScenario() {
+        guard restartTask == nil,
+              appModel.immersionState == .open,
+              appModel.selectedPracticeExperience == .integratedScenario,
+              let scenarioID = appModel.selectedIntegratedScenarioID,
+              let patternID = appModel.selectedIntegratedScenarioPatternID,
+              let scene = integratedScenarioSession.scenarioScene
+        else { return }
+
+        persistedScenarioAttemptID = nil
+        debriefAwardState = .pending
+        restartGeneration &+= 1
+        let generation = restartGeneration
+        restartTask = Task { @MainActor in
+            defer { finishRestart(generation: generation) }
+            await integratedScenarioSession.reset()
+            guard restartIsCurrent(
+                generation: generation,
+                experience: .integratedScenario
+            ) else {
+                integratedScenarioSession.stop()
+                return
+            }
+            await integratedScenarioSession.prepare(
+                scenarioID: scenarioID,
+                patternID: patternID,
+                audioDirector: appModel.audioDirector,
+                modelContainer: modelContext.container
+            )
+            guard restartIsCurrent(
+                generation: generation,
+                experience: .integratedScenario
+            ) else {
+                integratedScenarioSession.stop()
+                return
+            }
+            if appModel.isSimulationPaused {
+                await integratedScenarioSession.setPaused(true)
+            }
+            if appModel.selectedSimulationScene != scene.spatialSceneName {
+                isLoading = true
+                loadErrorMessage = nil
+            } else if !appModel.isSimulationPaused {
+                await integratedScenarioSession.startHandTracking()
+                guard restartIsCurrent(
+                    generation: generation,
+                    experience: .integratedScenario
+                ) else {
+                    integratedScenarioSession.stop()
+                    return
+                }
+            }
+            appModel.moveIntegratedScenarioBackToScene(scene)
+        }
+    }
+
+    private func returnToDashboard() {
+        Task { await exitSimulation() }
+    }
+
+    private func restartIsCurrent(
+        generation: Int,
+        experience: SpatialPracticeExperience
+    ) -> Bool {
+        !Task.isCancelled &&
+            restartGeneration == generation &&
+            appModel.immersionState == .open &&
+            appModel.selectedPracticeExperience == experience
+    }
+
+    private func finishRestart(generation: Int) {
+        guard restartGeneration == generation else { return }
+        restartTask = nil
     }
 
     @MainActor
@@ -699,8 +975,13 @@ struct SimulationSpaceRootView: View {
     }
 
     private func exitSimulation() async {
+        let pendingRestart = restartTask
+        restartGeneration &+= 1
+        pendingRestart?.cancel()
+        restartTask = nil
         await cprSession.stop()
         aedSession.stop()
+        integratedScenarioSession.stop()
         assetRegistry.releaseAllScenes()
         loadedScene = nil
         await appModel.dismissSimulation(using: dismissImmersiveSpace)
@@ -732,6 +1013,18 @@ struct SimulationSpaceRootView: View {
             cursor = candidate.parent
         }
         return nil
+    }
+
+    private static func isIntegratedScenarioScene(_ scene: SpatialSceneName) -> Bool {
+        switch scene {
+        case .scenarioHome,
+             .scenarioShoppingCentre,
+             .scenarioWorkplace,
+             .scenarioCommunityFacility:
+            true
+        default:
+            false
+        }
     }
 
     /// Reconstructs the event-log replay anchor as a static spatial highlight at the

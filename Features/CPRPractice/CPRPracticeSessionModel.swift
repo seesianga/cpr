@@ -111,6 +111,7 @@ final class CPRPracticeSessionModel {
     }
 
     func prepare() async {
+        guard !Task.isCancelled else { return }
         guard loadState != .loading else { return }
         loadState = .loading
         summary = nil
@@ -124,6 +125,10 @@ final class CPRPracticeSessionModel {
             loadState = .ready
             startSignalConsumerIfNeeded()
             try? await audioDirector.prepare()
+            guard !Task.isCancelled else {
+                await stop()
+                return
+            }
             startMetronome()
         } catch {
             content = nil
@@ -356,8 +361,11 @@ final class CPRPracticeSessionModel {
         guard !isPaused else { return }
         switch signal {
         case let .trackingAvailabilityChanged(isAvailable):
-            if !isAvailable, handTracking.state == .running {
-                latestFeedback = "Hand observations are temporarily unavailable. Continue with the accessible compression control."
+            let temporaryMessage = "Hand observations are temporarily unavailable. Continue with the accessible compression control."
+            if !isAvailable, handTracking.state.fallbackExplanation == nil {
+                latestFeedback = temporaryMessage
+            } else if isAvailable, latestFeedback == temporaryMessage {
+                latestFeedback = nil
             }
             handTrackingState = handTracking.state
         case let .placementChanged(zone):

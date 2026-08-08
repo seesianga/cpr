@@ -3,6 +3,8 @@ import SwiftUI
 struct DRSABCPracticeImmersivePanel: View {
     @Environment(\.lifesaverVisualStyle) private var visualStyle
     let model: DRSABCPracticeSessionModel
+    let onRestart: () -> Void
+    let onReturnToDashboard: () -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: 13) {
@@ -105,6 +107,16 @@ struct DRSABCPracticeImmersivePanel: View {
                     .lifesaverStatusChip(.success)
                 Text("This is not SRFAC certification. Practical competency requires instructor sign-off.")
                     .font(.footnote)
+                HStack {
+                    Button("Practise again", systemImage: "arrow.counterclockwise") {
+                        onRestart()
+                    }
+                    .buttonStyle(.borderedProminent)
+                    Button("Return to dashboard", systemImage: "rectangle.portrait.and.arrow.right") {
+                        onReturnToDashboard()
+                    }
+                    .buttonStyle(.bordered)
+                }
             }
 
         case nil:
