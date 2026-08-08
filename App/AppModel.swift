@@ -3,25 +3,31 @@ import SwiftUI
 
 /// The source-backed practice experience hosted by the single mixed immersive space.
 enum SpatialPracticeExperience: String, CaseIterable, Identifiable, Sendable {
+    case onboarding
     case cpr
     case aed
     case drsabc
+    case integratedScenario
 
     var id: String { rawValue }
 
     var title: String {
         switch self {
+        case .onboarding: "Pause and Exit Practice"
         case .cpr: "CPR Practice"
         case .aed: "AED Practice"
         case .drsabc: "DRSABC Practice"
+        case .integratedScenario: "Integrated Scenario"
         }
     }
 
     var initialScene: SpatialSceneName {
         switch self {
+        case .onboarding: .academyLobby
         case .cpr: .cprPracticeRoom
         case .aed: .aedPreparationRoom
         case .drsabc: .drsabcTrainingRoom
+        case .integratedScenario: .scenarioHome
         }
     }
 }
@@ -32,6 +38,7 @@ enum SpatialPracticeExperience: String, CaseIterable, Identifiable, Sendable {
 final class AppModel {
     static let dashboardWindowID = "Dashboard"
     static let learningLabWindowID = "LearningLab"
+    static let achievementGalleryWindowID = "AchievementGallery"
     static let simulationSpaceID = "SimulationSpace"
 
     let audioDirector: SystemAudioDirector
@@ -46,10 +53,19 @@ final class AppModel {
     private(set) var scenePhase: ScenePhase = .active
     private(set) var immersionState: ImmersionState = .closed
     private(set) var isSimulationPaused = false
+    private(set) var isSimulationRoomTransitionInFlight = false
     var hasUserOptedInToImmersion = false
     var immersionNotice: String?
     private(set) var selectedPracticeExperience: SpatialPracticeExperience = .cpr
     var selectedSimulationScene: SpatialSceneName = .cprPracticeRoom
+    private(set) var selectedIntegratedScenarioID: String?
+    private(set) var selectedIntegratedScenarioPatternID: String?
+    private(set) var onboardingExitPracticeCompleted = false
+    private(set) var onboardingPausePracticeCompleted = false
+    private(set) var onboardingComfortPosture: OnboardingComfortPosture?
+    private(set) var onboardingDominantHand: OnboardingDominantHand?
+    private(set) var onboardingInputMethod: OnboardingInputMethod?
+    private var onboardingExitPracticeActive = false
 
     init(audioDirector: SystemAudioDirector = SystemAudioDirector()) {
         self.audioDirector = audioDirector
@@ -64,12 +80,57 @@ final class AppModel {
         immersionNotice = nil
     }
 
+    func beginOnboardingExitPractice() {
+        guard immersionState == .closed else { return }
+        selectPractice(.onboarding)
+        onboardingExitPracticeActive = true
+        onboardingExitPracticeCompleted = false
+        onboardingPausePracticeCompleted = false
+    }
+
+    func configureOnboardingSession(
+        posture: OnboardingComfortPosture,
+        dominantHand: OnboardingDominantHand,
+        inputMethod: OnboardingInputMethod
+    ) {
+        onboardingComfortPosture = posture
+        onboardingDominantHand = dominantHand
+        onboardingInputMethod = inputMethod
+    }
+
+    func selectIntegratedScenario(
+        scenarioID: String,
+        patternID: String,
+        scene: IntegratedScenarioScene
+    ) {
+        guard immersionState == .closed else { return }
+        selectedPracticeExperience = .integratedScenario
+        selectedIntegratedScenarioID = scenarioID
+        selectedIntegratedScenarioPatternID = patternID
+        selectedSimulationScene = scene.spatialSceneName
+        immersionNotice = nil
+    }
+
+    func moveIntegratedScenarioToDebrief() {
+        guard selectedPracticeExperience == .integratedScenario,
+              immersionState == .open
+        else { return }
+        isSimulationRoomTransitionInFlight = true
+        selectedSimulationScene = .debriefSpace
+    }
+
     /// AED preparation and placement are one session across two independently loaded rooms.
     func moveAEDPractice(to scene: SpatialSceneName) {
         guard selectedPracticeExperience == .aed,
               scene == .aedPreparationRoom || scene == .aedPlacementRoom
         else { return }
+        isSimulationRoomTransitionInFlight = scene != selectedSimulationScene
         selectedSimulationScene = scene
+    }
+
+    func simulationRoomDidLoad(_ scene: SpatialSceneName) {
+        guard scene == selectedSimulationScene else { return }
+        isSimulationRoomTransitionInFlight = false
     }
 
     /// Records application lifecycle changes without making assumptions about learner progress.
@@ -99,6 +160,7 @@ final class AppModel {
         }
 
         immersionState = .opening
+        isSimulationRoomTransitionInFlight = false
         immersionNotice = nil
 
         switch await openImmersiveSpace(id: Self.simulationSpaceID) {
@@ -111,14 +173,20 @@ final class AppModel {
             )
         case .userCancelled:
             immersionState = .closed
+            hasUserOptedInToImmersion = false
+            onboardingExitPracticeActive = false
             immersionNotice = "Simulation entry was cancelled."
             await audioDirector.setImmersiveScene(active: false, isOpen: false)
         case .error:
             immersionState = .closed
+            hasUserOptedInToImmersion = false
+            onboardingExitPracticeActive = false
             immersionNotice = "The simulation could not be opened. Please try again."
             await audioDirector.setImmersiveScene(active: false, isOpen: false)
         @unknown default:
             immersionState = .closed
+            hasUserOptedInToImmersion = false
+            onboardingExitPracticeActive = false
             immersionNotice = "The simulation returned an unsupported result."
             await audioDirector.setImmersiveScene(active: false, isOpen: false)
         }
@@ -129,24 +197,36 @@ final class AppModel {
         guard immersionState == .open else { return }
 
         immersionState = .dismissing
+        if onboardingExitPracticeActive && selectedPracticeExperience == .onboarding {
+            onboardingExitPracticeCompleted = true
+            onboardingExitPracticeActive = false
+        }
         await dismissImmersiveSpace()
         await audioDirector.setImmersiveScene(active: false, isOpen: false)
         immersionState = .closed
+        isSimulationRoomTransitionInFlight = false
         isSimulationPaused = false
         immersionNotice = nil
+        hasUserOptedInToImmersion = false
     }
 
     /// Pauses app-owned scene activity. RealityKit rendering remains available for safe exit controls.
     func toggleSimulationPause() {
         guard immersionState == .open else { return }
         isSimulationPaused.toggle()
+        if selectedPracticeExperience == .onboarding {
+            onboardingPausePracticeCompleted = true
+        }
         immersionNotice = isSimulationPaused ? "Simulation paused." : nil
     }
 
     /// Reconciles state when the system closes the immersive space independently of the exit button.
     func simulationSpaceDidDisappear() {
         immersionState = .closed
+        isSimulationRoomTransitionInFlight = false
         isSimulationPaused = false
+        hasUserOptedInToImmersion = false
+        onboardingExitPracticeActive = false
         Task {
             await audioDirector.setImmersiveScene(active: false, isOpen: false)
         }

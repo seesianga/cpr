@@ -111,14 +111,20 @@ struct AuthenticationGateView: View {
             case .signedOut:
                 AuthenticationView(model: model)
             case .signedIn:
-                DashboardRootView()
-                    .environment(model)
-                    .toolbar {
-                        Button("Sign Out", systemImage: "rectangle.portrait.and.arrow.right") {
-                            Task { await model.signOut() }
-                        }
-                        .accessibilityHint("Ends the current local session")
+                Group {
+                    if model.currentUser?.role == .learner {
+                        OnboardingGateView()
+                    } else {
+                        DashboardRootView()
                     }
+                }
+                .environment(model)
+                .toolbar {
+                    Button("Sign Out", systemImage: "rectangle.portrait.and.arrow.right") {
+                        Task { await model.signOut() }
+                    }
+                    .accessibilityHint("Ends the current local session")
+                }
             }
         }
         .task {
