@@ -75,3 +75,18 @@ where interruptions occurred, which feedback helped and what to rehearse next. I
 not a clinical grade. The supplied fact extract contains no decompression protocol or
 refresher interval, so those blocks remain `clinicalReviewRequired` and cannot be used
 in scored assessment without new evidence and qualified approval.
+
+## Runtime-boundary addendum — 2026-08-08
+
+The `Verified runtime boundaries` section above records the Phase 3B implementation
+snapshot and is retained as history; its absence statements are no longer all current.
+The present app includes session-scoped comfort posture, dominant-hand and input-method
+selection (without creating a stored comfort profile), lesson replay controls, live
+DRSABC/CPR/AED practice, a CPR metronome, and four integrated scenario presentations.
+Settings now drive an environment-propagated increased-contrast treatment for practice
+status indicators, caption surfaces and dashboard mastery-status chips. Local retention
+is automatically enforced on app launch and every 24 hours while the dashboard scene
+remains active, using the administrator-configured retention values and retaining the
+existing audit record for each enforcement. A learner-originated practical-assessment
+request remains outside the current runtime; instructor sign-off remains the only
+practical-competency record.
