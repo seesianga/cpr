@@ -246,6 +246,7 @@ struct QuizSessionView: View {
 struct AssessmentReviewView: View {
     let outcome: TheoryAssessmentOutcome
     let assessment: Assessment
+    @Environment(AppModel.self) private var appModel
 
     var body: some View {
         ScrollView {
@@ -277,6 +278,19 @@ struct AssessmentReviewView: View {
                     .background(.thinMaterial, in: .rect(cornerRadius: 16))
                 }
             }
+        }
+        .task(id: outcome.attemptID) {
+            _ = await appModel.audioDirector.play(
+                AudioPlaybackRequest(
+                    cue: AudioCue(
+                        rawValue: outcome.passed
+                            ? "sfx.answer_correct"
+                            : "sfx.answer_incorrect"
+                    ),
+                    channel: .soundEffects,
+                    context: .sharedSpace
+                )
+            )
         }
     }
 }

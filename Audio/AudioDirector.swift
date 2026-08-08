@@ -219,7 +219,18 @@ struct BundleAudioAssetResolver: AudioAssetResolving, @unchecked Sendable {
 protocol AudioDirector: Sendable {
     func prepare() async throws
     func play(_ cue: AudioCue) async
+    func play(_ request: AudioPlaybackRequest) async -> AudioPlaybackResult
+    func pause(_ channel: AudioChannel) async
+    func resume(_ channel: AudioChannel) async
+    func replay(_ channel: AudioChannel) async
+    func stop(_ channel: AudioChannel) async
     func stopAll() async
+    func refreshPreferences() async
+    func setImmersiveScene(active: Bool, isOpen: Bool) async
+    func setAEDSafetyState(_ state: AEDAudioSafetyState) async
+    func setSafetyCriticalCorrectionActive(_ active: Bool) async
+    func presentVisualCue(_ cue: AudioCue) async
+    func playbackSnapshot() async -> AudioPlaybackSnapshot
 }
 
 extension AudioDirector {
@@ -314,7 +325,14 @@ actor SystemAudioDirector: AudioDirector {
                 return recordBlocked(.playerCreationFailed)
             }
             lastResult = .started
-            scheduleCompletion(for: channel, cue: request.cue, duration: player.duration)
+            scheduleCompletion(
+                for: channel,
+                cue: request.cue,
+                duration: wallClockDuration(
+                    mediaDuration: player.duration,
+                    rate: player.rate
+                )
+            )
             return .started
         } catch {
             stopChannel(channel, clearVisualState: false)
@@ -336,7 +354,10 @@ actor SystemAudioDirector: AudioDirector {
             scheduleCompletion(
                 for: channel,
                 cue: cue,
-                duration: max(0, player.duration - player.currentTime)
+                duration: wallClockDuration(
+                    mediaDuration: max(0, player.duration - player.currentTime),
+                    rate: player.rate
+                )
             )
         }
     }
@@ -346,7 +367,14 @@ actor SystemAudioDirector: AudioDirector {
         player.currentTime = 0
         player.play()
         if let cue = cues[channel] {
-            scheduleCompletion(for: channel, cue: cue, duration: player.duration)
+            scheduleCompletion(
+                for: channel,
+                cue: cue,
+                duration: wallClockDuration(
+                    mediaDuration: player.duration,
+                    rate: player.rate
+                )
+            )
         }
     }
 
@@ -476,6 +504,10 @@ actor SystemAudioDirector: AudioDirector {
 
     private func shouldLoop(_ cue: AudioCue, channel: AudioChannel) -> Bool {
         channel == .music && cue.rawValue != "music.completion_sting"
+    }
+
+    private func wallClockDuration(mediaDuration: TimeInterval, rate: Float) -> TimeInterval {
+        mediaDuration / Double(max(0.1, rate))
     }
 
     private func recordBlocked(_ reason: AudioPlaybackBlockReason) -> AudioPlaybackResult {

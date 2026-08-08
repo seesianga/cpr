@@ -141,6 +141,58 @@ struct BundleCaptionResolver: @unchecked Sendable {
     }
 }
 
+/// Caption timing for speech rendered by RealityKit rather than AVAudioPlayer.
+struct SpatialSpeechCaptionPlayback: Sendable, Equatable {
+    let cue: AudioCue
+    let startedAt: Date
+    let rate: Double
+}
+
+struct SpatialSpeechCaptionOverlay: View {
+    let playback: SpatialSpeechCaptionPlayback?
+    private let resolver: BundleCaptionResolver
+
+    @AppStorage(AudioPreferenceKeys.captionsEnabled) private var captionsEnabled = true
+    @State private var track: CaptionTrack?
+    @State private var currentTime: TimeInterval = 0
+
+    init(
+        playback: SpatialSpeechCaptionPlayback?,
+        bundle: Bundle = .main
+    ) {
+        self.playback = playback
+        resolver = BundleCaptionResolver(bundle: bundle)
+    }
+
+    var body: some View {
+        Group {
+            if captionsEnabled, let text = track?.text(at: currentTime) {
+                Text(text)
+                    .multilineTextAlignment(.center)
+                    .frame(maxWidth: 680)
+                    .padding(14)
+                    .glassBackgroundEffect()
+                    .accessibilityLabel("Caption: \(text)")
+            }
+        }
+        .task(id: playback?.cue.rawValue) {
+            guard let playback else {
+                track = nil
+                currentTime = 0
+                return
+            }
+            track = resolver.track(for: playback.cue.rawValue)
+            while !Task.isCancelled {
+                currentTime = max(
+                    0,
+                    Date().timeIntervalSince(playback.startedAt) * playback.rate
+                )
+                try? await Task.sleep(for: .milliseconds(100))
+            }
+        }
+    }
+}
+
 /// Captions follow the current speech playhead; meaningful SFX retain a visual status.
 struct AudioCaptionOverlay: View {
     let audioDirector: any AudioDirector

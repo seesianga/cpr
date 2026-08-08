@@ -15,6 +15,11 @@ enum AEDPracticeSessionLoadState: Sendable, Equatable {
     case failed(message: String)
 }
 
+struct AEDSpatialCueRequest: Identifiable, Sendable, Equatable {
+    let id = UUID()
+    let cue: AudioCue
+}
+
 /// Coordinates authored AED room interactions while the pure reducer owns every safety gate.
 @MainActor
 @Observable
@@ -39,6 +44,7 @@ final class AEDPracticeSessionModel {
         "bystander_02": false
     ]
     private(set) var isPaused = false
+    private(set) var spatialCueRequest: AEDSpatialCueRequest?
 
     init(
         resumeCoachingDelay: Duration = defaultResumeCoachingDelay,
@@ -139,6 +145,7 @@ final class AEDPracticeSessionModel {
             resetClearSweep()
             latestFeedback = nil
             loadState = .ready
+            requestSpatialCue("sfx.aed_case_open")
         } catch {
             content = nil
             machine = nil
@@ -167,7 +174,13 @@ final class AEDPracticeSessionModel {
         case .medicationPatchAtPadSite: .removeMedicationPatch
         case .wetChest: .dryChest
         }
-        submit(.performPreparation(action))
+        let wasComplete = isPreparationComplete
+        let entry = submit(.performPreparation(action))
+        if entry?.wasAccepted == true,
+           !wasComplete,
+           isPreparationComplete {
+            requestSpatialCue("sfx.electrode_packet_open")
+        }
     }
 
     /// Receives the semantic identifiers produced by a pad drag and collision-zone check.
@@ -183,6 +196,7 @@ final class AEDPracticeSessionModel {
             latestFeedback = "Use one of the two simulated electrode pads."
             return
         }
+        requestSpatialCue("sfx.pad_backing_peel")
         submitPadPlacementWhenBothAttempted()
     }
 
@@ -194,6 +208,7 @@ final class AEDPracticeSessionModel {
         } else {
             leftPadCorrect = inCorrectZone
         }
+        requestSpatialCue("sfx.pad_backing_peel")
         submitPadPlacementWhenBothAttempted()
     }
 
@@ -329,12 +344,15 @@ final class AEDPracticeSessionModel {
             latestFeedback = "Place both simulated pads before checking their positions."
             return
         }
-        submit(
+        let entry = submit(
             .placePads(
                 rightPadCorrect: rightPadCorrect,
                 leftPadCorrect: leftPadCorrect
             )
         )
+        if entry?.wasAccepted == true, state == .padsCorrect {
+            requestSpatialCue("sfx.connector_insert")
+        }
     }
 
     private func resetClearSweep() {
@@ -409,15 +427,14 @@ final class AEDPracticeSessionModel {
             await director.setAEDSafetyState(safetyState)
             await director.setSafetyCriticalCorrectionActive(correctionActive)
             if correctionActive {
-                _ = await director.play(
-                    AudioPlaybackRequest(
-                        cue: AudioCue(rawValue: "sfx.safety_warning"),
-                        channel: .soundEffects,
-                        context: .immersive,
-                        autoplay: true
-                    )
-                )
+                await MainActor.run {
+                    self.requestSpatialCue("sfx.safety_warning")
+                }
             }
         }
+    }
+
+    private func requestSpatialCue(_ id: String) {
+        spatialCueRequest = AEDSpatialCueRequest(cue: AudioCue(rawValue: id))
     }
 }

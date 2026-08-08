@@ -31,7 +31,7 @@ struct AEDPracticeImmersivePanel: View {
                 .font(.caption)
                 .foregroundStyle(.secondary)
         }
-        .frame(width: 620)
+        .frame(maxWidth: 620)
         .padding(24)
         .glassBackgroundEffect()
     }

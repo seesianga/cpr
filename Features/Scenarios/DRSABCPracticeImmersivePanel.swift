@@ -35,7 +35,7 @@ struct DRSABCPracticeImmersivePanel: View {
                 .disabled(model.isPaused)
             }
         }
-        .frame(width: 620)
+        .frame(maxWidth: 620)
         .padding(24)
         .glassBackgroundEffect()
     }

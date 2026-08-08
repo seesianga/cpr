@@ -1,9 +1,48 @@
 import SwiftUI
 
+struct CPRInterruptionPresentation: Sendable, Equatable {
+    enum Status: Sendable, Equatable {
+        case inactive
+        case underway
+        case thresholdExceeded
+    }
+
+    let status: Status
+
+    init(seconds: Double) {
+        if seconds > 10 {
+            status = .thresholdExceeded
+        } else if seconds > 0 {
+            status = .underway
+        } else {
+            status = .inactive
+        }
+    }
+
+    var label: String {
+        switch status {
+        case .inactive: "No active interruption"
+        case .underway: "Interruption underway"
+        case .thresholdExceeded: "Over the 10-second interruption threshold"
+        }
+    }
+
+    var systemImage: String {
+        switch status {
+        case .inactive: "checkmark.circle"
+        case .underway: "timer"
+        case .thresholdExceeded: "exclamationmark.triangle.fill"
+        }
+    }
+
+    var isThresholdExceeded: Bool { status == .thresholdExceeded }
+}
+
 /// Head-anchored CPR coaching panel. Spatial targets and every button submit the same
 /// typed events through `CPRPracticeSessionModel`.
 struct CPRPracticeImmersivePanel: View {
     let model: CPRPracticeSessionModel
+    let reduceMotion: Bool
 
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
@@ -43,7 +82,7 @@ struct CPRPracticeImmersivePanel: View {
                 .foregroundStyle(.secondary)
             }
         }
-        .frame(width: 560)
+        .frame(maxWidth: 560)
         .padding(24)
         .glassBackgroundEffect()
     }
@@ -59,7 +98,17 @@ struct CPRPracticeImmersivePanel: View {
     }
 
     private var metricsStrip: some View {
-        HStack(spacing: 18) {
+        ViewThatFits(in: .horizontal) {
+            HStack(spacing: 18) { metricsContent }
+            VStack(alignment: .leading, spacing: 10) { metricsContent }
+        }
+    }
+
+    @ViewBuilder
+    private var metricsContent: some View {
+            let interruption = CPRInterruptionPresentation(
+                seconds: model.liveInterruptionSeconds
+            )
             VStack(alignment: .leading) {
                 Text("Compressions").font(.caption).foregroundStyle(.secondary)
                 Text("\(model.metrics.totalCompressions)").font(.title3.monospacedDigit())
@@ -68,19 +117,31 @@ struct CPRPracticeImmersivePanel: View {
                 Text("Rate band").font(.caption).foregroundStyle(.secondary)
                 Text(rateText).font(.title3.monospacedDigit())
                     .foregroundStyle(rateColour)
+                Text(rateStatusText)
+                    .font(.caption2)
             }
             VStack(alignment: .leading) {
                 Text("Interruption timer").font(.caption).foregroundStyle(.secondary)
                 Text(model.liveInterruptionSeconds, format: .number.precision(.fractionLength(1)))
                     .font(.title3.monospacedDigit())
-                    .foregroundStyle(model.liveInterruptionSeconds > 10 ? .red : .primary)
+                    .foregroundStyle(interruption.isThresholdExceeded ? .red : .primary)
+                Label(interruption.label, systemImage: interruption.systemImage)
+                    .font(.caption2)
             }
-            Circle()
-                .fill(model.visualMetronomePulse ? Color.red : Color.blue)
-                .frame(width: model.visualMetronomePulse ? 34 : 24)
-                .animation(.easeInOut(duration: 0.15), value: model.visualMetronomePulse)
-                .accessibilityLabel("Visual metronome at 110 compressions per minute")
-        }
+            if reduceMotion {
+                Label(
+                    model.visualMetronomePulse ? "Beat 1" : "Beat 2",
+                    systemImage: model.visualMetronomePulse ? "1.circle.fill" : "2.circle.fill"
+                )
+                .font(.headline.monospacedDigit())
+                .accessibilityLabel("Discrete visual metronome at 110 compressions per minute")
+            } else {
+                Circle()
+                    .fill(model.visualMetronomePulse ? Color.red : Color.blue)
+                    .frame(width: model.visualMetronomePulse ? 34 : 24)
+                    .animation(.easeInOut(duration: 0.15), value: model.visualMetronomePulse)
+                    .accessibilityLabel("Visual metronome at 110 compressions per minute")
+            }
     }
 
     @ViewBuilder
@@ -186,5 +247,14 @@ struct CPRPracticeImmersivePanel: View {
     private var rateColour: Color {
         guard let band = model.metrics.cadenceBands.last else { return .secondary }
         return band == .withinSupportedBand ? .green : .orange
+    }
+
+    private var rateStatusText: String {
+        guard let band = model.metrics.cadenceBands.last else {
+            return "Waiting for rhythm evidence"
+        }
+        return band == .withinSupportedBand
+            ? "Within supported rhythm band"
+            : "Adjust rhythm toward the supported band"
     }
 }

@@ -19,12 +19,21 @@ enum SpatialAudioRoutingError: Error, Sendable, Equatable {
 @MainActor
 final class SpatialAudioManager {
     private let resolver: any AudioAssetResolving
+    private let preferences: AudioPreferencesStore
+    private let captions: BundleCaptionResolver
     private var routeEntities: [SpatialAudioRoute: Entity] = [:]
     private var controllers: [SpatialAudioRoute: AudioPlaybackController] = [:]
+    private var ambienceDuckingTask: Task<Void, Never>?
     private(set) var sceneIsActive = false
 
-    init(resolver: any AudioAssetResolving = BundleAudioAssetResolver()) {
+    init(
+        resolver: any AudioAssetResolving = BundleAudioAssetResolver(),
+        preferences: AudioPreferencesStore = AudioPreferencesStore(),
+        captions: BundleCaptionResolver = BundleCaptionResolver()
+    ) {
         self.resolver = resolver
+        self.preferences = preferences
+        self.captions = captions
     }
 
     /// Configures semantic emitters once the independently loaded room is active.
@@ -108,8 +117,19 @@ final class SpatialAudioManager {
             configuration: configuration
         )
         let controller = entity.prepareAudio(resource)
+        let currentPreferences = preferences.snapshot()
+        controller.gain = Self.decibels(
+            for: Self.volume(for: channel, preferences: currentPreferences)
+        )
+        if channel == .narration {
+            controller.speed = currentPreferences.narrationSpeed
+        }
         controller.play()
         controllers[route] = controller
+        if channel.isSpeech,
+           let duration = captions.track(for: cue.rawValue)?.cues.last?.endTime {
+            duckRoomAmbience(for: duration)
+        }
         return controller
     }
 
@@ -119,6 +139,8 @@ final class SpatialAudioManager {
     }
 
     func stopAll() {
+        ambienceDuckingTask?.cancel()
+        ambienceDuckingTask = nil
         for controller in controllers.values {
             controller.stop()
         }
@@ -133,5 +155,39 @@ final class SpatialAudioManager {
             }
         }
         return nil
+    }
+
+    private static func volume(
+        for channel: AudioChannel,
+        preferences: AudioPreferencesSnapshot
+    ) -> Double {
+        switch channel {
+        case .narration: preferences.narrationVolume
+        case .dialogue: preferences.dialogueVolume
+        case .soundEffects: preferences.soundEffectsVolume
+        case .music: preferences.musicVolume
+        }
+    }
+
+    private static func decibels(for linearVolume: Double) -> Double {
+        guard linearVolume > 0 else { return -96 }
+        return max(-96, 20 * log10(min(1, linearVolume)))
+    }
+
+    private func duckRoomAmbience(for duration: TimeInterval) {
+        ambienceDuckingTask?.cancel()
+        guard let ambience = controllers[.roomAmbience] else { return }
+        let musicDecibels = Self.decibels(
+            for: preferences.snapshot().musicVolume
+        )
+        ambience.gain = musicDecibels + AudioMixPolicy.speechDuckingDecibels
+        ambienceDuckingTask = Task { @MainActor [weak self] in
+            try? await Task.sleep(for: .seconds(max(0, duration)))
+            guard !Task.isCancelled, let self else { return }
+            self.controllers[.roomAmbience]?.gain = Self.decibels(
+                for: self.preferences.snapshot().musicVolume
+            )
+            self.ambienceDuckingTask = nil
+        }
     }
 }

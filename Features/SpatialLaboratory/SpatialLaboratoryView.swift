@@ -531,6 +531,11 @@ struct SpatialLaboratoryView: View {
                     .accessibilityLabel("Loading \(mode.title) laboratory model")
             }
         }
+        .overlay(alignment: .bottom) {
+            AudioCaptionOverlay(audioDirector: appModel.audioDirector)
+                .padding(.bottom, 14)
+                .allowsHitTesting(false)
+        }
         .accessibilityElement(children: .contain)
         .task {
             loadApprovedContent()
@@ -895,13 +900,16 @@ struct SpatialLaboratoryView: View {
                 case .heartAndLungs:
                     guard laboratoryContent?.heartAndLungs.part(named: name) != nil else { return }
                     selectedHeartPartID = name
+                    playInterfaceSFX("sfx.focus_confirm")
                 case .chainOfSurvival:
                     guard chainModel?.ring(id: name) != nil else { return }
                     updateChain { $0.select(name) }
+                    playInterfaceSFX("sfx.focus_confirm")
                 case .aedExplorer:
                     guard laboratoryContent?.aedExplorer.component(named: name) != nil else { return }
                     selectedAEDComponentID = name
                     selectedAEDCalloutID = nil
+                    playInterfaceSFX("sfx.focus_confirm")
                 }
             }
     }
@@ -934,6 +942,7 @@ struct SpatialLaboratoryView: View {
                     squaredDistance(location, chainSlots[left]) < squaredDistance(location, chainSlots[right])
                 } ?? 0
                 updateChain { _ = $0.move(ringID: ring.name, to: destination) }
+                playInterfaceSFX("sfx.pinch_confirm")
             }
     }
 
@@ -1050,6 +1059,18 @@ struct SpatialLaboratoryView: View {
             case .blocked:
                 narrationNotice = "Narration could not start; use the complete text shown above."
             }
+        }
+    }
+
+    private func playInterfaceSFX(_ id: String) {
+        Task {
+            _ = await appModel.audioDirector.play(
+                AudioPlaybackRequest(
+                    cue: AudioCue(rawValue: id),
+                    channel: .soundEffects,
+                    context: .sharedSpace
+                )
+            )
         }
     }
 
