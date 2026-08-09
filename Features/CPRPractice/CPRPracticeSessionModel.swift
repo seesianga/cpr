@@ -51,11 +51,18 @@ final class CPRPracticeSessionModel {
     private(set) var compressionDistanceLog: [CompressionDistanceSample] = []
     /// The most recent clamped detector-threshold adjustment, if any occurred.
     private(set) var latestThresholdAdaptation: CompressionThresholdAdaptation?
+    /// Latest stacked-hand heuristic. `.likelyStacked` means the two-hand CPR grip is
+    /// being tracked and compressions are counting without the fallback control.
+    private(set) var handStacking: CPRHandStackingHeuristic = .indeterminate
+
+    private var countAnnouncer: any CompressionCountAnnouncing
 
     init(
         handTracking: any HandTrackingServicing = HandTrackingService(),
         sensorProvider: any CPRSensorProvider = UnavailableCPRSensorProvider(),
         audioDirector: any AudioDirector = NoOpAudioDirector(),
+        countAnnouncer: any CompressionCountAnnouncing =
+            RecordingCompressionCountAnnouncer(),
         badgeRuleLoader: @escaping (Bundle) throws -> [BadgeRule] = {
             try BadgeRuleCodec.loadBundled(from: $0)
         },
@@ -64,6 +71,7 @@ final class CPRPracticeSessionModel {
         self.handTracking = handTracking
         self.sensorProvider = sensorProvider
         self.audioDirector = audioDirector
+        self.countAnnouncer = countAnnouncer
         self.badgeRuleLoader = badgeRuleLoader
         self.bundle = bundle
     }
@@ -94,6 +102,29 @@ final class CPRPracticeSessionModel {
 
     func setAudioDirector(_ audioDirector: any AudioDirector) {
         self.audioDirector = audioDirector
+    }
+
+    func setCountAnnouncer(_ countAnnouncer: any CompressionCountAnnouncing) {
+        self.countAnnouncer = countAnnouncer
+    }
+
+    /// True once hand tracking is live: compressions are counted from the tracked grip
+    /// and the fallback control is not required.
+    var isAutomaticCountingActive: Bool { handTrackingState == .running }
+
+    /// Live coaching state for the two-hand grip, shown so the learner can tell whether
+    /// the trainer has their hands before they start compressing.
+    var gripStatusText: String {
+        guard isAutomaticCountingActive else {
+            return "Hand tracking is not running — use the accessible compression control."
+        }
+        // `.indeterminate` means the detector has fewer than two hands, so it separates
+        // "only one hand is tracked" from "both are tracked but not stacked".
+        return switch handStacking {
+        case .likelyStacked: "Two-hand grip detected — counting compressions automatically."
+        case .separated: "Both hands seen, but side by side — stack one hand on top of the other."
+        case .indeterminate: "Only one hand tracked — bring both hands to the compression target."
+        }
     }
 
     var guidanceTitle: String {
@@ -140,6 +171,8 @@ final class CPRPracticeSessionModel {
         latestFeedback = nil
         compressionDistanceLog.removeAll(keepingCapacity: false)
         latestThresholdAdaptation = nil
+        handStacking = .indeterminate
+        countAnnouncer.reset()
         resetAttemptClocks()
         do {
             let loaded = try PracticeMachineContentContract.loadBundled(from: bundle)
@@ -330,6 +363,7 @@ final class CPRPracticeSessionModel {
     }
 
     func stop() async {
+        countAnnouncer.reset()
         signalTask?.cancel()
         signalTask = nil
         metronomeTask?.cancel()
@@ -359,6 +393,7 @@ final class CPRPracticeSessionModel {
             )
             liveInterruptionSeconds = 0
             startInterruptionTimerIfNeeded()
+            countAnnouncer.announce(count: metrics.totalCompressions)
         }
         switch entry.outcome {
         case let .accepted(_, remediation):
@@ -400,7 +435,9 @@ final class CPRPracticeSessionModel {
             if machine?.state == .landmarkCheck {
                 submit(.classifyHandPlacement(zone))
             }
-        case .handStackingChanged, .cadenceUpdated, .grabInteractionChanged:
+        case let .handStackingChanged(stacking):
+            handStacking = stacking
+        case .cadenceUpdated, .grabInteractionChanged:
             break
         case .interruptionMeasured:
             if let event = signal.cprPracticeEvent {

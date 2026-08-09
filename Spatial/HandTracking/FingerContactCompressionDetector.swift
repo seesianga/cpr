@@ -18,6 +18,11 @@ struct FingerContactCompressionConfiguration: Sendable, Equatable {
     let frontalMarginNormalized: Double
     let minimumCompressionIntervalSeconds: Double
     let maximumStackedPalmSeparationMetres: Float
+    /// Palm separation ACROSS the chest surface below which the pair reads as stacked
+    /// rather than side by side.
+    let maximumStackedLateralSeparationMetres: Float
+    /// Wrist separation confirming both hands belong to one stacked posture.
+    let maximumStackedWristSeparationMetres: Float
     /// Session-scoped auto-tuning of the entry and release filters, driven by the
     /// per-cycle distance log. Nil disables adaptation entirely.
     let adaptiveTuning: CompressionAdaptiveThresholdTuning?
@@ -29,6 +34,8 @@ struct FingerContactCompressionConfiguration: Sendable, Equatable {
         frontalMarginNormalized: Double,
         minimumCompressionIntervalSeconds: Double,
         maximumStackedPalmSeparationMetres: Float,
+        maximumStackedLateralSeparationMetres: Float = 0.10,
+        maximumStackedWristSeparationMetres: Float = 0.22,
         adaptiveTuning: CompressionAdaptiveThresholdTuning? = .practiceDefault
     ) {
         self.maximumSampleAgeSeconds = maximumSampleAgeSeconds
@@ -37,6 +44,8 @@ struct FingerContactCompressionConfiguration: Sendable, Equatable {
         self.frontalMarginNormalized = frontalMarginNormalized
         self.minimumCompressionIntervalSeconds = minimumCompressionIntervalSeconds
         self.maximumStackedPalmSeparationMetres = maximumStackedPalmSeparationMetres
+        self.maximumStackedLateralSeparationMetres = maximumStackedLateralSeparationMetres
+        self.maximumStackedWristSeparationMetres = maximumStackedWristSeparationMetres
         self.adaptiveTuning = adaptiveTuning
     }
 
@@ -92,6 +101,18 @@ struct CompressionAdaptiveThresholdTuning: Sendable, Equatable {
 /// below it). These are virtual-surface interaction distances used for coaching
 /// feedback and threshold tuning — never a physical compression-depth measurement.
 struct CompressionDistanceSample: Codable, Equatable, Sendable {
+    /// How the descent ended. Read together with `countedAsCompression` this separates a
+    /// near miss from an entry suppressed by the refractory interval, which otherwise
+    /// look identical in the log.
+    enum Resolution: String, Codable, Sendable {
+        /// The contact cycle completed: the node rose clear of the release hysteresis.
+        case releasedNormally
+        /// The descent reversed above the entry band, never reaching the contact surface.
+        case reversedAboveEntryBand
+        /// Hand tracking dropped, or the node left the torso footprint, before release.
+        case interruptedBeforeRelease
+    }
+
     /// Surface-entry time for counted/suppressed cycles; reversal time for near misses.
     let timestampSeconds: Double
     /// Local maximum height where the descent began.
@@ -102,6 +123,23 @@ struct CompressionDistanceSample: Codable, Equatable, Sendable {
     /// False for near-miss descents that reversed above the entry band and for cycles
     /// suppressed by the refractory interval.
     let countedAsCompression: Bool
+    let resolution: Resolution
+
+    init(
+        timestampSeconds: Double,
+        descentStartHeightMetres: Float,
+        troughHeightMetres: Float,
+        placement: CPRHandPlacementZone,
+        countedAsCompression: Bool,
+        resolution: Resolution = .releasedNormally
+    ) {
+        self.timestampSeconds = timestampSeconds
+        self.descentStartHeightMetres = descentStartHeightMetres
+        self.troughHeightMetres = troughHeightMetres
+        self.placement = placement
+        self.countedAsCompression = countedAsCompression
+        self.resolution = resolution
+    }
 
     /// Total distance travelled from the descent start to the trough.
     var descentDistanceMetres: Float {
@@ -273,7 +311,8 @@ struct FingerContactCompressionDetector: Sendable {
                     descentStartHeightMetres: cycle.descentStartHeightMetres,
                     troughHeightMetres: trough,
                     placement: cycle.placement,
-                    countedAsCompression: cycle.countedAsCompression
+                    countedAsCompression: cycle.countedAsCompression,
+                    resolution: .interruptedBeforeRelease
                 )
             )
         }
@@ -435,7 +474,8 @@ struct FingerContactCompressionDetector: Sendable {
                 descentStartHeightMetres: start,
                 troughHeightMetres: reversalTroughMetres,
                 placement: placement,
-                countedAsCompression: false
+                countedAsCompression: false,
+                resolution: .reversedAboveEntryBand
             )
         )
 
@@ -475,7 +515,8 @@ struct FingerContactCompressionDetector: Sendable {
             descentStartHeightMetres: cycle.descentStartHeightMetres,
             troughHeightMetres: trough,
             placement: cycle.placement,
-            countedAsCompression: cycle.countedAsCompression
+            countedAsCompression: cycle.countedAsCompression,
+            resolution: .releasedNormally
         )
         recordSample(sample)
         relaxReleaseHysteresisIfNeeded(for: sample, at: timestampSeconds)
@@ -628,15 +669,30 @@ struct FingerContactCompressionDetector: Sendable {
         return local.y - (volume.localCenter.y + volume.localExtents.y * 0.5)
     }
 
+    /// Classifies the pair from the palm proxy and wrist only — the two nodes that
+    /// survive an interlaced, palm-down grip — so the grip that matters most is the one
+    /// most reliably classified.
     private func handStackingHeuristic() -> CPRHandStackingHeuristic {
         guard let left = hands[.left], let right = hands[.right] else {
             return .indeterminate
         }
-        let separation = simd_distance(
-            left.nodes.palmProxy,
-            right.nodes.palmProxy
-        )
-        return separation <= configuration.maximumStackedPalmSeparationMetres
+        let leftLocal = targets.sternum.localPosition(of: left.nodes.palmProxy)
+        let rightLocal = targets.sternum.localPosition(of: right.nodes.palmProxy)
+        let delta = leftLocal - rightLocal
+        guard simd_length(delta) <= configuration.maximumStackedPalmSeparationMetres
+        else { return .separated }
+
+        // Y is anterior in the sternum's frame, so X/Z is the offset across the chest.
+        // Stacked hands sit on top of each other: near-zero across the chest, free to
+        // differ by a hand's thickness in height.
+        let acrossChest = simd_length(SIMD2<Float>(delta.x, delta.z))
+        guard acrossChest <= configuration.maximumStackedLateralSeparationMetres
+        else { return .separated }
+
+        // Wrists trail the palms and stay tracked in the grip, so they confirm the pair
+        // is one posture rather than two hands that happen to cross.
+        let wristSeparation = simd_distance(left.nodes.wrist, right.nodes.wrist)
+        return wristSeparation <= configuration.maximumStackedWristSeparationMetres
             ? .likelyStacked
             : .separated
     }

@@ -32,6 +32,9 @@ struct SimulationSpaceRootView: View {
     @State private var spatialSpeechCaption: SpatialSpeechCaptionPlayback?
     @State private var spatialAudioSceneStarted: SpatialSceneName?
     @State private var controlsAnchor: AnchorEntity?
+    @State private var visualModelPlacements = PracticeVisualModelPlacementStore()
+    @State private var attachedVisualModels: [PracticeVisualModel] = []
+    @State private var loadedSceneEntity: Entity?
     @State private var restartTask: Task<Void, Never>?
     @State private var restartGeneration = 0
 
@@ -72,6 +75,14 @@ struct SimulationSpaceRootView: View {
                 }
                 let scene = try await assetRegistry.loadScene(selectedScene)
                 try assetRegistry.decorateSemanticEntities(in: scene, for: selectedScene)
+                // Imported Reality Composer Pro meshes are decoration hung on the
+                // authored skeleton, so they attach after the semantic entities exist
+                // and never replace a detection target.
+                attachedVisualModels = await PracticeVisualModelLoader.attachModels(
+                    in: scene,
+                    placements: visualModelPlacements
+                )
+                loadedSceneEntity = scene
                 scene.isEnabled = !appModel.isSimulationPaused
                 content.add(scene)
                 spatialAudioManager.configure(
@@ -140,6 +151,25 @@ struct SimulationSpaceRootView: View {
             let sceneName = appModel.selectedSimulationScene.rawValue
             content.entities.first { $0.name == sceneName }?.isEnabled = !appModel.isSimulationPaused
 
+            // Re-apply placement so headset adjustments move the model immediately.
+            if let scene = content.entities.first(where: { $0.name == sceneName }) {
+                // Read-only: writing observable state here would re-enter update and
+                // spin forever.
+                for model in attachedVisualModels {
+                    let placement = visualModelPlacements.placement(for: model)
+                    PracticeVisualModelLoader.applyPlaceholderVisibility(
+                        for: model,
+                        isHidden: placement.hidesPlaceholder,
+                        in: scene
+                    )
+                    guard let entity = PracticeVisualModelLoader.firstEntity(
+                        named: model.semanticRootName,
+                        in: scene
+                    ) else { continue }
+                    PracticeVisualModelLoader.apply(placement, to: entity)
+                }
+            }
+
             if appModel.selectedPracticeExperience == .cpr,
                let scene = content.entities.first(where: { $0.name == sceneName }),
                let sternum = assetRegistry.firstEntity(named: "sternum_target", in: scene) {
@@ -168,6 +198,13 @@ struct SimulationSpaceRootView: View {
                     }
                     AudioCaptionOverlay(audioDirector: appModel.audioDirector)
                     SpatialSpeechCaptionOverlay(playback: spatialSpeechCaption)
+                    #if DEBUG
+                    PracticeVisualModelPlacementPanel(
+                        models: attachedVisualModels,
+                        store: visualModelPlacements,
+                        onFit: fitVisualModelToPlaceholder
+                    )
+                    #endif
                 }
             }
         }
@@ -178,6 +215,7 @@ struct SimulationSpaceRootView: View {
             await waitForOpenImmersion()
             guard appModel.immersionState == .open else { return }
             cprSession.setAudioDirector(appModel.audioDirector)
+            cprSession.setCountAnnouncer(SpeechCompressionCountAnnouncer())
             aedSession.setAudioDirector(appModel.audioDirector)
             switch appModel.selectedPracticeExperience {
             case .onboarding:
@@ -777,6 +815,19 @@ struct SimulationSpaceRootView: View {
 
     /// Registers the descriptor-resolved pinch-grabbable items with the AED session.
     /// The physical path is additive; every gaze-pinch and button control remains.
+    /// Scales and centres an imported model onto the placeholder geometry it replaces.
+    /// Runs from a button action, never from the RealityView update pass.
+    private func fitVisualModelToPlaceholder(_ model: PracticeVisualModel) {
+        guard let scene = loadedSceneEntity,
+              let fitted = PracticeVisualModelLoader.fitToPlaceholder(
+                  model,
+                  in: scene,
+                  placement: visualModelPlacements.placement(for: model)
+              )
+        else { return }
+        visualModelPlacements.update(fitted, for: model)
+    }
+
     private func configureAEDPhysicalInteraction(in scene: Entity) {
         let descriptor = assetRegistry.practiceAssetDescriptor
         let itemsByIdentifier = Dictionary(

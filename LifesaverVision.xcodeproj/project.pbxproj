@@ -15,6 +15,7 @@
 		04A6DF8D691B32A94D7C445A /* CourseEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4096E33EEA85FA3A5E8C96B /* CourseEngine.swift */; };
 		04E60DF6DD6954417F0A0614 /* nar.M4-B6.vtt in Resources */ = {isa = PBXBuildFile; fileRef = 192DBC33C1FB0E96B519044E /* nar.M4-B6.vtt */; };
 		05ECEC92388D8CA91BEABAD1 /* TheoryAssessmentModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BBFF70D43BAFE553153F9DD /* TheoryAssessmentModels.swift */; };
+		05F08E012ED76ECD650165DE /* PracticeVisualModelPlacement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05DEF39C59E93FEAFF8E7C9B /* PracticeVisualModelPlacement.swift */; };
 		064477FC5BD8577CA90D83A7 /* nar.M10-B2.vtt in Resources */ = {isa = PBXBuildFile; fileRef = E8B963F5CE8C3F1C4C20B0E2 /* nar.M10-B2.vtt */; };
 		066A7E1B68E85F7E76CA1C7E /* sys.scenario-d-community-facility-feedback-aed-safety.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 4349AC9ED6CD6092E0DD1831 /* sys.scenario-d-community-facility-feedback-aed-safety.m4a */; };
 		0727B73082FADA7D1397A586 /* nar.M4-B4.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 3686A206501439E107171445 /* nar.M4-B4.m4a */; };
@@ -92,6 +93,7 @@
 		2D0EED1A35F643F87192D89F /* nar.M9-B7.vtt in Resources */ = {isa = PBXBuildFile; fileRef = A44FC842D2D24BEB72E9AEEE /* nar.M9-B7.vtt */; };
 		2E281669594E906E28B90380 /* sys.aed.do_not_touch.vtt in Resources */ = {isa = PBXBuildFile; fileRef = 2CC1C4E998B951DA07A8817A /* sys.aed.do_not_touch.vtt */; };
 		2E947FAE2F259088E451FA16 /* nar.M5-B8.m4a in Resources */ = {isa = PBXBuildFile; fileRef = DFB4BEB06CDC6BB62CB28098 /* nar.M5-B8.m4a */; };
+		2EACFBE3273E3B454BBCA924 /* PracticeVisualModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 250C3F13CFC317B8A25BA2C1 /* PracticeVisualModelTests.swift */; };
 		30016171B1567DFB7A7ED911 /* sys.scenario-d-community-facility-feedback-resume.vtt in Resources */ = {isa = PBXBuildFile; fileRef = 56EADB0D529FC89AA399F06B /* sys.scenario-d-community-facility-feedback-resume.vtt */; };
 		303BB4643002509BF0ECA075 /* nar.M4-B9.vtt in Resources */ = {isa = PBXBuildFile; fileRef = A513F63C1F8921CB6657CCD7 /* nar.M4-B9.vtt */; };
 		31C02E12B4F9F786DD227D62 /* ContentVersionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FD4D21E092ACBB990924248 /* ContentVersionService.swift */; };
@@ -117,6 +119,7 @@
 		3E973480ADC7DA99957DFF72 /* IntegratedScenarioModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8474787A3C84CBF3BB98697A /* IntegratedScenarioModels.swift */; };
 		3EDF0F69E1EC6CFCAF3C5044 /* nar.M8-B5.m4a in Resources */ = {isa = PBXBuildFile; fileRef = EC2075A3B991B10D2695DF1A /* nar.M8-B5.m4a */; };
 		3FC7BAFD141FD7BCC79A810C /* sfx.aed_analysis.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 4AAC74F84FEC888B69EB9F3C /* sfx.aed_analysis.m4a */; };
+		40735FAB0213A3CB84A91336 /* CPRCompressionDistanceLogPresentation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1698DAD1E1B26E530F5052F5 /* CPRCompressionDistanceLogPresentation.swift */; };
 		40F36F523BC5D910D0AFBCA9 /* sfx.focus_confirm.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 1067280AF73FFFE5B1898F1F /* sfx.focus_confirm.m4a */; };
 		411DABDCEE4BDBCDAF4DB59B /* nar.M8-B7.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 60DA12DC9B5E5FE30102C7D9 /* nar.M8-B7.m4a */; };
 		413FD267FF2B4839A5ED4E4D /* portal_m01.usdz in CopyFiles */ = {isa = PBXBuildFile; fileRef = 33A37D45368C15817723F3A5 /* portal_m01.usdz */; };
@@ -159,6 +162,7 @@
 		605CB90DF5AA1729A5F9E84F /* music.anatomy_lesson.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 80732BD730167D6F36824780 /* music.anatomy_lesson.m4a */; };
 		60BD736B7D74434B9A58C038 /* ScenarioEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04735E7DF396D39660549FEF /* ScenarioEngineTests.swift */; };
 		614FCA649CEFAA311AC3E444 /* sys.scenario-d-community-facility-feedback-sequence.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 23460AEF69F1BC836A645685 /* sys.scenario-d-community-facility-feedback-sequence.m4a */; };
+		62AEBCD943F3800730401BD8 /* Human.reality in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3F0CF3DBE31DC22D6D58AC21 /* Human.reality */; };
 		6344665CC8768E7C7E8E6A6F /* achievement-vault-environment.usdz in CopyFiles */ = {isa = PBXBuildFile; fileRef = 00E766E08ED7FE94AE693981 /* achievement-vault-environment.usdz */; };
 		646032CC9D55AF071B15E4A6 /* nar.M1-B6.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 6B663BF3CF8BBBDA32B03765 /* nar.M1-B6.m4a */; };
 		6468752EBA949C55B6E1E024 /* sys.scenario-c-workplace-feedback-resume.vtt in Resources */ = {isa = PBXBuildFile; fileRef = 17C1BFAF7F19534BF746D2DC /* sys.scenario-c-workplace-feedback-resume.vtt */; };
@@ -195,6 +199,7 @@
 		77483DC7793DCF2275594B50 /* AudioPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E2F1D9CF552625E371CD68C /* AudioPreferences.swift */; };
 		774DD27572F0A2B35B971BBD /* nar.M4-B1.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 3594AE37717436ADCC532F9C /* nar.M4-B1.m4a */; };
 		77D57FE79BB96BC4D35792A9 /* music.academy_hub.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 9E3629E9A7D638E787913A57 /* music.academy_hub.m4a */; };
+		78007C5CA1A9C76BB28AAFB2 /* CompressionCountAnnouncer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C265AF1F8F671150A47B76F1 /* CompressionCountAnnouncer.swift */; };
 		78F246F325F1FBF4635B6773 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 716E94E5BB18EF201F19A56F /* OnboardingView.swift */; };
 		799D9A260F97E253B11048B0 /* nar.M9-B6.m4a in Resources */ = {isa = PBXBuildFile; fileRef = E4199F2EA0BC14BBE12CFD97 /* nar.M9-B6.m4a */; };
 		7A7D59D5D212352FDFFF002C /* theory_questions_v1.json in Resources */ = {isa = PBXBuildFile; fileRef = EEF77B06DFCFF1E1B8CAD828 /* theory_questions_v1.json */; };
@@ -206,6 +211,7 @@
 		7E9E86BF05066A679D39501D /* sfx.electrode_packet_open.m4a in Resources */ = {isa = PBXBuildFile; fileRef = D212BE5E881E3F3FD2358841 /* sfx.electrode_packet_open.m4a */; };
 		7F6CD26B8ED86869EFBB6124 /* nar.M8-B2.vtt in Resources */ = {isa = PBXBuildFile; fileRef = 0B343D25923033ED0B7310FD /* nar.M8-B2.vtt */; };
 		80470F2BE3E7E02110AC9AE2 /* AEDPracticeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBF3643E671D034583F581EB /* AEDPracticeView.swift */; };
+		807AB0466E059FFE84F3C3F4 /* PracticeVisualModelPlacementPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E193BF67BC47980B500B166 /* PracticeVisualModelPlacementPanel.swift */; };
 		80A683412DBE7C234C7AADA1 /* sys.scenario-a-home-feedback-normal-breathing.vtt in Resources */ = {isa = PBXBuildFile; fileRef = 2A9F389724F7BEBCE394D68C /* sys.scenario-a-home-feedback-normal-breathing.vtt */; };
 		80ABD756F99CA0A64EAAF5D3 /* nar.M10-B1.vtt in Resources */ = {isa = PBXBuildFile; fileRef = CFCFC26729816ED7B1F8860C /* nar.M10-B1.vtt */; };
 		81A6A5B8FD22BEE200A84D37 /* nar.M3.intro.vtt in Resources */ = {isa = PBXBuildFile; fileRef = 6FEBD1BA6AB4487E14CC4033 /* nar.M3.intro.vtt */; };
@@ -285,6 +291,7 @@
 		B7D83DFFB99193477D5E3ED8 /* SpatialLaboratoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1332AC8581AF5C4C69654B21 /* SpatialLaboratoryView.swift */; };
 		B844247BEEDB676DC9C39A2E /* nar.M4.intro.vtt in Resources */ = {isa = PBXBuildFile; fileRef = D3B537FD2F34422718C59F02 /* nar.M4.intro.vtt */; };
 		B8EFF88EFCD81430447C537A /* AudioDirector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BB18FB85B195587F2494CA4 /* AudioDirector.swift */; };
+		B99BB453F85A634B6EF6C601 /* PracticeVisualModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 248897CFCD8773335F0EDAE8 /* PracticeVisualModel.swift */; };
 		BA4F3B59C9CE91156138BA28 /* badge_m14.usdz in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9EBC6F5CB1D2796962C0CAE4 /* badge_m14.usdz */; };
 		BB138D84C5EAF245DB5874FD /* nar.M10-B3.vtt in Resources */ = {isa = PBXBuildFile; fileRef = C74848C203EF936FEB23F4B4 /* nar.M10-B3.vtt */; };
 		BBA818EF65FC6B2C4EB5D1FC /* LMSExportDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2B019E9C96D12A7C3F41A42 /* LMSExportDocument.swift */; };
@@ -331,6 +338,7 @@
 		D5B918910544D69F1C0C48CA /* safety-props-set.usdz in CopyFiles */ = {isa = PBXBuildFile; fileRef = 23C75D3A9002A0E5847005E9 /* safety-props-set.usdz */; };
 		D5D00034CAA2643759955FF9 /* nar.M1-B1.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 017BBB73F1C10A390B2F165B /* nar.M1-B1.m4a */; };
 		D5E1D8D1FF8DEC620CEC446E /* sys.scenario-d-community-facility-feedback-normal-breathing.vtt in Resources */ = {isa = PBXBuildFile; fileRef = AABAF8E9EEBA43332B47B6FC /* sys.scenario-d-community-facility-feedback-normal-breathing.vtt */; };
+		D5E3EAB13337C4227D8D9959 /* AED.reality in CopyFiles */ = {isa = PBXBuildFile; fileRef = C94EEFF52257CF93D22B0B5A /* AED.reality */; };
 		D80E6F09DE8EC271721A1606 /* portal_m02.usdz in CopyFiles */ = {isa = PBXBuildFile; fileRef = 24D4C90B4B23F040FB3F2DD4 /* portal_m02.usdz */; };
 		D827CB62A0D2C801FE9C15BA /* nar.M3-B6.vtt in Resources */ = {isa = PBXBuildFile; fileRef = 39778FF0A0A120BA125EFE3F /* nar.M3-B6.vtt */; };
 		D83B21286DAF7A98D5D73C61 /* nar.M3-B8.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 384F8D4CC07308BCBDC32B0D /* nar.M3-B8.m4a */; };
@@ -425,6 +433,17 @@
 		7EE5CA5367D0198112D39CAF /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
+			dstPath = Reality;
+			dstSubfolderSpec = 7;
+			files = (
+				D5E3EAB13337C4227D8D9959 /* AED.reality in CopyFiles */,
+				62AEBCD943F3800730401BD8 /* Human.reality in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		956876BB8C39819DFEDAF3E0 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
 			dstPath = USDZ;
 			dstSubfolderSpec = 7;
 			files = (
@@ -490,6 +509,7 @@
 		017BBB73F1C10A390B2F165B /* nar.M1-B1.m4a */ = {isa = PBXFileReference; path = "nar.M1-B1.m4a"; sourceTree = "<group>"; };
 		0197C71B9FC9335FACB534D4 /* nar.M8-B1.m4a */ = {isa = PBXFileReference; path = "nar.M8-B1.m4a"; sourceTree = "<group>"; };
 		04735E7DF396D39660549FEF /* ScenarioEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScenarioEngineTests.swift; sourceTree = "<group>"; };
+		05DEF39C59E93FEAFF8E7C9B /* PracticeVisualModelPlacement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PracticeVisualModelPlacement.swift; sourceTree = "<group>"; };
 		05FE4974ED8B8C4D14D6AF6D /* HandSignalDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HandSignalDetector.swift; sourceTree = "<group>"; };
 		0600349C97B5DBA059178F13 /* sys.aed.charging.vtt */ = {isa = PBXFileReference; path = sys.aed.charging.vtt; sourceTree = "<group>"; };
 		0694581CDDC98A836FB0BE35 /* accessibility-switch-puck.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "accessibility-switch-puck.usdz"; sourceTree = "<group>"; };
@@ -520,6 +540,7 @@
 		1369FBCCA665CD89E756F059 /* observatory-environment.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "observatory-environment.usdz"; sourceTree = "<group>"; };
 		13C8ED761AB73294DF208B05 /* sys.aed.no_shock_advised.vtt */ = {isa = PBXFileReference; path = sys.aed.no_shock_advised.vtt; sourceTree = "<group>"; };
 		16611A2D2A890A5412350039 /* sys.scenario-d-community-facility-feedback-sequence.vtt */ = {isa = PBXFileReference; path = "sys.scenario-d-community-facility-feedback-sequence.vtt"; sourceTree = "<group>"; };
+		1698DAD1E1B26E530F5052F5 /* CPRCompressionDistanceLogPresentation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CPRCompressionDistanceLogPresentation.swift; sourceTree = "<group>"; };
 		171DD359B87FE9F91157BFB3 /* nar.M0.intro.vtt */ = {isa = PBXFileReference; path = nar.M0.intro.vtt; sourceTree = "<group>"; };
 		17C1BFAF7F19534BF746D2DC /* sys.scenario-c-workplace-feedback-resume.vtt */ = {isa = PBXFileReference; path = "sys.scenario-c-workplace-feedback-resume.vtt"; sourceTree = "<group>"; };
 		18575A461F6F15257C008FC2 /* DRSABCStateMachine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DRSABCStateMachine.swift; sourceTree = "<group>"; };
@@ -537,6 +558,7 @@
 		1C6D24B90E75602D2F983287 /* nar.M3-B5.vtt */ = {isa = PBXFileReference; path = "nar.M3-B5.vtt"; sourceTree = "<group>"; };
 		1CDBCD8AFD3F228351DD17E6 /* DebriefView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebriefView.swift; sourceTree = "<group>"; };
 		1CFD2BFF9AF0F7F90B7911D9 /* test_traceability_generator.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = test_traceability_generator.py; sourceTree = "<group>"; };
+		1E193BF67BC47980B500B166 /* PracticeVisualModelPlacementPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PracticeVisualModelPlacementPanel.swift; sourceTree = "<group>"; };
 		1E84BD710471EF61C2449F29 /* sys.aed.remove_clothing.vtt */ = {isa = PBXFileReference; path = sys.aed.remove_clothing.vtt; sourceTree = "<group>"; };
 		1EB228FFBDB47E78EB7185CF /* sys.scenario-d-community-facility-feedback-normal-breathing.m4a */ = {isa = PBXFileReference; path = "sys.scenario-d-community-facility-feedback-normal-breathing.m4a"; sourceTree = "<group>"; };
 		1FA6375F75B8550D8CEDB024 /* nar.M6-B8.vtt */ = {isa = PBXFileReference; path = "nar.M6-B8.vtt"; sourceTree = "<group>"; };
@@ -549,8 +571,10 @@
 		23C75D3A9002A0E5847005E9 /* safety-props-set.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "safety-props-set.usdz"; sourceTree = "<group>"; };
 		23D300E714D9A79713F4FBE5 /* ClinicalContentAndExportTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClinicalContentAndExportTests.swift; sourceTree = "<group>"; };
 		23F0940B7EF109D2FADA5D24 /* nar.M2-B3.m4a */ = {isa = PBXFileReference; path = "nar.M2-B3.m4a"; sourceTree = "<group>"; };
+		248897CFCD8773335F0EDAE8 /* PracticeVisualModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PracticeVisualModel.swift; sourceTree = "<group>"; };
 		24C263828A3A8EBF2DAEB664 /* PrivacyModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivacyModels.swift; sourceTree = "<group>"; };
 		24D4C90B4B23F040FB3F2DD4 /* portal_m02.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = portal_m02.usdz; sourceTree = "<group>"; };
+		250C3F13CFC317B8A25BA2C1 /* PracticeVisualModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PracticeVisualModelTests.swift; sourceTree = "<group>"; };
 		252A06BBC531386D696A0CCB /* PrivacyOperationsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivacyOperationsTests.swift; sourceTree = "<group>"; };
 		261E99EAE3C8058CD5529511 /* nar.M4-B8.m4a */ = {isa = PBXFileReference; path = "nar.M4-B8.m4a"; sourceTree = "<group>"; };
 		27EF7DCEC7919918149A854C /* LessonPlayerModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LessonPlayerModels.swift; sourceTree = "<group>"; };
@@ -592,6 +616,7 @@
 		3D2C956BBD135F60A883C223 /* SimulationSpaceRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimulationSpaceRootView.swift; sourceTree = "<group>"; };
 		3E2F1D9CF552625E371CD68C /* AudioPreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPreferences.swift; sourceTree = "<group>"; };
 		3EE47A154E2FFC2314F76CB3 /* sys.scenario-b-shopping-centre-feedback-aed-safety.vtt */ = {isa = PBXFileReference; path = "sys.scenario-b-shopping-centre-feedback-aed-safety.vtt"; sourceTree = "<group>"; };
+		3F0CF3DBE31DC22D6D58AC21 /* Human.reality */ = {isa = PBXFileReference; path = Human.reality; sourceTree = "<group>"; };
 		3F73BCB2DC3F5C8059AB4969 /* nar.M4-B6.m4a */ = {isa = PBXFileReference; path = "nar.M4-B6.m4a"; sourceTree = "<group>"; };
 		406810C0EDD90C980933E5E0 /* nar.M5-B5.vtt */ = {isa = PBXFileReference; path = "nar.M5-B5.vtt"; sourceTree = "<group>"; };
 		40919B428DE8DDAC10FA3DFC /* nar.M0.intro.m4a */ = {isa = PBXFileReference; path = nar.M0.intro.m4a; sourceTree = "<group>"; };
@@ -800,6 +825,7 @@
 		BE75C1E490C016E957940212 /* nar.M4.intro.m4a */ = {isa = PBXFileReference; path = nar.M4.intro.m4a; sourceTree = "<group>"; };
 		C1195408B939E2D8464E1F2A /* nar.M0-B7.vtt */ = {isa = PBXFileReference; path = "nar.M0-B7.vtt"; sourceTree = "<group>"; };
 		C258A0E5ADCD2205961B72E0 /* TheoryAssessmentEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TheoryAssessmentEngineTests.swift; sourceTree = "<group>"; };
+		C265AF1F8F671150A47B76F1 /* CompressionCountAnnouncer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompressionCountAnnouncer.swift; sourceTree = "<group>"; };
 		C2B6B4D0E61B82E4320DC526 /* nar.M1-B4.vtt */ = {isa = PBXFileReference; path = "nar.M1-B4.vtt"; sourceTree = "<group>"; };
 		C2C58052E17FFE6E85D4D7D7 /* nar.M8.intro.vtt */ = {isa = PBXFileReference; path = nar.M8.intro.vtt; sourceTree = "<group>"; };
 		C2FD9ED93E2327ADBB08FEDC /* OfflineFirstSyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfflineFirstSyncService.swift; sourceTree = "<group>"; };
@@ -813,6 +839,7 @@
 		C6D64CF3E809FBB3887BD87E /* badge_m10.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = badge_m10.usdz; sourceTree = "<group>"; };
 		C74848C203EF936FEB23F4B4 /* nar.M10-B3.vtt */ = {isa = PBXFileReference; path = "nar.M10-B3.vtt"; sourceTree = "<group>"; };
 		C8D3058A297591DBE5620957 /* nar.M5-B3.m4a */ = {isa = PBXFileReference; path = "nar.M5-B3.m4a"; sourceTree = "<group>"; };
+		C94EEFF52257CF93D22B0B5A /* AED.reality */ = {isa = PBXFileReference; path = AED.reality; sourceTree = "<group>"; };
 		C96BA7C31F92D50F11538B3C /* nar.M3-B5.m4a */ = {isa = PBXFileReference; path = "nar.M3-B5.m4a"; sourceTree = "<group>"; };
 		CA12911D0B817572C2A62D25 /* sys.scenario-c-workplace-feedback-sequence.m4a */ = {isa = PBXFileReference; path = "sys.scenario-c-workplace-feedback-sequence.m4a"; sourceTree = "<group>"; };
 		CA757C1AD1292C2B8B01A5D0 /* AuthenticationModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationModel.swift; sourceTree = "<group>"; };
@@ -915,6 +942,8 @@
 				D7D7FEBFB29DD1315ECDB39D /* AssetRegistry.swift */,
 				46DD3EFA951686E5546DCBF7 /* AssetRegistry+HandTrackingTargets.swift */,
 				DAC4557A240C616B5756910A /* PracticeAssetDescriptor.swift */,
+				248897CFCD8773335F0EDAE8 /* PracticeVisualModel.swift */,
+				05DEF39C59E93FEAFF8E7C9B /* PracticeVisualModelPlacement.swift */,
 				FB1547039F983C313AA2675E /* SpatialRealityKit.swift */,
 			);
 			path = RealityKit;
@@ -956,6 +985,7 @@
 				7BB18FB85B195587F2494CA4 /* AudioDirector.swift */,
 				3E2F1D9CF552625E371CD68C /* AudioPreferences.swift */,
 				62C3DA6151F06D2EFC2589FB /* CaptionSupport.swift */,
+				C265AF1F8F671150A47B76F1 /* CompressionCountAnnouncer.swift */,
 				55149DA43D463F75660DF328 /* ELEVENLABS_AUDIO_MANIFEST.json */,
 				6741BA638F8A5AD297C48A95 /* SpatialAudioManager.swift */,
 			);
@@ -1166,6 +1196,7 @@
 				80F49591654C43E80DB7F320 /* LearningLabRootView.swift */,
 				7E52C2BF6FA4F38A8D57346F /* LifesaverVision.entitlements */,
 				353CA1EBE9AF3912F64E7C52 /* LifesaverVisionApp.swift */,
+				1E193BF67BC47980B500B166 /* PracticeVisualModelPlacementPanel.swift */,
 				2C165DDD143CB188C78CE1C7 /* PrivacyInfo.xcprivacy */,
 				3D2C956BBD135F60A883C223 /* SimulationSpaceRootView.swift */,
 			);
@@ -1359,6 +1390,7 @@
 				BE5FE75A095D5D1B72B2C6F3 /* ModulePresentationModelTests.swift */,
 				1B8FD13FAC252A8D7CFC45A6 /* OnboardingGamificationComfortTests.swift */,
 				98267160BB6426E0ED88E1E7 /* Phase3BSchemaTests.swift */,
+				250C3F13CFC317B8A25BA2C1 /* PracticeVisualModelTests.swift */,
 				252A06BBC531386D696A0CCB /* PrivacyOperationsTests.swift */,
 				FB730BB4FFA4A509C7852563 /* RealityKitAssetTests.swift */,
 				04735E7DF396D39660549FEF /* ScenarioEngineTests.swift */,
@@ -1397,6 +1429,16 @@
 				935DF4782A94093460924620 /* music.scenario_bed.m4a */,
 			);
 			path = music;
+			sourceTree = "<group>";
+		};
+		6ED792D6030F5A9075C6C71B /* Reality */ = {
+			isa = PBXGroup;
+			children = (
+				C94EEFF52257CF93D22B0B5A /* AED.reality */,
+				3F0CF3DBE31DC22D6D58AC21 /* Human.reality */,
+			);
+			name = Reality;
+			path = Media/3D/Reality;
 			sourceTree = "<group>";
 		};
 		7F90916F861762F42BC764F4 /* Features */ = {
@@ -1477,6 +1519,7 @@
 		A984AAAFC2FC0F65A762A115 /* CPRPractice */ = {
 			isa = PBXGroup;
 			children = (
+				1698DAD1E1B26E530F5052F5 /* CPRCompressionDistanceLogPresentation.swift */,
 				63A122AAF6CF6CFA28B3CF8E /* CPRPracticeImmersivePanel.swift */,
 				68B3E4E90F9676C9CD0C8C8D /* CPRPracticeSessionModel.swift */,
 				5DDBD4AFC87AA6D056BBF533 /* CPRPracticeView.swift */,
@@ -1523,6 +1566,7 @@
 				7F90916F861762F42BC764F4 /* Features */,
 				212BC41964E7DEB40B77A1A6 /* Packages */,
 				1BAC5DCD9F259446ED93EFE1 /* Questions */,
+				6ED792D6030F5A9075C6C71B /* Reality */,
 				415E14ED18F7F42B8EFF0249 /* Spatial */,
 				64261A136F474488B227A30C /* Tests */,
 				03AD3B514AECB157A640F67A /* UITests */,
@@ -1756,6 +1800,7 @@
 				2EC78C292EEE6FD327F1DC37 /* Sources */,
 				55399063C358FEAFC17AB5B0 /* Resources */,
 				7EE5CA5367D0198112D39CAF /* CopyFiles */,
+				956876BB8C39819DFEDAF3E0 /* CopyFiles */,
 				A3EEB5FE1E182214179733C8 /* Frameworks */,
 			);
 			buildRules = (
@@ -2090,6 +2135,7 @@
 				CA139B195F3BBCC078CACADD /* AuthenticationModel.swift in Sources */,
 				A5A61C60D0423286BCA40725 /* AuthenticationView.swift in Sources */,
 				8D443DBE2A378DC1A34ABBC1 /* AutomaticRetentionEnforcer.swift in Sources */,
+				40735FAB0213A3CB84A91336 /* CPRCompressionDistanceLogPresentation.swift in Sources */,
 				3ADD1BBB39196738198D20E8 /* CPRPracticeImmersivePanel.swift in Sources */,
 				C91BFC09574D864A34EC5401 /* CPRPracticeSessionModel.swift in Sources */,
 				284D7B5D387B77943A6E9331 /* CPRPracticeStateMachine.swift in Sources */,
@@ -2099,6 +2145,7 @@
 				7D08CD511D4C00D9905DFDBD /* ClinicalSafetyValidator.swift in Sources */,
 				E190871532CA1C2BF590E1D4 /* CohortReportExportService.swift in Sources */,
 				EFADB233B428BCEA110BAC88 /* ComposedHandSignalDetector.swift in Sources */,
+				78007C5CA1A9C76BB28AAFB2 /* CompressionCountAnnouncer.swift in Sources */,
 				31C02E12B4F9F786DD227D62 /* ContentVersionService.swift in Sources */,
 				3B3B592B2F1EFECA1B2DF4EC /* CourseCatalogueView.swift in Sources */,
 				04A6DF8D691B32A94D7C445A /* CourseEngine.swift in Sources */,
@@ -2142,6 +2189,9 @@
 				91EAAE0EC9867AA6846C8F19 /* PinchGrabTracker.swift in Sources */,
 				95E8581947861F343C9A2828 /* PracticeAssetDescriptor.swift in Sources */,
 				D4DFE65E77183303DB507009 /* PracticeMachineContentContract.swift in Sources */,
+				B99BB453F85A634B6EF6C601 /* PracticeVisualModel.swift in Sources */,
+				05F08E012ED76ECD650165DE /* PracticeVisualModelPlacement.swift in Sources */,
+				807AB0466E059FFE84F3C3F4 /* PracticeVisualModelPlacementPanel.swift in Sources */,
 				AFC82F233B3E122B7FEA48F8 /* PrivacyModels.swift in Sources */,
 				160B2F2C9ADE7632E096F59F /* PrivacyOperationsService.swift in Sources */,
 				67651DBFFA041440042D1829 /* QuizSessionView.swift in Sources */,
@@ -2194,6 +2244,7 @@
 				5EBA81E0055A7257C66834AB /* ModulePresentationModelTests.swift in Sources */,
 				B284BFF6B439ED4EA08D50EE /* OnboardingGamificationComfortTests.swift in Sources */,
 				505DF9290C93533424D131AB /* Phase3BSchemaTests.swift in Sources */,
+				2EACFBE3273E3B454BBCA924 /* PracticeVisualModelTests.swift in Sources */,
 				329A16FB9956C1AB206E861E /* PrivacyOperationsTests.swift in Sources */,
 				E78EF4E7D132349712AB38A3 /* RealityKitAssetTests.swift in Sources */,
 				60BD736B7D74434B9A58C038 /* ScenarioEngineTests.swift in Sources */,

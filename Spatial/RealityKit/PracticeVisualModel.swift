@@ -1,0 +1,365 @@
+import Foundation
+import RealityKit
+
+enum PracticeVisualModelError: Error, Sendable, Equatable {
+    case resourceMissing(name: String)
+    case loadFailed(name: String, diagnostic: String)
+
+    var errorDescription: String {
+        switch self {
+        case let .resourceMissing(name):
+            "Missing bundled model Reality/\(name).reality."
+        case let .loadFailed(name, diagnostic):
+            "The model \(name).reality could not be loaded: \(diagnostic)"
+        }
+    }
+}
+
+/// A model authored in Reality Composer Pro 3 and exported as a compiled `.reality`
+/// archive.
+///
+/// The archive is encrypted and cannot be edited on disk, so its authored entity names
+/// are remapped after loading rather than in the source asset.
+///
+/// These models are VISUAL ONLY. The authored `TrainingManikin.usda` / `AEDTrainer.usda`
+/// skeletons remain the single source of truth for every detection target, so the
+/// mapping below deliberately renames into a separate `*_visual_*` namespace. Renaming
+/// an exported mesh onto a semantic name such as `sternum_target` would both collide
+/// with the authored entity that already owns it and silently move a clinically
+/// meaningful zone onto un-surveyed geometry.
+enum PracticeVisualModel: String, CaseIterable, Sendable {
+    case human = "Human"
+    case aed = "AED"
+
+    /// Bundle subdirectory written by the `Media/3D/Reality` copy-files phase.
+    static let bundleSubdirectory = "Reality"
+    static let fileExtension = "reality"
+
+    var resourceName: String { rawValue }
+
+    /// Name given to the loaded root once it is attached to the authored skeleton.
+    var semanticRootName: String {
+        switch self {
+        case .human: "human_visual_model"
+        case .aed: "aed_visual_model"
+        }
+    }
+
+    /// Entity in the authored skeleton this model hangs beneath.
+    var hostEntityName: String {
+        switch self {
+        case .human: "training_manikin"
+        case .aed: "aed_unit"
+        }
+    }
+
+    /// Starting placement before the first auto-fit.
+    ///
+    /// The human export lands prone, so it needs a half turn about the head-to-feet axis
+    /// to lie face-up like the manikin it replaces. Rotation must be right BEFORE fitting,
+    /// because fitting measures the rotated bounding box.
+    var defaultPlacement: PracticeVisualModelPlacement {
+        var placement = PracticeVisualModelPlacement.identity
+        if self == .human {
+            placement.rollDegrees = 180
+        }
+        return placement
+    }
+
+    /// Placeholder geometry this model visually replaces.
+    ///
+    /// These are hidden with an opacity component rather than disabled: `torso_shell` is
+    /// the torso grid's bounds source, and a disabled entity reports no visual bounds,
+    /// which would collapse every detection region. Opacity leaves bounds intact.
+    ///
+    /// The zone markers (`sternum_target`, `xiphoid_avoid_zone`, the pad zones) stay
+    /// visible — they are coaching affordances, not placeholder body geometry.
+    var replacedPlaceholderEntityNames: [String] {
+        switch self {
+        case .human: ["torso_shell", "head", "right_arm", "left_arm"]
+        // Shells only. The buttons, connector, status light and pads stay visible:
+        // they are the entities the AED interaction actually drives.
+        case .aed: ["aed_case_shell", "aed_case_handle", "aed_unit_shell"]
+        }
+    }
+
+    /// Authored Reality Composer Pro name → this project's visual name.
+    ///
+    /// Every value is namespaced `*_visual_*` on purpose; see the type's note.
+    var nameMapping: [String: String] {
+        switch self {
+        case .human: [
+            "Human": "human_visual_model",
+            "Human_body": "human_visual_body",
+            "Human_clothe": "human_visual_clothing",
+            "Tshirts": "human_visual_clothing_top",
+            "Pants": "human_visual_clothing_bottom",
+            // Confirmed by the asset author as the sternum compression site.
+            "Human_detection_area": "human_visual_sternum_site",
+            "Human_CPR_guide": "human_visual_cpr_guide",
+            // One authored entity covering BOTH pad sites. The app needs them as two
+            // separate zones, so this stays a single visual guide until the export is
+            // split into a right-clavicle and a left-lateral entity.
+            "Human_AED_guide": "human_visual_aed_guide"
+        ]
+        case .aed: [
+            "AED": "aed_visual_model",
+            "AED_Defibrilator": "aed_visual_case",
+            // Pad sides confirmed by the asset author: blue is the casualty's anatomical
+            // LEFT (lower lateral chest), orange the anatomical RIGHT (below the right
+            // clavicle). The names encode the side, not the colour, so a future
+            // re-colour cannot silently swap two clinically distinct pads.
+            "AED_patch_blue": "aed_visual_left_pad",
+            "AED_patch_orange": "aed_visual_right_pad",
+            "shockbutton_red": "aed_visual_shock_button",
+            "startbutton_green": "aed_visual_power_button"
+        ]
+        }
+    }
+}
+
+/// Loads and renames the exported Reality Composer Pro models.
+enum PracticeVisualModelLoader {
+    /// Renames every entity in `root` whose authored name appears in `mapping`.
+    ///
+    /// Returns the authored names that were NOT recognised, so an exported hierarchy
+    /// that has drifted from the mapping reports itself instead of failing silently.
+    @discardableResult
+    @MainActor
+    static func applyNameMapping(
+        _ mapping: [String: String],
+        to root: Entity
+    ) -> [String] {
+        var unmapped: [String] = []
+        forEachEntity(in: root) { entity in
+            guard !entity.name.isEmpty else { return }
+            if let semanticName = mapping[entity.name] {
+                entity.name = semanticName
+            } else if mapping.values.contains(entity.name) == false {
+                unmapped.append(entity.name)
+            }
+        }
+        return unmapped
+    }
+
+    /// Every non-empty entity name in the hierarchy, depth-first.
+    ///
+    /// The compiled archive is encrypted, so this is the only way to confirm what a
+    /// `.reality` export actually contains.
+    @MainActor
+    static func entityNames(in root: Entity) -> [String] {
+        var names: [String] = []
+        forEachEntity(in: root) { entity in
+            guard !entity.name.isEmpty else { return }
+            names.append(entity.name)
+        }
+        return names
+    }
+
+    @MainActor
+    static func url(
+        for model: PracticeVisualModel,
+        in bundle: Bundle
+    ) throws -> URL {
+        guard let url = bundle.url(
+            forResource: model.resourceName,
+            withExtension: PracticeVisualModel.fileExtension,
+            subdirectory: PracticeVisualModel.bundleSubdirectory
+        ) else {
+            throw PracticeVisualModelError.resourceMissing(name: model.resourceName)
+        }
+        return url
+    }
+
+    /// Loads the compiled model and applies its rename map.
+    @MainActor
+    static func load(
+        _ model: PracticeVisualModel,
+        from bundle: Bundle = .main
+    ) async throws -> Entity {
+        let url = try url(for: model, in: bundle)
+        let entity: Entity
+        do {
+            entity = try await Entity(contentsOf: url)
+        } catch let cancellation as CancellationError {
+            throw cancellation
+        } catch {
+            throw PracticeVisualModelError.loadFailed(
+                name: model.resourceName,
+                diagnostic: String(describing: error)
+            )
+        }
+        applyNameMapping(model.nameMapping, to: entity)
+        makeNonInteractive(entity)
+        entity.name = model.semanticRootName
+        return entity
+    }
+
+    /// Strips input and collision components from an imported model.
+    ///
+    /// Reality Composer Pro authors these onto entities by default, and once attached
+    /// they sit in front of the practice UI and swallow taps — the AED export carries
+    /// both, which is enough to make the panel behind it unselectable. These models are
+    /// decoration; the authored skeleton owns every interactive entity.
+    @MainActor
+    static func makeNonInteractive(_ root: Entity) {
+        forEachEntity(in: root) { entity in
+            entity.components.remove(InputTargetComponent.self)
+            entity.components.remove(CollisionComponent.self)
+        }
+    }
+
+    /// Positions an already-attached model. Safe to call every frame.
+    @MainActor
+    static func apply(_ placement: PracticeVisualModelPlacement, to entity: Entity) {
+        let sanitized = placement.sanitized
+        entity.position = sanitized.offsetMetres
+        entity.orientation = sanitized.orientation
+        entity.scale = SIMD3<Float>(repeating: sanitized.scale)
+    }
+
+    /// Shows or hides the placeholder geometry this model replaces.
+    @MainActor
+    static func applyPlaceholderVisibility(
+        for model: PracticeVisualModel,
+        isHidden: Bool,
+        in scene: Entity
+    ) {
+        for name in model.replacedPlaceholderEntityNames {
+            guard let placeholder = firstEntity(named: name, in: scene) else { continue }
+            placeholder.components.set(OpacityComponent(opacity: isHidden ? 0 : 1))
+        }
+    }
+
+    /// Attaches every model whose host entity exists in `scene`, and returns the ones
+    /// attached.
+    ///
+    /// Scenes are cached and re-added when a room is revisited, so an already-attached
+    /// model is repositioned rather than duplicated.
+    @discardableResult
+    @MainActor
+    static func attachModels(
+        in scene: Entity,
+        placements: PracticeVisualModelPlacementStore,
+        bundle: Bundle = .main
+    ) async -> [PracticeVisualModel] {
+        var attached: [PracticeVisualModel] = []
+        for model in PracticeVisualModel.allCases {
+            guard let host = firstEntity(named: model.hostEntityName, in: scene) else {
+                continue
+            }
+            let placement = placements.placement(for: model)
+            if let existing = firstEntity(named: model.semanticRootName, in: host) {
+                apply(placement, to: existing)
+                applyPlaceholderVisibility(
+                    for: model,
+                    isHidden: placement.hidesPlaceholder,
+                    in: scene
+                )
+                attached.append(model)
+                continue
+            }
+            let hadStoredPlacement = placements.hasStoredPlacement(for: model)
+            guard let entity = try? await load(model, from: bundle) else { continue }
+            apply(placement, to: entity)
+            host.addChild(entity)
+
+            // First attach only: align onto the placeholder automatically, so the model
+            // arrives at the old model's size and position instead of at an arbitrary
+            // export origin. Later manual adjustments are never overwritten.
+            if !hadStoredPlacement,
+               let fitted = fitToPlaceholder(model, in: scene, placement: placement) {
+                placements.update(fitted, for: model)
+                apply(fitted, to: entity)
+            }
+
+            applyPlaceholderVisibility(
+                for: model,
+                isHidden: placement.hidesPlaceholder,
+                in: scene
+            )
+            attached.append(model)
+        }
+        return attached
+    }
+
+    /// Fits the attached model onto the bounding box of the placeholder geometry it
+    /// replaces, preserving the model's aspect ratio and its current rotation.
+    ///
+    /// Imported exports carry their own origin, units and axis convention, so an
+    /// identity placement almost never lands correctly. Measuring the old model and
+    /// matching it is deterministic where guessing is not. Rotation is applied first and
+    /// left untouched: set the body face-up, THEN fit, or the box being measured is the
+    /// wrong shape.
+    @MainActor
+    static func fitToPlaceholder(
+        _ model: PracticeVisualModel,
+        in scene: Entity,
+        placement: PracticeVisualModelPlacement
+    ) -> PracticeVisualModelPlacement? {
+        guard let host = firstEntity(named: model.hostEntityName, in: scene),
+              let entity = firstEntity(named: model.semanticRootName, in: host)
+        else { return nil }
+
+        let reference = placeholderBounds(for: model, in: scene, relativeTo: host)
+        guard let reference, !reference.isEmpty else { return nil }
+
+        // Measure the model unscaled and unmoved, but with its rotation applied.
+        let restore = entity.transform
+        entity.position = .zero
+        entity.orientation = placement.sanitized.orientation
+        entity.scale = .one
+        let modelBounds = entity.visualBounds(recursive: true, relativeTo: host)
+        entity.transform = restore
+        guard !modelBounds.isEmpty else { return nil }
+
+        let referenceExtents = reference.extents
+        let modelExtents = modelBounds.extents
+        var ratios: [Float] = []
+        for axis in 0..<3 where modelExtents[axis] > 1e-5 {
+            ratios.append(referenceExtents[axis] / modelExtents[axis])
+        }
+        guard let fitScale = ratios.min(), fitScale.isFinite, fitScale > 0 else {
+            return nil
+        }
+
+        var fitted = placement
+        fitted.scale = fitScale
+        fitted.offsetMetres = reference.center - modelBounds.center * fitScale
+        return fitted.sanitized
+    }
+
+    /// Union of the placeholder geometry's bounds, in the host's coordinate space.
+    @MainActor
+    private static func placeholderBounds(
+        for model: PracticeVisualModel,
+        in scene: Entity,
+        relativeTo host: Entity
+    ) -> BoundingBox? {
+        var union: BoundingBox?
+        for name in model.replacedPlaceholderEntityNames {
+            guard let placeholder = firstEntity(named: name, in: scene) else { continue }
+            let bounds = placeholder.visualBounds(recursive: true, relativeTo: host)
+            guard !bounds.isEmpty else { continue }
+            union = union.map { $0.union(bounds) } ?? bounds
+        }
+        return union
+    }
+
+    @MainActor
+    static func firstEntity(named name: String, in root: Entity) -> Entity? {
+        if root.name == name { return root }
+        for child in root.children {
+            if let match = firstEntity(named: name, in: child) { return match }
+        }
+        return nil
+    }
+
+    @MainActor
+    private static func forEachEntity(in root: Entity, _ body: (Entity) -> Void) {
+        body(root)
+        for child in root.children {
+            forEachEntity(in: child, body)
+        }
+    }
+}

@@ -44,6 +44,7 @@ targets:
       - path: Spatial
       - path: Audio/AudioDirector.swift
       - path: Audio/AudioPreferences.swift
+      - path: Audio/CompressionCountAnnouncer.swift
       - path: Audio/CaptionSupport.swift
       - path: Audio/SpatialAudioManager.swift
       - path: Audio/ELEVENLABS_AUDIO_MANIFEST.json
@@ -66,6 +67,12 @@ targets:
           copyFiles:
             destination: resources
             subpath: USDZ
+      - path: Media/3D/Reality
+        type: group
+        buildPhase:
+          copyFiles:
+            destination: resources
+            subpath: Reality
       - path: Docs/CLINICAL_FACTS_EXTRACT.json
         buildPhase: resources
     dependencies:

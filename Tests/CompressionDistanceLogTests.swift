@@ -200,7 +200,229 @@ final class CompressionDistanceLogTests: XCTestCase {
         await model.stop()
     }
 
+    // MARK: - Per-descent log presentation
+
+    func testLogEntriesAreNewestFirstAndNumberedChronologically() {
+        let samples = (0..<3).map { index in
+            makeSample(timestampSeconds: 10 + Double(index))
+        }
+
+        let entries = CPRCompressionDistanceLogPresenter.entries(from: samples)
+
+        XCTAssertEqual(entries.map(\.id), [3, 2, 1])
+        XCTAssertEqual(entries.map(\.elapsedSeconds), [2, 1, 0])
+        XCTAssertEqual(entries.map(\.elapsedLabel), ["t+2.0s", "t+1.0s", "t+0.0s"])
+        // 0.02 m start to a -0.005 m trough: 25 mm travelled, 5 mm past the surface.
+        XCTAssertEqual(entries.first?.travelMillimetres, 25)
+        XCTAssertEqual(entries.first?.belowSurfaceMillimetres, 5)
+    }
+
+    func testLogEntryDistinguishesNearMissFromRefractorySuppression() {
+        let nearMiss = makeSample(
+            timestampSeconds: 1,
+            troughHeightMetres: 0.025,
+            countedAsCompression: false,
+            resolution: .reversedAboveEntryBand
+        )
+        let suppressed = makeSample(
+            timestampSeconds: 2,
+            countedAsCompression: false,
+            resolution: .releasedNormally
+        )
+        let interrupted = makeSample(
+            timestampSeconds: 3,
+            countedAsCompression: false,
+            resolution: .interruptedBeforeRelease
+        )
+
+        let entries = CPRCompressionDistanceLogPresenter.entries(
+            from: [nearMiss, suppressed, interrupted]
+        )
+
+        XCTAssertEqual(entries.map(\.isCounted), [false, false, false])
+        XCTAssertTrue(entries[0].statusLabel.contains("tracking lost"))
+        XCTAssertTrue(entries[1].statusLabel.contains("too soon"))
+        XCTAssertTrue(entries[2].statusLabel.contains("Near miss"))
+    }
+
+    func testLogDisplayLimitKeepsTheMostRecentDescents() {
+        let samples = (0..<30).map { makeSample(timestampSeconds: Double($0)) }
+
+        let entries = CPRCompressionDistanceLogPresenter.entries(from: samples, limit: 5)
+
+        XCTAssertEqual(entries.map(\.id), [30, 29, 28, 27, 26])
+        XCTAssertEqual(CPRCompressionDistanceLogPresenter.entries(from: samples, limit: 0), [])
+        XCTAssertEqual(CPRCompressionDistanceLogPresenter.entries(from: []), [])
+    }
+
+    func testLogSummaryTalliesCountedAndInBandDescents() {
+        let samples = [
+            // 25 mm of travel: counted, but short of the 40–60 mm target band.
+            makeSample(timestampSeconds: 1),
+            makeSample(timestampSeconds: 2, countedAsCompression: false),
+            // 45 mm of travel: counted and inside the band.
+            makeSample(timestampSeconds: 3, troughHeightMetres: -0.025)
+        ]
+
+        let summary = CPRCompressionDistanceLogPresenter.summary(from: samples)
+
+        XCTAssertEqual(summary.countedDescents, 2)
+        XCTAssertEqual(summary.totalDescents, 3)
+        XCTAssertEqual(summary.withinTargetBandDescents, 1)
+        XCTAssertEqual(summary.label, "2 counted of 3 descents, 1 in the 40–60 mm band")
+    }
+
+    func testTravelBandClassifiesAgainstTheFortyToSixtyMillimetreTarget() {
+        XCTAssertEqual(CPRCompressionTravelBand(travelMetres: 0.039), .belowTargetBand)
+        XCTAssertEqual(CPRCompressionTravelBand(travelMetres: 0.040), .withinTargetBand)
+        XCTAssertEqual(CPRCompressionTravelBand(travelMetres: 0.050), .withinTargetBand)
+        XCTAssertEqual(CPRCompressionTravelBand(travelMetres: 0.060), .withinTargetBand)
+        XCTAssertEqual(CPRCompressionTravelBand(travelMetres: 0.061), .aboveTargetBand)
+        XCTAssertEqual(CPRCompressionTravelBand(travelMetres: .nan), .belowTargetBand)
+        XCTAssertTrue(CPRCompressionTravelBand(travelMetres: 0.05).isWithinTargetBand)
+    }
+
+    func testLogEntryCarriesTheTravelBand() {
+        let entries = CPRCompressionDistanceLogPresenter.entries(
+            from: [makeSample(timestampSeconds: 1, troughHeightMetres: -0.025)]
+        )
+
+        let entry = entries.first
+        XCTAssertEqual(entry?.travelMillimetres, 45)
+        XCTAssertEqual(entry?.travelBand, .withinTargetBand)
+        XCTAssertEqual(entry?.travelBand.label, "40–60 mm")
+    }
+
+    // MARK: - Stacked CPR grip without fingertip nodes
+
+    /// The interlaced, palm-down CPR grip occludes the thumb and index tips. Contact
+    /// classification only needs the palm proxy and wrist, so it must keep counting.
+    func testInterlacedGripWithoutFingertipNodesStillCountsStackedCompressions() throws {
+        var detector = FingerContactCompressionDetector(targets: try makeGridTargets())
+
+        let frequency = 110.0 / 60
+        var compressions: [FingerContactCompression] = []
+        var time = 0.0
+        while time <= 10 {
+            let phase = 2 * Double.pi * frequency * time
+            let height = Float(0.0075 + 0.0125 * cos(phase))
+            let contact = SIMD3<Float>(0, 0.21 + height, 0.095)
+            compressions.append(contentsOf: detector.processFrame(
+                timestampSeconds: time,
+                leftNodes: makeGripNodes(palmProxy: contact + [0, 0.03, 0]),
+                rightNodes: makeGripNodes(palmProxy: contact)
+            ))
+            time += 1 / 60.0
+        }
+
+        XCTAssertGreaterThan(
+            compressions.count,
+            10,
+            "A grip with no tracked fingertips must still produce compressions"
+        )
+        XCTAssertTrue(
+            compressions.allSatisfy { $0.handStacking == .likelyStacked },
+            "Both hands are tracked, so the grip must read as stacked"
+        )
+    }
+
+    /// Straight-line distance alone cannot separate a stacked pair from a side-by-side
+    /// pair: both sit within arm's reach. Only the offset ACROSS the chest can.
+    func testSideBySideHandsAreNotClassifiedAsStacked() throws {
+        var detector = FingerContactCompressionDetector(targets: try makeGridTargets())
+
+        let frequency = 110.0 / 60
+        var compressions: [FingerContactCompression] = []
+        var time = 0.0
+        while time <= 10 {
+            let phase = 2 * Double.pi * frequency * time
+            let height = Float(0.0075 + 0.0125 * cos(phase))
+            // Both palms at the same height, 15 cm apart across the chest.
+            let left = SIMD3<Float>(-0.075, 0.21 + height, 0.095)
+            let right = SIMD3<Float>(0.075, 0.21 + height, 0.095)
+            compressions.append(contentsOf: detector.processFrame(
+                timestampSeconds: time,
+                leftNodes: makeGripNodes(palmProxy: left),
+                rightNodes: makeGripNodes(palmProxy: right)
+            ))
+            time += 1 / 60.0
+        }
+
+        XCTAssertFalse(compressions.isEmpty, "Contact cycles still register from one hand")
+        XCTAssertTrue(
+            compressions.allSatisfy { $0.handStacking == .separated },
+            "Hands resting side by side must not read as a stacked CPR grip"
+        )
+    }
+
+    @MainActor
+    func testAcceptedCompressionsAnnounceTheRunningCount() async throws {
+        let driver = SimulatedHandInput(startState: .permissionDenied)
+        let announcer = RecordingCompressionCountAnnouncer()
+        let model = CPRPracticeSessionModel(
+            handTracking: driver,
+            countAnnouncer: announcer
+        )
+        await model.prepare()
+        XCTAssertEqual(model.loadState, .ready)
+        model.confirmPositioning()
+        model.choosePlacement(.sternumTarget)
+
+        let interval = 60 / CPRPracticePolicy.sourceBacked.practiceTempoPerMinute
+        for index in 0..<5 {
+            model.recordFallbackCompression(at: 1_000 + Double(index) * interval)
+        }
+
+        XCTAssertGreaterThan(model.metrics.totalCompressions, 0)
+        XCTAssertEqual(
+            announcer.announcedCounts,
+            Array(1...model.metrics.totalCompressions),
+            "Every accepted compression announces the running tally exactly once"
+        )
+        await model.stop()
+    }
+
+    func testInterruptedContactCycleIsTaggedInTheDistanceLog() throws {
+        var detector = FingerContactCompressionDetector(targets: try makeGridTargets())
+
+        var time = 0.0
+        for height in stride(from: Float(0.05), through: Float(-0.005), by: -0.005) {
+            _ = detector.processFrame(
+                timestampSeconds: time,
+                leftNodes: nil,
+                rightNodes: makeNodes(palmProxy: SIMD3<Float>(0, 0.21 + height, 0.095))
+            )
+            time += 1 / 60.0
+        }
+        _ = detector.drainDistanceTelemetry()
+
+        // Hand tracking drops while the contact cycle is still open.
+        _ = detector.processFrame(timestampSeconds: time, leftNodes: nil, rightNodes: nil)
+
+        let interrupted = try XCTUnwrap(
+            detector.drainDistanceTelemetry().samples.last,
+            "An abandoned contact cycle must still reach the log"
+        )
+        XCTAssertEqual(interrupted.resolution, .interruptedBeforeRelease)
+    }
+
     // MARK: - Helpers
+
+    private func makeSample(
+        timestampSeconds: Double,
+        troughHeightMetres: Float = -0.005,
+        countedAsCompression: Bool = true,
+        resolution: CompressionDistanceSample.Resolution = .releasedNormally
+    ) -> CompressionDistanceSample {
+        CompressionDistanceSample(
+            timestampSeconds: timestampSeconds,
+            descentStartHeightMetres: 0.02,
+            troughHeightMetres: troughHeightMetres,
+            placement: .sternumTarget,
+            countedAsCompression: countedAsCompression,
+            resolution: resolution
+        )
+    }
 
     @MainActor
     private func waitUntil(
@@ -232,6 +454,15 @@ final class CompressionDistanceLogTests: XCTestCase {
             sternum: try XCTUnwrap(grid.worldVolume(for: .sternumCompressionSite)),
             xiphoidAvoidZone: try XCTUnwrap(grid.worldVolume(for: .xiphoidAvoidZone)),
             grid: grid
+        )
+    }
+
+    /// A stacked, palm-down grip as ARKit reports it: metacarpal and wrist tracked, the
+    /// interlaced thumb and index tips lost to occlusion.
+    private func makeGripNodes(palmProxy: SIMD3<Float>) -> TrackedHandNodes {
+        TrackedHandNodes(
+            middleMetacarpal: palmProxy,
+            wrist: palmProxy + [0, 0.02, -0.08]
         )
     }
 
