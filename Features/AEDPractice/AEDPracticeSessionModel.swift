@@ -396,7 +396,11 @@ final class AEDPracticeSessionModel {
             latestFeedback = "Use one of the two simulated electrode pads."
             return
         }
-        requestSpatialCue("sfx.pad_backing_peel")
+        requestPadPlacementCue(
+            isInCorrectRegion: padName == "aed_right_pad"
+                ? destinationZoneName == "aed_right_pad_zone"
+                : destinationZoneName == "aed_left_pad_zone"
+        )
         submitPadPlacementWhenBothAttempted()
     }
 
@@ -418,10 +422,35 @@ final class AEDPracticeSessionModel {
             )
         )
         guard entry?.wasAccepted == true else { return }
-        requestSpatialCue("sfx.pad_backing_peel")
+        requestPadPlacementCue(
+            isInCorrectRegion: AEDPhysicalPadPlacement(
+                padSide: side,
+                regionID: regionID,
+                normalizedPlacementError: normalizedPlacementError
+            ).isInCorrectRegion
+        )
         if state == .padsCorrect {
             requestSpatialCue("sfx.connector_insert")
         }
+    }
+
+    /// The single cue for one pad going down, chosen by whether it landed in its
+    /// anatomical region.
+    ///
+    /// Before, `sfx.pad_backing_peel` fired for every release and said nothing about
+    /// whether the pad went where it belongs, while the completion cue only arrived once
+    /// both pads were down — so at the moment the decision is actually made, which is
+    /// where placement habits form, the learner heard the same sound either way.
+    ///
+    /// One cue rather than two on purpose: `spatialCueRequest` is a single slot that the
+    /// immersive view observes, so a second request in the same turn replaces the first
+    /// instead of queueing behind it. The peel therefore stays as the sound of a pad that
+    /// merely stuck, and a correct placement earns the confirmation tone instead.
+    ///
+    /// Apple Vision Pro has no haptic actuator, so audio plus the panel's visible state is
+    /// the whole reinforcement channel.
+    private func requestPadPlacementCue(isInCorrectRegion: Bool) {
+        requestSpatialCue(isInCorrectRegion ? "sfx.answer_correct" : "sfx.pad_backing_peel")
     }
 
     /// Accessible non-drag alternative that still routes through the same placement event.
@@ -432,7 +461,7 @@ final class AEDPracticeSessionModel {
         } else {
             leftPadCorrect = inCorrectZone
         }
-        requestSpatialCue("sfx.pad_backing_peel")
+        requestPadPlacementCue(isInCorrectRegion: inCorrectZone)
         submitPadPlacementWhenBothAttempted()
     }
 

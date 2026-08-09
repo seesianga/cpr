@@ -33,6 +33,7 @@ struct SimulationSpaceRootView: View {
     @State private var spatialAudioSceneStarted: SpatialSceneName?
     @State private var controlsAnchor: AnchorEntity?
     @State private var visualModelPlacements = PracticeVisualModelPlacementStore()
+    @State private var alignmentReports = PracticeAlignmentReportStore()
     @State private var attachedVisualModels: [PracticeVisualModel] = []
     @State private var loadedSceneEntity: Entity?
     @State private var restartTask: Task<Void, Never>?
@@ -80,7 +81,9 @@ struct SimulationSpaceRootView: View {
                 // and never replace a detection target.
                 attachedVisualModels = await PracticeVisualModelLoader.attachModels(
                     in: scene,
-                    placements: visualModelPlacements
+                    placements: visualModelPlacements,
+                    reports: alignmentReports,
+                    descriptor: assetRegistry.practiceAssetDescriptor
                 )
                 loadedSceneEntity = scene
                 scene.isEnabled = !appModel.isSimulationPaused
@@ -153,13 +156,15 @@ struct SimulationSpaceRootView: View {
 
             // Re-apply placement so headset adjustments move the model immediately.
             if let scene = content.entities.first(where: { $0.name == sceneName }) {
-                // Read-only: writing observable state here would re-enter update and
-                // spin forever.
+                // Read-only with respect to observable state: writing any here would
+                // re-enter update and spin forever. Cropping and accuracy measurement
+                // therefore run from `refreshVisualModel`, on the actions that change a
+                // placement, not on every frame.
                 for model in attachedVisualModels {
                     let placement = visualModelPlacements.placement(for: model)
-                    PracticeVisualModelLoader.applyPlaceholderVisibility(
+                    PracticeVisualModelLoader.applyVisibility(
                         for: model,
-                        isHidden: placement.hidesPlaceholder,
+                        placement: placement,
                         in: scene
                     )
                     guard let entity = PracticeVisualModelLoader.firstEntity(
@@ -202,7 +207,9 @@ struct SimulationSpaceRootView: View {
                     PracticeVisualModelPlacementPanel(
                         models: attachedVisualModels,
                         store: visualModelPlacements,
-                        onFit: fitVisualModelToPlaceholder
+                        reports: alignmentReports,
+                        onAlign: alignVisualModel,
+                        onPlacementChanged: refreshVisualModel
                     )
                     #endif
                 }
@@ -380,6 +387,10 @@ struct SimulationSpaceRootView: View {
                 await playSpatialAEDCue(for: newState)
             }
         }
+        .onChange(of: alignmentReports.snapEvent) { _, event in
+            guard let event else { return }
+            presentAlignmentSnap(event)
+        }
         .onChange(of: cprSession.summary) { _, summary in
             guard let summary else { return }
             persistCPRAttempt(summary)
@@ -427,6 +438,13 @@ struct SimulationSpaceRootView: View {
             spatialAudioManager.stopAll()
             spatialSpeechCaption = nil
             spatialAudioSceneStarted = nil
+            // Cropping keeps each original mesh so the toggle can restore it. Those are
+            // the largest allocations the import makes, so they are released with the
+            // scene rather than kept alive for a room the learner has left.
+            if let loadedSceneEntity {
+                PracticeVisualModelCrop.forget(loadedSceneEntity)
+            }
+            loadedSceneEntity = nil
             assetRegistry.releaseAllScenes()
             loadedScene = nil
             controlsAnchor = nil
@@ -815,17 +833,100 @@ struct SimulationSpaceRootView: View {
 
     /// Registers the descriptor-resolved pinch-grabbable items with the AED session.
     /// The physical path is additive; every gaze-pinch and button control remains.
-    /// Scales and centres an imported model onto the placeholder geometry it replaces.
-    /// Runs from a button action, never from the RealityView update pass.
-    private func fitVisualModelToPlaceholder(_ model: PracticeVisualModel) {
+    /// Re-solves a model's registration onto the manikin and applies it.
+    ///
+    /// Runs from a button action, never from the RealityView update pass: it writes
+    /// observable placement and accuracy state, which update must not do.
+    private func alignVisualModel(_ model: PracticeVisualModel) {
+        guard let scene = loadedSceneEntity else { return }
+        let current = visualModelPlacements.placement(for: model)
+        alignmentReports.recordBaseline(
+            PracticeVisualModelAlignment.measureAccuracy(
+                for: model,
+                in: scene,
+                placement: current,
+                descriptor: assetRegistry.practiceAssetDescriptor
+            ),
+            for: model
+        )
+        guard let solved = PracticeVisualModelLoader.solvePlacement(
+            for: model,
+            in: scene,
+            placement: current,
+            descriptor: assetRegistry.practiceAssetDescriptor
+        ) else { return }
+        visualModelPlacements.update(solved, for: model)
+        refreshVisualModel(model)
+    }
+
+    /// Re-applies placement, visibility and cropping after a manual adjustment, then
+    /// re-measures how accurately the model now sits.
+    ///
+    /// The crop is mesh surgery, so it belongs on discrete actions rather than in the
+    /// per-frame update pass; the measurement has to follow it, because a crop changes the
+    /// bounds the measurement reads.
+    private func refreshVisualModel(_ model: PracticeVisualModel) {
         guard let scene = loadedSceneEntity,
-              let fitted = PracticeVisualModelLoader.fitToPlaceholder(
-                  model,
-                  in: scene,
-                  placement: visualModelPlacements.placement(for: model)
+              let host = PracticeVisualModelLoader.firstEntity(
+                  named: model.hostEntityName,
+                  in: scene
+              ),
+              let entity = PracticeVisualModelLoader.firstEntity(
+                  named: model.semanticRootName,
+                  in: host
               )
         else { return }
-        visualModelPlacements.update(fitted, for: model)
+        let placement = visualModelPlacements.placement(for: model)
+        PracticeVisualModelLoader.apply(placement, to: entity)
+        PracticeVisualModelLoader.applyVisibility(
+            for: model,
+            placement: placement,
+            in: scene
+        )
+        PracticeVisualModelLoader.applyCrop(
+            for: model,
+            entity: entity,
+            host: host,
+            scene: scene,
+            placement: placement,
+            descriptor: assetRegistry.practiceAssetDescriptor,
+            reports: alignmentReports
+        )
+        alignmentReports.recordAlignment(
+            PracticeVisualModelAlignment.measureAccuracy(
+                for: model,
+                in: scene,
+                placement: placement,
+                descriptor: assetRegistry.practiceAssetDescriptor
+            ),
+            for: model
+        )
+    }
+
+    /// Traces the manikin's chest once, the moment a body overlay registers onto it, and
+    /// confirms it with the same soft cue the rest of the interface uses for a landed
+    /// action.
+    private func presentAlignmentSnap(_ event: PracticeAlignmentReportStore.SnapEvent) {
+        defer { alignmentReports.acknowledgeSnap(event) }
+        guard event.model == .human,
+              let scene = loadedSceneEntity,
+              let host = PracticeVisualModelLoader.firstEntity(
+                  named: event.model.hostEntityName,
+                  in: scene
+              ),
+              let reference = PracticeVisualModelAlignment.bestReference(
+                  in: scene,
+                  host: host,
+                  descriptor: assetRegistry.practiceAssetDescriptor
+              )
+        else { return }
+        AlignmentSnapHighlight.present(
+            in: scene,
+            host: host,
+            reference: reference,
+            reduceMotion: effectiveReduceMotion
+        )
+        playInterfaceSFX("sfx.focus_confirm")
     }
 
     private func configureAEDPhysicalInteraction(in scene: Entity) {

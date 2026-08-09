@@ -21,6 +21,13 @@ struct PracticeVisualModelPlacement: Codable, Equatable, Sendable {
     /// back on while aligning: seeing both bodies at once is what makes the offset
     /// obvious.
     var hidesPlaceholder: Bool = true
+    /// Whether geometry outside the manikin's physical envelope is hidden.
+    ///
+    /// The manikin is a torso trainer, so a full-body import renders legs that hang in
+    /// mid-air with nothing physical underneath them. Cropping is on by default and
+    /// switchable in the headset, because an import whose bind pose defeats the crop is
+    /// better shown whole than shown wrong.
+    var cropsToPhysicalEnvelope: Bool = true
 
     static let identity = PracticeVisualModelPlacement(
         offsetMetres: .zero,
@@ -57,7 +64,54 @@ struct PracticeVisualModelPlacement: Codable, Equatable, Sendable {
             pitchDegrees: pitchDegrees.truncatingRemainder(dividingBy: 360),
             yawDegrees: yawDegrees.truncatingRemainder(dividingBy: 360),
             scale: min(max(scale, Self.minimumScale), Self.maximumScale),
-            hidesPlaceholder: hidesPlaceholder
+            hidesPlaceholder: hidesPlaceholder,
+            cropsToPhysicalEnvelope: cropsToPhysicalEnvelope
+        )
+    }
+
+    /// Rewrites yaw/pitch/roll so `orientation` reproduces `rotation`.
+    ///
+    /// The solver works in matrices, but the persisted placement and the in-headset
+    /// steppers are Euler angles, and keeping both in sync by hand is how a tuned
+    /// placement silently stops matching what is on screen. Decomposing instead means the
+    /// operator can still nudge a solved orientation by 15° and have it persist.
+    mutating func setOrientation(_ rotation: simd_float3x3) {
+        let angles = Self.yawPitchRollDegrees(from: rotation)
+        yawDegrees = angles.yaw
+        pitchDegrees = angles.pitch
+        rollDegrees = angles.roll
+    }
+
+    /// Inverse of `orientation`: extracts the Y→X→Z Euler triple from a rotation matrix.
+    ///
+    /// Every rotation has such a decomposition, so this never fails; the gimbal-locked
+    /// case (chest pointing straight along the head-to-feet axis) folds the redundant
+    /// degree of freedom into yaw and leaves roll at zero.
+    static func yawPitchRollDegrees(
+        from rotation: simd_float3x3
+    ) -> (yaw: Float, pitch: Float, roll: Float) {
+        // simd is column-major: element(row, column) is columns.column[row].
+        func element(_ row: Int, _ column: Int) -> Float {
+            rotation[column][row]
+        }
+        let degrees = 180 / Float.pi
+        let sinPitch = min(max(-element(1, 2), -1), 1)
+        let pitch = asin(sinPitch)
+        let cosPitch = (1 - sinPitch * sinPitch).squareRoot()
+        guard cosPitch > 1e-5 else {
+            return (
+                yaw: atan2(-element(2, 0), element(0, 0)) * degrees,
+                pitch: pitch * degrees,
+                roll: 0
+            )
+        }
+        // For R = Ry·Rx·Rz: R[0][2] = sin(yaw)·cos(pitch) and R[2][2] = cos(yaw)·cos(pitch),
+        // and `pitch` comes from asin so cos(pitch) is never negative — the ratio is yaw
+        // outright.
+        return (
+            yaw: atan2(element(0, 2), element(2, 2)) * degrees,
+            pitch: pitch * degrees,
+            roll: atan2(element(1, 0), element(1, 1)) * degrees
         )
     }
 
@@ -132,11 +186,14 @@ final class PracticeVisualModelPlacementStore {
         defaults.data(forKey: Self.storageKey(for: model)) != nil
     }
 
-    /// Versioned: the placement schema gained roll and pitch, and placements stored
-    /// before auto-fit existed were tuned against a model that arrived at an arbitrary
-    /// export origin. Bumping the key discards those and lets the first attach re-fit.
+    /// Versioned, and bumped whenever the meaning of a stored placement changes rather
+    /// than only its schema. v2 placements were tuned against the old whole-figure fit,
+    /// which measured the manikin's head and arms as well as its torso and then shrank the
+    /// import to the tightest axis — a placement tuned to compensate for that is wrong
+    /// under anatomical registration. Bumping the key discards them so the first attach
+    /// solves afresh; a stale key would silently keep the old misalignment.
     private static func storageKey(for model: PracticeVisualModel) -> String {
-        "developer.visualModelPlacement.v2.\(model.rawValue)"
+        "developer.visualModelPlacement.v3.\(model.rawValue)"
     }
 
     private static func load(

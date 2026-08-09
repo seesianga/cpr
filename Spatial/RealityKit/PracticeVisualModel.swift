@@ -83,6 +83,24 @@ enum PracticeVisualModel: String, CaseIterable, Sendable {
         }
     }
 
+    /// Authored markers whose job this model's own guidance geometry has taken over.
+    ///
+    /// The amber pad-zone slabs were the pad guidance before the body export shipped one.
+    /// The export's `human_visual_aed_guide` now marks both pad sites on the body itself,
+    /// so the slabs are duplicate coaching that floats above the chest, and two competing
+    /// targets is worse guidance than one.
+    ///
+    /// Only the *surfaces* are listed. Their parent zone Xforms carry the collision and
+    /// bounds that pad-drop classification reads, and hiding those would delete pad
+    /// detection along with the visuals — so this list is hidden by opacity for the same
+    /// reason `torso_shell` is, and the parents are left alone.
+    var supersededLegacyEntityNames: [String] {
+        switch self {
+        case .human: ["aed_right_pad_zone_surface", "aed_left_pad_zone_surface"]
+        case .aed: []
+        }
+    }
+
     /// Authored Reality Composer Pro name → this project's visual name.
     ///
     /// Every value is namespaced `*_visual_*` on purpose; see the type's note.
@@ -232,7 +250,7 @@ enum PracticeVisualModelLoader {
     }
 
     /// Attaches every model whose host entity exists in `scene`, and returns the ones
-    /// attached.
+    /// attached along with how accurately each landed.
     ///
     /// Scenes are cached and re-added when a room is revisited, so an already-attached
     /// model is repositioned rather than duplicated.
@@ -241,6 +259,8 @@ enum PracticeVisualModelLoader {
     static func attachModels(
         in scene: Entity,
         placements: PracticeVisualModelPlacementStore,
+        reports: PracticeAlignmentReportStore? = nil,
+        descriptor: PracticeAssetDescriptor = .placeholderDescriptor,
         bundle: Bundle = .main
     ) async -> [PracticeVisualModel] {
         var attached: [PracticeVisualModel] = []
@@ -251,10 +271,19 @@ enum PracticeVisualModelLoader {
             let placement = placements.placement(for: model)
             if let existing = firstEntity(named: model.semanticRootName, in: host) {
                 apply(placement, to: existing)
-                applyPlaceholderVisibility(
+                applyVisibility(for: model, placement: placement, in: scene)
+                applyCrop(
                     for: model,
-                    isHidden: placement.hidesPlaceholder,
-                    in: scene
+                    entity: existing,
+                    host: host,
+                    scene: scene,
+                    placement: placement,
+                    descriptor: descriptor,
+                    reports: reports
+                )
+                reports?.recordAlignment(
+                    measure(model, in: scene, placement: placement, descriptor: descriptor),
+                    for: model
                 )
                 attached.append(model)
                 continue
@@ -264,23 +293,163 @@ enum PracticeVisualModelLoader {
             apply(placement, to: entity)
             host.addChild(entity)
 
-            // First attach only: align onto the placeholder automatically, so the model
-            // arrives at the old model's size and position instead of at an arbitrary
-            // export origin. Later manual adjustments are never overwritten.
-            if !hadStoredPlacement,
-               let fitted = fitToPlaceholder(model, in: scene, placement: placement) {
-                placements.update(fitted, for: model)
-                apply(fitted, to: entity)
+            // First attach only. A stored placement is either a solve that already ran or
+            // an operator's deliberate adjustment; re-solving over either would throw away
+            // in-headset tuning every time the room reloads.
+            var effective = placement
+            if !hadStoredPlacement {
+                // Baseline first: what the import's own export convention gets you with no
+                // registration at all. This is the "before" half of the accuracy report and
+                // has to be sampled while it is still true.
+                reports?.recordBaseline(
+                    measure(model, in: scene, placement: placement, descriptor: descriptor),
+                    for: model
+                )
+                if let solved = solvePlacement(
+                    for: model,
+                    in: scene,
+                    placement: placement,
+                    descriptor: descriptor
+                ) {
+                    effective = solved
+                    placements.update(solved, for: model)
+                    apply(solved, to: entity)
+                }
             }
 
-            applyPlaceholderVisibility(
+            applyVisibility(for: model, placement: effective, in: scene)
+            applyCrop(
                 for: model,
-                isHidden: placement.hidesPlaceholder,
-                in: scene
+                entity: entity,
+                host: host,
+                scene: scene,
+                placement: effective,
+                descriptor: descriptor,
+                reports: reports
+            )
+            reports?.recordAlignment(
+                measure(model, in: scene, placement: effective, descriptor: descriptor),
+                for: model
             )
             attached.append(model)
         }
         return attached
+    }
+
+    /// Registers a body onto the manikin, or sizes a prop against it.
+    ///
+    /// Falls back to the old placeholder fit when neither applies, so a scene the solver
+    /// cannot measure still gets a model at a sensible size rather than at its raw export
+    /// scale.
+    @MainActor
+    static func solvePlacement(
+        for model: PracticeVisualModel,
+        in scene: Entity,
+        placement: PracticeVisualModelPlacement,
+        descriptor: PracticeAssetDescriptor = .placeholderDescriptor
+    ) -> PracticeVisualModelPlacement? {
+        switch model {
+        case .human:
+            if let solved = PracticeVisualModelAlignment.solvePlacement(
+                for: model,
+                in: scene,
+                currentPlacement: placement,
+                descriptor: descriptor
+            ) {
+                return solved.placement
+            }
+        case .aed:
+            if let sized = PracticeVisualModelAlignment.solvePropPlacement(
+                for: model,
+                in: scene,
+                currentPlacement: fitToPlaceholder(model, in: scene, placement: placement)
+                    ?? placement,
+                descriptor: descriptor
+            ) {
+                return sized
+            }
+        }
+        return fitToPlaceholder(model, in: scene, placement: placement)
+    }
+
+    @MainActor
+    private static func measure(
+        _ model: PracticeVisualModel,
+        in scene: Entity,
+        placement: PracticeVisualModelPlacement,
+        descriptor: PracticeAssetDescriptor
+    ) -> TorsoAlignmentAccuracy? {
+        PracticeVisualModelAlignment.measureAccuracy(
+            for: model,
+            in: scene,
+            placement: placement,
+            descriptor: descriptor
+        )
+    }
+
+    /// Hides the geometry this model stands in for, and the markers it makes redundant.
+    @MainActor
+    static func applyVisibility(
+        for model: PracticeVisualModel,
+        placement: PracticeVisualModelPlacement,
+        in scene: Entity
+    ) {
+        applyPlaceholderVisibility(
+            for: model,
+            isHidden: placement.hidesPlaceholder,
+            in: scene
+        )
+        // Tied to the same switch: showing the placeholder body to check alignment while
+        // its pad markers stayed hidden would hide half the thing being checked.
+        setOpacity(
+            placement.hidesPlaceholder ? 0 : 1,
+            onEntitiesNamed: model.supersededLegacyEntityNames,
+            in: scene
+        )
+    }
+
+    /// Crops the import to the manikin's physical envelope, or restores it when the
+    /// operator switches cropping off.
+    @MainActor
+    static func applyCrop(
+        for model: PracticeVisualModel,
+        entity: Entity,
+        host: Entity,
+        scene: Entity,
+        placement: PracticeVisualModelPlacement,
+        descriptor: PracticeAssetDescriptor,
+        reports: PracticeAlignmentReportStore?
+    ) {
+        guard model == .human else { return }
+        guard placement.cropsToPhysicalEnvelope else {
+            PracticeVisualModelCrop.restore(entity)
+            reports?.recordCrop(nil, for: model)
+            return
+        }
+        guard let reference = PracticeVisualModelAlignment.bestReference(
+            in: scene,
+            host: host,
+            descriptor: descriptor
+        ) else { return }
+        let outcome = PracticeVisualModelCrop.apply(
+            to: entity,
+            envelopeCenter: reference.physicalEnvelopeCenter,
+            envelopeExtents: reference.physicalEnvelopeExtents,
+            host: host
+        )
+        reports?.recordCrop(outcome, for: model)
+    }
+
+    @MainActor
+    private static func setOpacity(
+        _ opacity: Float,
+        onEntitiesNamed names: [String],
+        in scene: Entity
+    ) {
+        for name in names {
+            guard let entity = firstEntity(named: name, in: scene) else { continue }
+            entity.components.set(OpacityComponent(opacity: opacity))
+        }
     }
 
     /// Fits the attached model onto the bounding box of the placeholder geometry it

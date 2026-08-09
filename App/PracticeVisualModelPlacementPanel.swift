@@ -7,10 +7,14 @@ import SwiftUI
 struct PracticeVisualModelPlacementPanel: View {
     let models: [PracticeVisualModel]
     let store: PracticeVisualModelPlacementStore
-    /// Fitting needs the live scene, which only the RealityView holds. It runs from this
-    /// button action — never from the view's update pass, where writing observable state
-    /// would re-enter update endlessly.
-    let onFit: (PracticeVisualModel) -> Void
+    let reports: PracticeAlignmentReportStore
+    /// Solving needs the live scene, which only the RealityView holds. Both callbacks run
+    /// from button actions — never from the view's update pass, where writing observable
+    /// state would re-enter update endlessly.
+    let onAlign: (PracticeVisualModel) -> Void
+    /// Re-applies and re-measures after a manual nudge, so the readout below always
+    /// describes what is actually on the manikin.
+    let onPlacementChanged: (PracticeVisualModel) -> Void
 
     @State private var selection: PracticeVisualModel?
     @State private var isExpanded = false
@@ -75,11 +79,13 @@ struct PracticeVisualModelPlacementPanel: View {
                         increase: { adjust(model) { $0.scale *= Self.scaleStep } }
                     )
 
-                    Button("Fit to old model", systemImage: "arrow.down.right.and.arrow.up.left") {
-                        onFit(model)
+                    Button("Align to manikin", systemImage: "scope") {
+                        onAlign(model)
                     }
                     .font(.caption)
-                    .accessibilityHint("Scales and centres this model onto the placeholder it replaces")
+                    .accessibilityHint(
+                        "Registers this model onto the manikin's measured torso, matching its chest width and sternum landmark"
+                    )
 
                     if !model.replacedPlaceholderEntityNames.isEmpty {
                         Toggle(
@@ -94,6 +100,24 @@ struct PracticeVisualModelPlacementPanel: View {
                         .font(.caption)
                     }
 
+                    if model == .human {
+                        Toggle(
+                            "Crop to manikin envelope",
+                            isOn: Binding(
+                                get: { placement.cropsToPhysicalEnvelope },
+                                set: { isOn in
+                                    adjust(model) { $0.cropsToPhysicalEnvelope = isOn }
+                                }
+                            )
+                        )
+                        .font(.caption)
+                        .accessibilityHint(
+                            "Hides imported body geometry that extends past the physical manikin"
+                        )
+                    }
+
+                    accuracyReadout(for: model)
+
                     Text(placement.sourceLiteral)
                         .font(.caption2.monospaced())
                         .foregroundStyle(.secondary)
@@ -101,6 +125,7 @@ struct PracticeVisualModelPlacementPanel: View {
 
                     Button("Reset \(model.rawValue)", systemImage: "arrow.uturn.backward") {
                         store.reset(model)
+                        onPlacementChanged(model)
                     }
                     .font(.caption)
                 }
@@ -115,6 +140,53 @@ struct PracticeVisualModelPlacementPanel: View {
                 .font(.caption.bold())
         }
         .frame(maxWidth: 420)
+    }
+
+    /// Registration quality, in centimetres and degrees.
+    ///
+    /// This is the panel's reason to exist beyond nudging: it turns "does the body look
+    /// right?" into a number the operator can act on, and the before/after pair is the
+    /// evidence that registration did something.
+    @ViewBuilder
+    private func accuracyReadout(for model: PracticeVisualModel) -> some View {
+        if let accuracy = reports.alignment[model] {
+            VStack(alignment: .leading, spacing: 3) {
+                Label {
+                    Text(accuracy.isAligned ? "Registered" : "Not yet registered")
+                } icon: {
+                    Image(
+                        systemName: accuracy.isAligned
+                            ? "checkmark.circle.fill"
+                            : "exclamationmark.circle"
+                    )
+                }
+                .font(.caption.bold())
+                .foregroundStyle(accuracy.isAligned ? .green : .orange)
+
+                Text(accuracy.summary)
+                    .font(.caption2.monospacedDigit())
+                    .textSelection(.enabled)
+
+                if let report = reports.report(for: model) {
+                    Text(report.demoLine)
+                        .font(.caption2.monospacedDigit())
+                        .foregroundStyle(.secondary)
+                        .textSelection(.enabled)
+                }
+                if let crop = reports.crop[model] {
+                    Text(crop.summary)
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                }
+            }
+            .accessibilityElement(children: .combine)
+            .accessibilityLabel(
+                accuracy.isAligned
+                    ? "Registered onto the manikin"
+                    : "Not yet registered onto the manikin"
+            )
+            .accessibilityValue(accuracy.summary)
+        }
     }
 
     private func axisRow(
@@ -167,5 +239,6 @@ struct PracticeVisualModelPlacementPanel: View {
         var placement = store.placement(for: model)
         transform(&placement)
         store.update(placement, for: model)
+        onPlacementChanged(model)
     }
 }
