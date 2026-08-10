@@ -756,7 +756,12 @@ final class AEDPracticeSessionModel {
         let snap = handTrackingTargets?.grid?.snapResolution(
             forWorld: releaseWorldPosition
         )
-        let restingPosition = snap?.worldSnapPosition ?? releaseWorldPosition
+        let restingPosition = Self.padRestingPosition(
+            snap: snap,
+            padSide: grab.padSide,
+            releaseWorldPosition: releaseWorldPosition,
+            grid: handTrackingTargets?.grid
+        )
         grabItemPositions[grab.itemIdentifier] = restingPosition
         publishGrabbableItems()
         padSnapPresentation = AEDPadSnapPresentation(
@@ -769,6 +774,26 @@ final class AEDPracticeSessionModel {
             regionID: snap?.regionID,
             normalizedPlacementError: snap.map(\.normalizedError)
         )
+    }
+
+    /// Where a released pad comes to rest. Operator spec (2026-08-10): a pad released in
+    /// its OWN section seats on the section — the region's centre on the torso surface —
+    /// so the blue pad sticks at the blue section and the orange at the orange, instead
+    /// of resting wherever the pinch happened to open. A wrong-section or off-torso
+    /// release keeps the honest position: there, the visible offset IS the training
+    /// signal, and the recorded evidence (regionID + error) is unchanged either way.
+    nonisolated static func padRestingPosition(
+        snap: TorsoGridSnapResolution?,
+        padSide: AEDPadSide,
+        releaseWorldPosition: SIMD3<Float>,
+        grid: TorsoGridMap?
+    ) -> SIMD3<Float> {
+        guard let snap else { return releaseWorldPosition }
+        if snap.regionID == padSide.expectedRegionID,
+           let seat = grid?.worldSurfaceCenter(of: snap.regionID) {
+            return seat
+        }
+        return snap.worldSnapPosition
     }
 
     private func recordGuidedCompression(at timestamp: Double) {

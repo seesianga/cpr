@@ -684,11 +684,35 @@ struct SimulationSpaceRootView: View {
                         matching: ["aed_left_pad", "aed_right_pad"]
                       )
                 else { return }
+                let destinationZoneName = nearestPadZone(to: pad)
                 aedSession.placeDraggedPad(
                     padName: pad.name,
-                    destinationZoneName: nearestPadZone(to: pad)
+                    destinationZoneName: destinationZoneName
                 )
+                // Operator spec (2026-08-10): a pad dropped on its OWN zone seats on
+                // the zone rather than resting at the drag end-point; a wrong-zone
+                // drop stays where it landed so the offset reads as the error it is.
+                if let destinationZoneName,
+                   destinationZoneName == Self.matchingPadZoneName(forPad: pad.name),
+                   let scene = loadedSceneEntity,
+                   let zone = PracticeVisualModelLoader.firstEntity(
+                       named: destinationZoneName,
+                       in: scene
+                   ) {
+                    let seat = zone.position(relativeTo: nil)
+                    let zoneUp = zone.convert(direction: SIMD3<Float>(0, 1, 0), to: nil)
+                    // Half the zone slab plus half the pad, so the pad sits flush on
+                    // the section instead of embedded in it.
+                    pad.setPosition(seat + zoneUp * 0.016, relativeTo: nil)
+                }
             }
+    }
+
+    /// The zone that means "this pad's own section": right pad below the right
+    /// clavicle, left pad on the left lower lateral chest — the same rule the
+    /// reducer's correctness decision uses.
+    private static func matchingPadZoneName(forPad padName: String) -> String {
+        padName == "aed_right_pad" ? "aed_right_pad_zone" : "aed_left_pad_zone"
     }
 
     private func handleSpatialTap(on entity: Entity) {

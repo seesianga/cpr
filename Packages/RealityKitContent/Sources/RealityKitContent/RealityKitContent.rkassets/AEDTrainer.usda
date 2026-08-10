@@ -82,6 +82,30 @@ def Xform "aed_trainer"
                 token outputs:surface
             }
         }
+        def Material "PadBlue"
+        {
+            token outputs:surface.connect = </aed_trainer/Materials/PadBlue/PreviewSurface.outputs:surface>
+            def Shader "PreviewSurface"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.16, 0.42, 0.82)
+                float inputs:metallic = 0.02
+                float inputs:roughness = 0.6
+                token outputs:surface
+            }
+        }
+        def Material "PadOrange"
+        {
+            token outputs:surface.connect = </aed_trainer/Materials/PadOrange/PreviewSurface.outputs:surface>
+            def Shader "PreviewSurface"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.93, 0.47, 0.12)
+                float inputs:metallic = 0.02
+                float inputs:roughness = 0.6
+                token outputs:surface
+            }
+        }
     }
 
     def Xform "aed_case"
@@ -189,9 +213,12 @@ def Xform "aed_trainer"
             prepend apiSchemas = ["MaterialBindingAPI"]
         )
         {
-            rel material:binding = </aed_trainer/Materials/PadGold>
+            # Casualty's anatomical LEFT (lower lateral chest) — BLUE, matching the
+            # body guide's blue section. Footprint matches the guide sections
+            # (~0.083 x 0.133 m at demo scale); operator spec 2026-08-10.
+            rel material:binding = </aed_trainer/Materials/PadBlue>
             double size = 1
-            float3 xformOp:scale = (0.13, 0.018, 0.16)
+            float3 xformOp:scale = (0.085, 0.014, 0.135)
             uniform token[] xformOpOrder = ["xformOp:scale"]
         }
     }
@@ -204,9 +231,11 @@ def Xform "aed_trainer"
             prepend apiSchemas = ["MaterialBindingAPI"]
         )
         {
-            rel material:binding = </aed_trainer/Materials/PadGold>
+            # Casualty's anatomical RIGHT (below right clavicle) — ORANGE, matching the
+            # body guide's orange section. Same footprint as the left pad.
+            rel material:binding = </aed_trainer/Materials/PadOrange>
             double size = 1
-            float3 xformOp:scale = (0.13, 0.018, 0.16)
+            float3 xformOp:scale = (0.085, 0.014, 0.135)
             uniform token[] xformOpOrder = ["xformOp:scale"]
         }
     }
