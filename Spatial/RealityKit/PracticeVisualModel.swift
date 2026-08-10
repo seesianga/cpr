@@ -53,17 +53,50 @@ enum PracticeVisualModel: String, CaseIterable, Sendable {
         }
     }
 
-    /// Starting placement before the first auto-fit.
+    /// The shipped placement: what a fresh install shows before anyone touches a control.
     ///
-    /// The human export lands prone, so it needs a half turn about the head-to-feet axis
-    /// to lie face-up like the manikin it replaces. Rotation must be right BEFORE fitting,
-    /// because fitting measures the rotated bounding box.
+    /// The human's values are not derived — they were tuned by eye in the headset against
+    /// the PHYSICAL torso trainer on the demo table (2026-08-10) and read back off the
+    /// developer panel. The solver registers against the authored virtual skeleton, which
+    /// is not the frame the physical unit occupies, so a metrically "perfect" solve can
+    /// still sit visibly wrong on the real chest; these numbers are the configuration that
+    /// looked right on it. Roll 180° is still what turns the prone export face-up, and it
+    /// combines with yaw 180° here — both must be right BEFORE any fit, because fitting
+    /// measures the rotated bounding box.
+    ///
+    /// Everything remains operator-adjustable in the placement panel; this is only where
+    /// the controls start.
     var defaultPlacement: PracticeVisualModelPlacement {
-        var placement = PracticeVisualModelPlacement.identity
-        if self == .human {
+        switch self {
+        case .human:
+            var placement = PracticeVisualModelPlacement.identity
+            placement.offsetMetres = SIMD3<Float>(0.00, 0.19, 0.80)
             placement.rollDegrees = 180
+            placement.pitchDegrees = 0
+            placement.yawDegrees = 180
+            placement.scale = 0.43
+            placement.hidesPlaceholder = true
+            // Off per the same physical-demo configuration: at this placement the body
+            // reads correctly whole, and the crop is one toggle away if it stops doing so.
+            placement.cropsToPhysicalEnvelope = false
+            return placement
+        case .aed:
+            return .identity
         }
-        return placement
+    }
+
+    /// Whether the first attach runs the registration solver over the default placement.
+    ///
+    /// The human does not: its default IS the working registration, measured against the
+    /// physical manikin, and an automatic solve would replace it with one that is only
+    /// right against the virtual skeleton. Alignment stays one explicit button away in
+    /// the placement panel. The AED still solves — it is sized as a measured fraction of
+    /// the chest, not hand-placed, so solving cannot lose tuned work.
+    var solvesOnFirstAttach: Bool {
+        switch self {
+        case .human: false
+        case .aed: true
+        }
     }
 
     /// Placeholder geometry this model visually replaces.
@@ -298,14 +331,14 @@ enum PracticeVisualModelLoader {
             // in-headset tuning every time the room reloads.
             var effective = placement
             if !hadStoredPlacement {
-                // Baseline first: what the import's own export convention gets you with no
-                // registration at all. This is the "before" half of the accuracy report and
-                // has to be sampled while it is still true.
+                // Baseline first: what the shipped default achieves before any solve. This
+                // is the "before" half of the accuracy report and has to be sampled while
+                // it is still true.
                 reports?.recordBaseline(
                     measure(model, in: scene, placement: placement, descriptor: descriptor),
                     for: model
                 )
-                if let solved = solvePlacement(
+                if model.solvesOnFirstAttach, let solved = solvePlacement(
                     for: model,
                     in: scene,
                     placement: placement,

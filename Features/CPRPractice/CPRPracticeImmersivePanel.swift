@@ -148,11 +148,6 @@ struct CPRPracticeImmersivePanel: View {
                         .font(.caption2)
                         .foregroundStyle(.secondary)
                     }
-                    Text(
-                        "Travel is how far your hands moved against the virtual chest surface, and the 40–60 mm band is a movement target only. It cannot confirm real compression depth: depth, force and recoil are not physically assessed."
-                    )
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
                 }
                 .padding(.top, 6)
             } label: {

@@ -218,6 +218,37 @@ final class PracticeVisualModelTests: XCTestCase {
         XCTAssertEqual(PracticeVisualModel.aed.defaultPlacement.rollDegrees, 0)
     }
 
+    /// Pins the shipped human placement to the values tuned by eye against the physical
+    /// torso trainer (2026-08-10). These are configuration, not derivation — a change here
+    /// must be a deliberate re-tune on the demo unit, never a refactoring accident.
+    func testHumanDefaultPlacementIsThePhysicallyTunedConfiguration() {
+        let placement = PracticeVisualModel.human.defaultPlacement
+        XCTAssertEqual(placement.offsetMetres.x, 0.00, accuracy: 0.0001)
+        XCTAssertEqual(placement.offsetMetres.y, 0.19, accuracy: 0.0001)
+        XCTAssertEqual(placement.offsetMetres.z, 0.80, accuracy: 0.0001)
+        XCTAssertEqual(placement.rollDegrees, 180)
+        XCTAssertEqual(placement.pitchDegrees, 0)
+        XCTAssertEqual(placement.yawDegrees, 180)
+        XCTAssertEqual(placement.scale, 0.43, accuracy: 0.0001)
+        XCTAssertTrue(placement.hidesPlaceholder)
+        XCTAssertFalse(
+            placement.cropsToPhysicalEnvelope,
+            "Crop ships OFF: the tuned placement reads correctly whole on the demo unit"
+        )
+        XCTAssertEqual(
+            placement,
+            placement.sanitized,
+            "The shipped default must survive sanitization untouched"
+        )
+    }
+
+    /// The human's default is the working registration, so the first attach must not
+    /// solve over it; the AED is sized off the measured chest, so it must keep solving.
+    func testFirstAttachSolvePolicyPreservesTheTunedHumanDefault() {
+        XCTAssertFalse(PracticeVisualModel.human.solvesOnFirstAttach)
+        XCTAssertTrue(PracticeVisualModel.aed.solvesOnFirstAttach)
+    }
+
     // MARK: - Placement tuning
 
     func testPlacementSanitizationClampsAndRejectsNonFiniteValues() {

@@ -440,17 +440,6 @@
 		7EE5CA5367D0198112D39CAF /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
-			dstPath = Reality;
-			dstSubfolderSpec = 7;
-			files = (
-				D5E3EAB13337C4227D8D9959 /* AED.reality in CopyFiles */,
-				62AEBCD943F3800730401BD8 /* Human.reality in CopyFiles */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		956876BB8C39819DFEDAF3E0 /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
 			dstPath = USDZ;
 			dstSubfolderSpec = 7;
 			files = (
@@ -504,6 +493,17 @@
 				D5B918910544D69F1C0C48CA /* safety-props-set.usdz in CopyFiles */,
 				1A74044870428D8E76B01D21 /* theatre-environment.usdz in CopyFiles */,
 				ECB84CCA61546543F94AE48F /* xp-orb.usdz in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		956876BB8C39819DFEDAF3E0 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = Reality;
+			dstSubfolderSpec = 7;
+			files = (
+				D5E3EAB13337C4227D8D9959 /* AED.reality in CopyFiles */,
+				62AEBCD943F3800730401BD8 /* Human.reality in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

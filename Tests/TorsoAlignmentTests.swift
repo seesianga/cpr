@@ -263,9 +263,15 @@ final class TorsoAlignmentTests: XCTestCase {
             ProportionalPropSizing.aedWidthAsFractionOfChestWidth,
             accuracy: 0.0001
         )
-        XCTAssertTrue(
-            (0.25...0.30).contains(ProportionalPropSizing.aedWidthAsFractionOfChestWidth),
-            "The authored fraction must stay inside the reviewed proportion band"
+        XCTAssertEqual(
+            ProportionalPropSizing.aedWidthAsFractionOfChestWidth,
+            0.14,
+            accuracy: 0.0001,
+            """
+            Half the anatomically faithful 0.25–0.30 band, by operator decision against \
+            the physical demo scene (2026-08-10). A change here must be another such \
+            decision, not a drift back toward the textbook proportion.
+            """
         )
     }
 
@@ -452,8 +458,10 @@ final class TorsoAlignmentTests: XCTestCase {
         XCTAssertFalse(accuracy.isAligned)
     }
 
-    /// The baseline the demo readout compares against: the import at its export placement
-    /// is badly wrong, which is the problem being solved.
+    /// The baseline the demo readout compares against. The shipped default is tuned to the
+    /// PHYSICAL demo unit, whose frame is not the virtual skeleton's, so the solver's
+    /// metric reads it as misaligned — which is expected, and why "Align to manikin" is an
+    /// explicit button rather than an automatic first-attach solve.
     func testUnregisteredImportMeasuresAsMisalignedBeforeSolving() throws {
         let scene = makeManikinScene(includeTorsoGarment: true)
         let accuracy = try XCTUnwrap(

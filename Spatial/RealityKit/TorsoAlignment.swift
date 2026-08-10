@@ -402,9 +402,13 @@ enum TorsoAlignmentSolver {
 /// differently sized manikin, so the prop is expressed as a ratio of measured chest width
 /// instead.
 enum ProportionalPropSizing {
-    /// An adult AED sits at roughly a quarter to a third of chest width across its face.
-    /// The midpoint keeps it readable in hand without dominating the casualty.
-    static let aedWidthAsFractionOfChestWidth: Float = 0.28
+    /// An adult AED sits at roughly a quarter to a third of chest width across its face,
+    /// which puts the anatomically faithful band at 0.25–0.30. Shipped at HALF that
+    /// midpoint: at 0.28 the operator judged the unit twice too large against the physical
+    /// demo scene (2026-08-10), where it competes with a real table and a real manikin
+    /// rather than sitting alone in a virtual room. Still a fraction, not a fixed size, so
+    /// it keeps tracking the measured chest.
+    static let aedWidthAsFractionOfChestWidth: Float = 0.14
 
     static let minimumScale: Float = 0.05
     static let maximumScale: Float = 20

@@ -23,10 +23,13 @@ struct PracticeVisualModelPlacement: Codable, Equatable, Sendable {
     var hidesPlaceholder: Bool = true
     /// Whether geometry outside the manikin's physical envelope is hidden.
     ///
-    /// The manikin is a torso trainer, so a full-body import renders legs that hang in
-    /// mid-air with nothing physical underneath them. Cropping is on by default and
-    /// switchable in the headset, because an import whose bind pose defeats the crop is
-    /// better shown whole than shown wrong.
+    /// The manikin is a torso trainer, so a full-body import can render legs that hang in
+    /// mid-air with nothing physical underneath them. Switchable in the headset, because
+    /// an import whose bind pose defeats the crop is better shown whole than shown wrong.
+    /// The human's shipped default leaves it OFF — see
+    /// `PracticeVisualModel.defaultPlacement`, which carries the placement tuned on the
+    /// physical demo unit — so this struct-level value only reaches entities whose
+    /// default placement does not say otherwise.
     var cropsToPhysicalEnvelope: Bool = true
 
     static let identity = PracticeVisualModelPlacement(
