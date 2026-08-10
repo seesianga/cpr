@@ -76,6 +76,10 @@ struct SimulationSpaceRootView: View {
                 }
                 let scene = try await assetRegistry.loadScene(selectedScene)
                 try assetRegistry.decorateSemanticEntities(in: scene, for: selectedScene)
+                // After decoration, so stripping input from hidden set dressing wins
+                // over anything decoration added. The curated practice rooms are exempt
+                // inside SceneDeclutter itself.
+                SceneDeclutter.apply(in: scene, for: selectedScene)
                 // Imported Reality Composer Pro meshes are decoration hung on the
                 // authored skeleton, so they attach after the semantic entities exist
                 // and never replace a detection target.
