@@ -338,11 +338,35 @@ final class PracticeVisualModelTests: XCTestCase {
         )
     }
 
-    /// The human's default is the working registration, so the first attach must not
-    /// solve over it; the AED is sized off the measured chest, so it must keep solving.
-    func testFirstAttachSolvePolicyPreservesTheTunedHumanDefault() {
-        XCTAssertFalse(PracticeVisualModel.human.solvesOnFirstAttach)
-        XCTAssertTrue(PracticeVisualModel.aed.solvesOnFirstAttach)
+    /// Pins the shipped AED placement to the operator's configuration, read off the
+    /// panel's debug line during the 2026-08-10 physical demo. Like the human's, these
+    /// values are policy, not derivation.
+    func testAEDDefaultPlacementIsTheOperatorPinnedConfiguration() {
+        let placement = PracticeVisualModel.aed.defaultPlacement
+        XCTAssertEqual(placement.offsetMetres.x, -0.247, accuracy: 0.0001)
+        XCTAssertEqual(placement.offsetMetres.y, 0.047, accuracy: 0.0001)
+        XCTAssertEqual(placement.offsetMetres.z, -0.072, accuracy: 0.0001)
+        XCTAssertEqual(placement.rollDegrees, 0)
+        XCTAssertEqual(placement.pitchDegrees, 0)
+        XCTAssertEqual(placement.yawDegrees, 0)
+        XCTAssertEqual(placement.scale, 0.060, accuracy: 0.0001)
+        XCTAssertTrue(placement.hidesPlaceholder)
+        XCTAssertEqual(
+            placement,
+            placement.sanitized,
+            "The shipped default must survive sanitization untouched"
+        )
+    }
+
+    /// Both defaults are operator-pinned working configurations, so the first attach
+    /// must never solve over either; "Align to manikin" is the explicit path.
+    func testFirstAttachNeverSolvesOverAPinnedDefault() {
+        for model in PracticeVisualModel.allCases {
+            XCTAssertFalse(
+                model.solvesOnFirstAttach,
+                "\(model.rawValue) must come up on its pinned default, not a solve"
+            )
+        }
     }
 
     // MARK: - Placement tuning
@@ -384,7 +408,7 @@ final class PracticeVisualModelTests: XCTestCase {
         XCTAssertEqual(reloaded.placement(for: .human).yawDegrees, 15)
         XCTAssertEqual(
             reloaded.placement(for: .aed),
-            .identity,
+            PracticeVisualModel.aed.defaultPlacement,
             "A tuned placement must not leak onto the other model"
         )
 
@@ -401,23 +425,31 @@ final class PracticeVisualModelTests: XCTestCase {
         )
     }
 
-    /// The AED's storage key went v3 → v4 when its export changed unit convention
-    /// (2026-08-10): a v3 scale renders the new asset ~100× wrong. A device that stored a
-    /// v3 AED placement must come up on the defaults and re-solve, not apply the stale
-    /// number — while the human's v3 key stays honoured, because its export did not
-    /// change and it carries the operator's hand-tuned registration.
-    func testStaleV3AEDPlacementIsDiscardedButHumanV3Survives() throws {
+    /// The AED's storage key was bumped twice on 2026-08-10 — v4 when the export changed
+    /// unit convention (a v3 scale renders the new asset ~100× wrong), v5 when the
+    /// operator pinned the shipped default (v4 holds auto-solves that would shadow it).
+    /// Values under either retired key must be invisible, while the human's v3 key stays
+    /// honoured: its export did not change and it carries the hand-tuned registration.
+    func testRetiredAEDPlacementKeysAreDiscardedButHumanV3Survives() throws {
         let suiteName = "PracticeVisualModelTests.migration"
         let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
         defaults.removePersistentDomain(forName: suiteName)
         defer { defaults.removePersistentDomain(forName: suiteName) }
 
-        var stale = PracticeVisualModelPlacement.identity
-        stale.scale = 0.05
-        stale.offsetMetres = [-0.247, 0.047, -0.072]
-        let data = try JSONEncoder().encode(stale)
-        // Written under the RETIRED key, the way a pre-swap install left it.
-        defaults.set(data, forKey: "developer.visualModelPlacement.v3.AED")
+        var staleV3 = PracticeVisualModelPlacement.identity
+        staleV3.scale = 0.05
+        staleV3.offsetMetres = [-0.247, 0.047, -0.072]
+        defaults.set(
+            try JSONEncoder().encode(staleV3),
+            forKey: "developer.visualModelPlacement.v3.AED"
+        )
+
+        var staleV4 = PracticeVisualModelPlacement.identity
+        staleV4.scale = 0.16
+        defaults.set(
+            try JSONEncoder().encode(staleV4),
+            forKey: "developer.visualModelPlacement.v4.AED"
+        )
 
         var tunedHuman = PracticeVisualModel.human.defaultPlacement
         tunedHuman.yawDegrees = 195
@@ -429,17 +461,17 @@ final class PracticeVisualModelTests: XCTestCase {
         let store = PracticeVisualModelPlacementStore(defaults: defaults)
         XCTAssertFalse(
             store.hasStoredPlacement(for: .aed),
-            "A v3 AED value must not be visible through the v4 key"
+            "Values under retired AED keys must not be visible through the current key"
         )
         XCTAssertEqual(
             store.placement(for: .aed),
             PracticeVisualModel.aed.defaultPlacement,
-            "The stale AED placement must be discarded in favour of the defaults"
+            "Stale AED placements must be discarded in favour of the pinned default"
         )
         XCTAssertEqual(
             store.placement(for: .human).yawDegrees,
             195,
-            "The human's v3 placement must survive the AED's key bump"
+            "The human's v3 placement must survive the AED's key bumps"
         )
     }
 

@@ -107,22 +107,32 @@ enum PracticeVisualModel: String, CaseIterable, Sendable {
             placement.cropsToPhysicalEnvelope = false
             return placement
         case .aed:
-            return .identity
+            // Operator-pinned on 2026-08-10, read off the panel's debug line during a
+            // completed AED practice run on the physical demo scene. The steppers round
+            // to 2 dp (−0.25 m), so the debug line is the authoritative source. At this
+            // scale the unit's case renders ≈2.5 cm across — a deliberate demo choice;
+            // the proportional solve remains one button away if a measured size is ever
+            // wanted instead.
+            var placement = PracticeVisualModelPlacement.identity
+            placement.offsetMetres = SIMD3<Float>(-0.247, 0.047, -0.072)
+            placement.rollDegrees = 0
+            placement.pitchDegrees = 0
+            placement.yawDegrees = 0
+            placement.scale = 0.060
+            placement.hidesPlaceholder = true
+            return placement
         }
     }
 
     /// Whether the first attach runs the registration solver over the default placement.
     ///
-    /// The human does not: its default IS the working registration, measured against the
-    /// physical manikin, and an automatic solve would replace it with one that is only
-    /// right against the virtual skeleton. Alignment stays one explicit button away in
-    /// the placement panel. The AED still solves — it is sized as a measured fraction of
-    /// the chest, not hand-placed, so solving cannot lose tuned work.
+    /// Neither model does, and for the same reason: both defaults are operator-pinned
+    /// configurations judged against the PHYSICAL demo scene (2026-08-10), and an
+    /// automatic solve would replace them with values that are only right against the
+    /// virtual skeleton. "Align to manikin" stays in the panel as the explicit way to
+    /// invoke the solver for either model.
     var solvesOnFirstAttach: Bool {
-        switch self {
-        case .human: false
-        case .aed: true
-        }
+        false
     }
 
     /// Placeholder geometry this model visually replaces.

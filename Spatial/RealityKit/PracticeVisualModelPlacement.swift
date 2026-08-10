@@ -201,13 +201,17 @@ final class PracticeVisualModelPlacementStore {
     /// when its export changed unit convention (2026-08-10): the old file's root carried
     /// an authored 0.01 scale with ×100 compensating children, the new file bakes both to
     /// 1 — so the same stored scale number renders the two assets ~100× apart in world
-    /// size, and every v3 AED value was derived against the old convention. The human
-    /// stays on v3: its export did not change, and a shared bump would discard the
-    /// operator's hand-tuned placement for no reason.
+    /// size, and every v3 AED value was derived against the old convention. v5 followed
+    /// the same day, when the operator pinned an exact AED configuration as the shipped
+    /// default and first-attach solving was switched off: v4 values are the auto-solves
+    /// that brief era stored on attach, and keeping them would shadow the pinned default
+    /// on precisely the devices it was tuned for. The human stays on v3: its export did
+    /// not change, and a shared bump would discard the operator's hand-tuned placement
+    /// for no reason.
     private static func storageVersion(for model: PracticeVisualModel) -> Int {
         switch model {
         case .human: 3
-        case .aed: 4
+        case .aed: 5
         }
     }
 
