@@ -24,6 +24,11 @@ struct AuthenticationView: View {
             }
 
             VStack(spacing: 12) {
+                // Personal signing teams cannot carry the Sign in with Apple entitlement,
+                // so the button is hidden rather than left to fail on tap. Guest mode is
+                // the whole entry path in that build; the divider goes with it, or it
+                // would sit above the guest field separating nothing.
+                #if !PERSONAL_TEAM
                 if #available(visionOS 1.0, *) {
                     SignInWithAppleButton(.signIn) { request in
                         request.requestedScopes = [.fullName, .email]
@@ -37,6 +42,7 @@ struct AuthenticationView: View {
 
                 Divider()
                     .frame(maxWidth: 360)
+                #endif
 
                 TextField("Name for guest mode (optional)", text: $guestName)
                     .textFieldStyle(.roundedBorder)
@@ -66,6 +72,7 @@ struct AuthenticationView: View {
         .glassBackgroundEffect()
     }
 
+    #if !PERSONAL_TEAM
     @available(visionOS 1.0, *)
     @MainActor
     private func handleAppleResult(_ result: Result<ASAuthorization, any Error>) {
@@ -97,6 +104,7 @@ struct AuthenticationView: View {
             }
         }
     }
+    #endif
 }
 
 struct AuthenticationGateView: View {

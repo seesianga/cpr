@@ -17,6 +17,9 @@ settings:
     SWIFT_STRICT_CONCURRENCY: complete
     MARKETING_VERSION: "0.1.0"
     CURRENT_PROJECT_VERSION: "1"
+    # Device builds need a signing team; the simulator ignores both of these.
+    DEVELOPMENT_TEAM: AAG5WTMX8G
+    CODE_SIGN_STYLE: Automatic
 
 packages:
   RealityKitContent:
@@ -82,15 +85,18 @@ targets:
         CODE_SIGN_ENTITLEMENTS: App/LifesaverVision.entitlements
         PRODUCT_BUNDLE_IDENTIFIER: com.lifesaver.vision
         PRODUCT_NAME: LifesaverVision
+      # PERSONAL_TEAM hides Sign in with Apple, which the free signing team cannot be
+      # issued a profile for. Drop it from all four configs once the paid programme
+      # enrolment lands, alongside restoring the entitlement key.
       configs:
         Debug-Beta:
-          SWIFT_ACTIVE_COMPILATION_CONDITIONS: DEBUG BETA
+          SWIFT_ACTIVE_COMPILATION_CONDITIONS: DEBUG BETA PERSONAL_TEAM
         Release-Stable:
-          SWIFT_ACTIVE_COMPILATION_CONDITIONS: STABLE
+          SWIFT_ACTIVE_COMPILATION_CONDITIONS: STABLE PERSONAL_TEAM
         UITest:
-          SWIFT_ACTIVE_COMPILATION_CONDITIONS: DEBUG UITEST
+          SWIFT_ACTIVE_COMPILATION_CONDITIONS: DEBUG UITEST PERSONAL_TEAM
         Demo:
-          SWIFT_ACTIVE_COMPILATION_CONDITIONS: DEBUG DEMO
+          SWIFT_ACTIVE_COMPILATION_CONDITIONS: DEBUG DEMO PERSONAL_TEAM
     info:
       path: App/Info.plist
       properties:

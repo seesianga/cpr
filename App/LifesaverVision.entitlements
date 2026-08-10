@@ -2,9 +2,18 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>com.apple.developer.applesignin</key>
-	<array>
-		<string>Default</string>
-	</array>
+	<!--
+	  Sign in with Apple is a paid-Apple-Developer-Program capability. The signing team
+	  is currently a free personal team, which cannot be issued a profile carrying it,
+	  so device builds fail at provisioning rather than at runtime.
+
+	  On enrolling in the paid programme, restore the key below and drop PERSONAL_TEAM
+	  from SWIFT_ACTIVE_COMPILATION_CONDITIONS in project.yml to bring the button back:
+
+	  <key>com.apple.developer.applesignin</key>
+	  <array>
+	      <string>Default</string>
+	  </array>
+	-->
 </dict>
 </plist>
