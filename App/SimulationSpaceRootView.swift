@@ -931,8 +931,13 @@ struct SimulationSpaceRootView: View {
 
     private func configureAEDPhysicalInteraction(in scene: Entity) {
         let descriptor = assetRegistry.practiceAssetDescriptor
+        // Operator-hidden props must not stay pinch-targets: the hand-tracking pipeline
+        // associates by position, not collision, so without this an invisible power
+        // button still powers the unit on when a pinch lands near the visible AED.
+        let hidden = Set(PracticeVisualModel.aed.operatorHiddenEntityNames)
         let itemsByIdentifier = Dictionary(
             uniqueKeysWithValues: assetRegistry.pinchGrabItems(in: scene)
+                .filter { !hidden.contains($0.identifier) }
                 .map { ($0.identifier, $0) }
         )
         var padItems: [AEDPadSide: PinchGrabItem] = [:]

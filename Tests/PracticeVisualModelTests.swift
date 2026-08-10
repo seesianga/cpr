@@ -359,6 +359,72 @@ final class PracticeVisualModelTests: XCTestCase {
         )
     }
 
+    /// Pins the operator's 2026-08-10 scene declutter: what stays visible is exactly the
+    /// imported yellow unit, the two gold grabbable pads and the blue electrode packet.
+    /// The kept names must never drift into the hidden list, and the hidden list must
+    /// keep covering the props whose jobs moved to the panel's labelled controls.
+    func testOperatorHiddenListKeepsTheDeclaredTrioVisible() {
+        let hidden = Set(PracticeVisualModel.aed.operatorHiddenEntityNames)
+
+        for kept in ["aed_left_pad", "aed_right_pad", "electrode_packet", "aed_visual_case"] {
+            XCTAssertFalse(hidden.contains(kept), "\(kept) is a kept item; it must stay visible")
+        }
+        for gone in [
+            "aed_power_button", "aed_shock_button", "training_razor", "prep_cloth",
+            "clear_zone", "aed_visual_left_pad", "aed_visual_right_pad"
+        ] {
+            XCTAssertTrue(hidden.contains(gone), "\(gone) must be operator-hidden")
+        }
+        // The grabbable pads are resolved by these descriptor names; hiding either would
+        // remove the core pad-placement interaction along with the visuals.
+        let descriptor = PracticeAssetDescriptor.placeholderDescriptor
+        XCTAssertFalse(hidden.contains(descriptor.patches.rightPadEntityName))
+        XCTAssertFalse(hidden.contains(descriptor.patches.leftPadEntityName))
+        // The power button IS hidden, which is what makes the pinch-pipeline filter in
+        // configureAEDPhysicalInteraction drop it as a pinch target.
+        XCTAssertTrue(hidden.contains(descriptor.defibrillator.powerButtonEntityName))
+        XCTAssertTrue(PracticeVisualModel.human.operatorHiddenEntityNames.isEmpty)
+    }
+
+    /// Hiding is by opacity with input stripped one-way: the props may come back to be
+    /// LOOKED at via the developer switch, but an invisible-or-visible retired shock
+    /// button must never take a tap again.
+    func testOperatorHiddenEntitiesLoseInputAndKeepBoundsAcrossTheToggle() {
+        let scene = Entity()
+        let razor = ModelEntity(mesh: .generateBox(size: [0.02, 0.02, 0.12]))
+        razor.name = "training_razor"
+        razor.components.set(InputTargetComponent())
+        razor.components.set(CollisionComponent(shapes: [.generateBox(size: [0.02, 0.02, 0.12])]))
+        scene.addChild(razor)
+
+        let keptPad = ModelEntity(mesh: .generateBox(size: [0.1, 0.01, 0.15]))
+        keptPad.name = "aed_left_pad"
+        keptPad.components.set(InputTargetComponent())
+        scene.addChild(keptPad)
+
+        var placement = PracticeVisualModel.aed.defaultPlacement
+        placement.hidesPlaceholder = true
+        PracticeVisualModelLoader.applyVisibility(for: .aed, placement: placement, in: scene)
+
+        XCTAssertEqual(razor.components[OpacityComponent.self]?.opacity, 0)
+        XCTAssertFalse(razor.components.has(InputTargetComponent.self))
+        XCTAssertFalse(razor.components.has(CollisionComponent.self))
+        XCTAssertFalse(
+            razor.visualBounds(recursive: true, relativeTo: scene).isEmpty,
+            "Opacity-hiding must keep bounds intact, like every hide in this layer"
+        )
+        XCTAssertNil(keptPad.components[OpacityComponent.self], "Kept items stay visible")
+        XCTAssertTrue(keptPad.components.has(InputTargetComponent.self), "Kept items stay interactive")
+
+        placement.hidesPlaceholder = false
+        PracticeVisualModelLoader.applyVisibility(for: .aed, placement: placement, in: scene)
+        XCTAssertEqual(razor.components[OpacityComponent.self]?.opacity, 1, "The switch shows it again")
+        XCTAssertFalse(
+            razor.components.has(InputTargetComponent.self),
+            "Interactivity must NOT return with visibility"
+        )
+    }
+
     /// Both defaults are operator-pinned working configurations, so the first attach
     /// must never solve over either; "Align to manikin" is the explicit path.
     func testFirstAttachNeverSolvesOverAPinnedDefault() {

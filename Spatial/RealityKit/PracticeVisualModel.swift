@@ -45,6 +45,36 @@ enum PracticeVisualModel: String, CaseIterable, Sendable {
         }
     }
 
+    /// Scene entities removed from the demo by operator decision (2026-08-10), judged
+    /// from a photograph of the live AED preparation table: keep the imported yellow
+    /// unit, the two gold grabbable pads and the blue electrode packet — hide the rest
+    /// of the authored kit, plus the import's own patch visuals, which duplicate the
+    /// gold pads without being grabbable.
+    ///
+    /// Hidden by opacity like every other visibility decision here, so bounds survive,
+    /// and tied to the same "Hide placeholder body" switch for developer inspection.
+    /// Their input and collision components are stripped when hidden and NOT restored
+    /// by the switch: an invisible shock button that still takes gaze-pinch would fire
+    /// from a stray pinch at the visible unit it sits on. Every step these props served
+    /// keeps its labelled control in the practice panel, so no session state becomes
+    /// unreachable.
+    var operatorHiddenEntityNames: [String] {
+        switch self {
+        case .human: return []
+        case .aed: return [
+            // The authored unit's controls — the panel's labelled buttons carry these.
+            "aed_power_button", "aed_shock_button", "aed_status_light", "aed_connector",
+            // Preparation kit props — panel buttons complete the same steps.
+            "training_razor", "training_scissors", "prep_cloth", "glove_box",
+            // The clear-zone ring — "Activate clear-zone ring" remains in the panel.
+            "clear_zone",
+            // The import's own patch visuals: decoration that mimics the grabbable
+            // gold pads one hand-width away from them.
+            "aed_visual_left_pad", "aed_visual_right_pad"
+        ]
+        }
+    }
+
     /// Entity whose measured bounds proportional sizing is taken against, when the
     /// proportion is expressed against a specific part rather than the whole model.
     ///
@@ -484,6 +514,17 @@ enum PracticeVisualModelLoader {
             onEntitiesNamed: model.supersededLegacyEntityNames,
             in: scene
         )
+        setOpacity(
+            placement.hidesPlaceholder ? 0 : 1,
+            onEntitiesNamed: model.operatorHiddenEntityNames,
+            in: scene
+        )
+        // One-way on purpose: flipping the switch brings the props back to LOOK at,
+        // never to touch — see `operatorHiddenEntityNames`.
+        for name in model.operatorHiddenEntityNames {
+            guard let entity = firstEntity(named: name, in: scene) else { continue }
+            makeNonInteractive(entity)
+        }
     }
 
     /// Crops the import to the manikin's physical envelope, or restores it when the
