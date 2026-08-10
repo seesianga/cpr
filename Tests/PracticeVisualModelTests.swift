@@ -338,8 +338,9 @@ final class PracticeVisualModelTests: XCTestCase {
         )
     }
 
-    /// Pins the shipped AED placement to the operator's configuration, read off the
-    /// panel's debug line during the 2026-08-10 physical demo. Like the human's, these
+    /// Pins the shipped AED placement to the operator's configuration, pulled from the
+    /// demo device's own placement store on 2026-08-10 — the authoritative source after
+    /// a photographed "0.96×" was misread as "0.06×" once. Like the human's, these
     /// values are policy, not derivation.
     func testAEDDefaultPlacementIsTheOperatorPinnedConfiguration() {
         let placement = PracticeVisualModel.aed.defaultPlacement
@@ -349,7 +350,7 @@ final class PracticeVisualModelTests: XCTestCase {
         XCTAssertEqual(placement.rollDegrees, 0)
         XCTAssertEqual(placement.pitchDegrees, 0)
         XCTAssertEqual(placement.yawDegrees, 0)
-        XCTAssertEqual(placement.scale, 0.060, accuracy: 0.0001)
+        XCTAssertEqual(placement.scale, 1.047, accuracy: 0.0001)
         XCTAssertTrue(placement.hidesPlaceholder)
         XCTAssertEqual(
             placement,

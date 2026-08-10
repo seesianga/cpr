@@ -107,18 +107,19 @@ enum PracticeVisualModel: String, CaseIterable, Sendable {
             placement.cropsToPhysicalEnvelope = false
             return placement
         case .aed:
-            // Operator-pinned on 2026-08-10, read off the panel's debug line during a
-            // completed AED practice run on the physical demo scene. The steppers round
-            // to 2 dp (−0.25 m), so the debug line is the authoritative source. At this
-            // scale the unit's case renders ≈2.5 cm across — a deliberate demo choice;
-            // the proportional solve remains one button away if a measured size is ever
-            // wanted instead.
+            // Operator-pinned on 2026-08-10, taken from the device's own placement store
+            // rather than from a photo of the panel: a photographed "0.96×" was first
+            // misread as "0.06×" and shipped, which rendered the unit at 2.5 cm; the
+            // operator stepped the scale back up in the headset (0.060 × 1.1³⁰ — thirty
+            // presses), and THAT stored value is what ships. At this scale the case
+            // renders ≈43 cm across — real-world AED trainer size. The proportional
+            // solve remains one button away if a measured size is ever wanted instead.
             var placement = PracticeVisualModelPlacement.identity
             placement.offsetMetres = SIMD3<Float>(-0.247, 0.047, -0.072)
             placement.rollDegrees = 0
             placement.pitchDegrees = 0
             placement.yawDegrees = 0
-            placement.scale = 0.060
+            placement.scale = 1.047
             placement.hidesPlaceholder = true
             return placement
         }
