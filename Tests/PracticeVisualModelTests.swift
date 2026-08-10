@@ -360,18 +360,19 @@ final class PracticeVisualModelTests: XCTestCase {
     }
 
     /// Pins the operator's 2026-08-10 scene declutter: what stays visible is exactly the
-    /// imported yellow unit, the two gold grabbable pads and the blue electrode packet.
-    /// The kept names must never drift into the hidden list, and the hidden list must
-    /// keep covering the props whose jobs moved to the panel's labelled controls.
-    func testOperatorHiddenListKeepsTheDeclaredTrioVisible() {
+    /// imported yellow unit and the two gold grabbable pads (the electrode packet was
+    /// kept at first, then removed by a same-day follow-up). The kept names must never
+    /// drift into the hidden list, and the hidden list must keep covering the props
+    /// whose jobs moved to the panel's labelled controls.
+    func testOperatorHiddenListKeepsTheDeclaredKeepersVisible() {
         let hidden = Set(PracticeVisualModel.aed.operatorHiddenEntityNames)
 
-        for kept in ["aed_left_pad", "aed_right_pad", "electrode_packet", "aed_visual_case"] {
+        for kept in ["aed_left_pad", "aed_right_pad", "aed_visual_case"] {
             XCTAssertFalse(hidden.contains(kept), "\(kept) is a kept item; it must stay visible")
         }
         for gone in [
             "aed_power_button", "aed_shock_button", "training_razor", "prep_cloth",
-            "clear_zone", "aed_visual_left_pad", "aed_visual_right_pad"
+            "electrode_packet", "clear_zone", "aed_visual_left_pad", "aed_visual_right_pad"
         ] {
             XCTAssertTrue(hidden.contains(gone), "\(gone) must be operator-hidden")
         }

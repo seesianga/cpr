@@ -47,9 +47,10 @@ enum PracticeVisualModel: String, CaseIterable, Sendable {
 
     /// Scene entities removed from the demo by operator decision (2026-08-10), judged
     /// from a photograph of the live AED preparation table: keep the imported yellow
-    /// unit, the two gold grabbable pads and the blue electrode packet — hide the rest
-    /// of the authored kit, plus the import's own patch visuals, which duplicate the
-    /// gold pads without being grabbable.
+    /// unit and the two gold grabbable pads — hide the rest of the authored kit, plus
+    /// the import's own patch visuals, which duplicate the gold pads without being
+    /// grabbable. (The blue electrode packet was kept in the first pass and removed by
+    /// a follow-up decision the same day.)
     ///
     /// Hidden by opacity like every other visibility decision here, so bounds survive,
     /// and tied to the same "Hide placeholder body" switch for developer inspection.
@@ -66,6 +67,7 @@ enum PracticeVisualModel: String, CaseIterable, Sendable {
             "aed_power_button", "aed_shock_button", "aed_status_light", "aed_connector",
             // Preparation kit props — panel buttons complete the same steps.
             "training_razor", "training_scissors", "prep_cloth", "glove_box",
+            "electrode_packet",
             // The clear-zone ring — "Activate clear-zone ring" remains in the panel.
             "clear_zone",
             // The import's own patch visuals: decoration that mimics the grabbable
