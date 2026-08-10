@@ -45,6 +45,32 @@ enum PracticeVisualModel: String, CaseIterable, Sendable {
         }
     }
 
+    /// Entity whose measured bounds proportional sizing is taken against, when the
+    /// proportion is expressed against a specific part rather than the whole model.
+    ///
+    /// The AED's chest-width fraction is defined against the unit's face, but the
+    /// whole-model bounds also span the laid-out pads and cable run — under the combined
+    /// export that nearly doubles the span, which would render the unit at roughly half
+    /// the stated fraction. Sizing falls back to whole-model bounds when the named entity
+    /// is absent, so an export without the case name still gets a sensible size.
+    var sizingProxyEntityName: String? {
+        switch self {
+        case .human: nil
+        case .aed: "aed_visual_case"
+        }
+    }
+
+    /// This model's authored root INSIDE an export, for exports that carry more than one
+    /// model.
+    ///
+    /// Reality Composer Pro's "export selection" wraps the whole composition in a scene
+    /// root (named "Selection"), so a single delivered file can contain the human AND the
+    /// AED side by side. Loading that file for one model must take only that model's
+    /// subtree — attaching the whole root would hang a second body off the AED mount. A
+    /// single-model export's root already carries this name, so it resolves to itself and
+    /// loads exactly as before.
+    var authoredRootEntityName: String { rawValue }
+
     /// Entity in the authored skeleton this model hangs beneath.
     var hostEntityName: String {
         switch self {
@@ -229,9 +255,9 @@ enum PracticeVisualModelLoader {
         from bundle: Bundle = .main
     ) async throws -> Entity {
         let url = try url(for: model, in: bundle)
-        let entity: Entity
+        let loaded: Entity
         do {
-            entity = try await Entity(contentsOf: url)
+            loaded = try await Entity(contentsOf: url)
         } catch let cancellation as CancellationError {
             throw cancellation
         } catch {
@@ -240,6 +266,14 @@ enum PracticeVisualModelLoader {
                 diagnostic: String(describing: error)
             )
         }
+        // Take this model's subtree BEFORE the rename map runs — the subtree is found by
+        // its authored name, which the mapping is about to rewrite. Detaching drops the
+        // rest of a combined export (the other model, the "Selection" wrapper); its
+        // authored layout transform is irrelevant because `apply(_:to:)` overwrites the
+        // root transform on attach. A root that already carries the authored name resolves
+        // to itself, so single-model exports are untouched by this step.
+        let entity = firstEntity(named: model.authoredRootEntityName, in: loaded) ?? loaded
+        entity.removeFromParent()
         applyNameMapping(model.nameMapping, to: entity)
         makeNonInteractive(entity)
         entity.name = model.semanticRootName

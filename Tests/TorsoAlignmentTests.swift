@@ -344,6 +344,45 @@ final class TorsoAlignmentTests: XCTestCase {
         return scene
     }
 
+    /// The AED's fraction is defined against the unit's FACE. The combined export lays
+    /// the pads out next to the case, so whole-model bounds are nearly twice the case —
+    /// sizing against them renders the unit at roughly half the stated fraction. The
+    /// solve must measure the case when the export names one.
+    func testPropSizingMeasuresTheCaseNotTheLaidOutPadSpan() throws {
+        let scene = makeManikinScene(includeTorsoGarment: true)
+
+        let aedHost = Entity()
+        aedHost.name = "aed_unit"
+        scene.addChild(aedHost)
+
+        let aed = Entity()
+        aed.name = "aed_visual_model"
+        aedHost.addChild(aed)
+
+        let aedCase = ModelEntity(mesh: .generateBox(size: [0.3, 0.12, 0.4]))
+        aedCase.name = "aed_visual_case"
+        aed.addChild(aedCase)
+
+        // A pad laid out well away from the case, the way the combined export ships it:
+        // it stretches whole-model bounds to ~0.8 m while the case stays 0.4 m.
+        let pad = ModelEntity(mesh: .generateBox(size: [0.08, 0.01, 0.13]))
+        pad.name = "aed_visual_left_pad"
+        pad.position = [0, 0, -0.6]
+        aed.addChild(pad)
+
+        let solved = try XCTUnwrap(
+            PracticeVisualModelAlignment.solvePropPlacement(
+                for: .aed,
+                in: scene,
+                currentPlacement: PracticeVisualModel.aed.defaultPlacement
+            )
+        )
+        // Chest 0.46 m (the shirt proxy measures 0.40 m wide, chest width comes from the
+        // torso shell pairing = 0.46) × fraction, against the CASE's 0.4 m longest side.
+        let expected = 0.46 * ProportionalPropSizing.aedWidthAsFractionOfChestWidth / 0.4
+        XCTAssertEqual(solved.scale, expected, accuracy: 0.01)
+    }
+
     /// The whole point of pairing proxies: the chest scale must come from a chest, not
     /// from head-to-toe height.
     func testSceneSolveScalesFromTheTorsoGarmentWhenTheExportHasOne() throws {

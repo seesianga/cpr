@@ -115,6 +115,102 @@ final class PracticeVisualModelTests: XCTestCase {
         }
     }
 
+    // MARK: - Bundled export contracts (runtime loads)
+
+    /// The AED ships inside a combined "export selection" file that also carries the
+    /// human. Loading the AED must yield the AED subtree ONLY: the wrapper and the
+    /// neighbouring body may never ride along, or a second casualty hangs off the AED
+    /// mount. The archive is encrypted, so an actual load is the only place this can be
+    /// checked.
+    func testBundledAEDExportLoadsAsTheAEDSubtreeOnly() async throws {
+        let root = try await PracticeVisualModelLoader.load(.aed)
+        XCTAssertEqual(root.name, PracticeVisualModel.aed.semanticRootName)
+
+        for required in [
+            "aed_visual_case",
+            "aed_visual_left_pad",
+            "aed_visual_right_pad",
+            "aed_visual_shock_button",
+            "aed_visual_power_button"
+        ] {
+            XCTAssertNotNil(
+                PracticeVisualModelLoader.firstEntity(named: required, in: root),
+                "Bundled AED export is missing the mapped entity \(required)"
+            )
+        }
+
+        let names = PracticeVisualModelLoader.entityNames(in: root)
+        XCTAssertFalse(
+            names.contains { $0.hasPrefix("Human") || $0.hasPrefix("human_visual") },
+            "The combined export's human subtree leaked into the AED model: \(names)"
+        )
+        // Structural proof the SUBTREE was selected, not the wrapper: the case is a
+        // direct child of the returned root. In the wrapper-attached failure mode the
+        // case sits a level deeper (wrapper → AED → case), so this fails there. A
+        // names.contains("Selection") check would be vacuous instead — load() renames
+        // whichever root it picked, so that name never survives to be observed.
+        XCTAssertTrue(
+            root.children.contains { $0.name == "aed_visual_case" },
+            "aed_visual_case must be a direct child of the selected AED subtree"
+        )
+    }
+
+    /// The AED is sized as a fraction of chest width, which only works if the export is
+    /// authored in metres. The OLD export was not — its root carried a 0.01 scale with
+    /// ×100 children, the neutralized measurement came out ~67 m, and the fraction solve
+    /// silently nil'd out to the placeholder fit. This pins the new contract: measured at
+    /// neutral root transform, the AED must be metric and the proportional solve must
+    /// actually engage. A future export in mm or cm units fails here instead of silently
+    /// changing sizing behavior class.
+    func testBundledAEDExportIsMetricAndProportionalSizingEngages() async throws {
+        let root = try await PracticeVisualModelLoader.load(.aed)
+        root.transform = Transform()
+        let staging = Entity()
+        staging.addChild(root)
+
+        let bounds = root.visualBounds(recursive: true, relativeTo: staging)
+        let maxExtent = bounds.extents.max()
+        XCTAssertTrue(
+            (0.2...2.0).contains(maxExtent),
+            "AED export must be metric; neutralized max extent was \(maxExtent) m"
+        )
+
+        // 0.46 m is the authored manikin chest width the fraction is taken against.
+        XCTAssertNotNil(
+            ProportionalPropSizing.scale(
+                chestWidthMetres: 0.46,
+                measuredPropWidthMetres: maxExtent
+            ),
+            "The proportional sizing path must engage for the bundled export"
+        )
+    }
+
+    /// The human still loads from its own single-model export; this pins that its
+    /// authored names keep resolving through the rename map after any asset swap.
+    func testBundledHumanExportLoadsWithSemanticNames() async throws {
+        let root = try await PracticeVisualModelLoader.load(.human)
+        XCTAssertEqual(root.name, PracticeVisualModel.human.semanticRootName)
+
+        for required in [
+            "human_visual_body",
+            "human_visual_clothing",
+            "human_visual_sternum_site",
+            "human_visual_cpr_guide",
+            "human_visual_aed_guide"
+        ] {
+            XCTAssertNotNil(
+                PracticeVisualModelLoader.firstEntity(named: required, in: root),
+                "Bundled human export is missing the mapped entity \(required)"
+            )
+        }
+
+        let names = PracticeVisualModelLoader.entityNames(in: root)
+        XCTAssertFalse(
+            names.contains { $0.hasPrefix("AED") || $0.hasPrefix("aed_visual") },
+            "An AED subtree leaked into the human model: \(names)"
+        )
+    }
+
     func testMissingBundledResourceThrowsInsteadOfCrashing() {
         XCTAssertThrowsError(
             try PracticeVisualModelLoader.url(for: .human, in: Bundle(for: Self.self))
@@ -302,6 +398,48 @@ final class PracticeVisualModelTests: XCTestCase {
         XCTAssertFalse(
             afterReset.hasStoredPlacement(for: .human),
             "Clearing the stored value lets the next attach auto-fit again"
+        )
+    }
+
+    /// The AED's storage key went v3 → v4 when its export changed unit convention
+    /// (2026-08-10): a v3 scale renders the new asset ~100× wrong. A device that stored a
+    /// v3 AED placement must come up on the defaults and re-solve, not apply the stale
+    /// number — while the human's v3 key stays honoured, because its export did not
+    /// change and it carries the operator's hand-tuned registration.
+    func testStaleV3AEDPlacementIsDiscardedButHumanV3Survives() throws {
+        let suiteName = "PracticeVisualModelTests.migration"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
+        defaults.removePersistentDomain(forName: suiteName)
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+
+        var stale = PracticeVisualModelPlacement.identity
+        stale.scale = 0.05
+        stale.offsetMetres = [-0.247, 0.047, -0.072]
+        let data = try JSONEncoder().encode(stale)
+        // Written under the RETIRED key, the way a pre-swap install left it.
+        defaults.set(data, forKey: "developer.visualModelPlacement.v3.AED")
+
+        var tunedHuman = PracticeVisualModel.human.defaultPlacement
+        tunedHuman.yawDegrees = 195
+        defaults.set(
+            try JSONEncoder().encode(tunedHuman),
+            forKey: "developer.visualModelPlacement.v3.Human"
+        )
+
+        let store = PracticeVisualModelPlacementStore(defaults: defaults)
+        XCTAssertFalse(
+            store.hasStoredPlacement(for: .aed),
+            "A v3 AED value must not be visible through the v4 key"
+        )
+        XCTAssertEqual(
+            store.placement(for: .aed),
+            PracticeVisualModel.aed.defaultPlacement,
+            "The stale AED placement must be discarded in favour of the defaults"
+        )
+        XCTAssertEqual(
+            store.placement(for: .human).yawDegrees,
+            195,
+            "The human's v3 placement must survive the AED's key bump"
         )
     }
 

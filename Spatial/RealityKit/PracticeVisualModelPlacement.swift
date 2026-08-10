@@ -193,10 +193,26 @@ final class PracticeVisualModelPlacementStore {
     /// than only its schema. v2 placements were tuned against the old whole-figure fit,
     /// which measured the manikin's head and arms as well as its torso and then shrank the
     /// import to the tightest axis — a placement tuned to compensate for that is wrong
-    /// under anatomical registration. Bumping the key discards them so the first attach
-    /// solves afresh; a stale key would silently keep the old misalignment.
+    /// under anatomical registration. Bumping the key discards them so the next attach
+    /// starts from the shipped defaults; a stale key would silently keep the old
+    /// misalignment.
+    ///
+    /// Versioned PER MODEL, because the assets revise independently. The AED went to v4
+    /// when its export changed unit convention (2026-08-10): the old file's root carried
+    /// an authored 0.01 scale with ×100 compensating children, the new file bakes both to
+    /// 1 — so the same stored scale number renders the two assets ~100× apart in world
+    /// size, and every v3 AED value was derived against the old convention. The human
+    /// stays on v3: its export did not change, and a shared bump would discard the
+    /// operator's hand-tuned placement for no reason.
+    private static func storageVersion(for model: PracticeVisualModel) -> Int {
+        switch model {
+        case .human: 3
+        case .aed: 4
+        }
+    }
+
     private static func storageKey(for model: PracticeVisualModel) -> String {
-        "developer.visualModelPlacement.v3.\(model.rawValue)"
+        "developer.visualModelPlacement.v\(storageVersion(for: model)).\(model.rawValue)"
     }
 
     private static func load(

@@ -240,14 +240,20 @@ enum PracticeVisualModelAlignment {
         let restore = entity.transform
         entity.transform = Transform(rotation: previous.orientation)
         let measured = boundsIfPresent(of: entity, relativeTo: host)
+        // The proportion is defined against the unit's face, so the width comes from the
+        // case when the export names one. Whole-model bounds also span the laid-out pads,
+        // which nearly doubles the measured width and halves the rendered unit; the
+        // whole-model centre is still the right thing to hold still below, because
+        // scaling acts on the whole model.
+        let sizingBounds = model.sizingProxyEntityName
+            .flatMap { firstEntity(named: $0, in: entity) }
+            .flatMap { boundsIfPresent(of: $0, relativeTo: host) }
         entity.transform = restore
         guard let measured else { return nil }
 
-        // An AED's longest dimension is the width of its face, which is the dimension the
-        // proportion is expressed against.
         guard let scale = ProportionalPropSizing.scale(
             chestWidthMetres: chestWidthMetres,
-            measuredPropWidthMetres: measured.extents.max()
+            measuredPropWidthMetres: (sizingBounds ?? measured).extents.max()
         ) else { return nil }
 
         var placement = currentPlacement
