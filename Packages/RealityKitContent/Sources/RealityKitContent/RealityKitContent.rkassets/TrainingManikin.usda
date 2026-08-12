@@ -188,6 +188,51 @@ def Xform "training_manikin"
         }
     }
 
+    # Torso-grid landmarks. These are transform-only markers: the grid reads
+    # `position(relativeTo: nil)` and never their bounds, so they carry no geometry and
+    # stay invisible.
+    #
+    # Positions are DERIVED from BodyGridDescriptor.placeholderDefault against the
+    # torso_shell bounds (X -0.23...0.23 toward patient left, Z -0.36...0.36 toward the
+    # feet), so that:
+    #     X = (centerU - 0.5) * 0.46      Z = (centerV - 0.5) * 0.72
+    # Each landmark therefore reproduces the region centre the grid already computes
+    # proportionally — behaviour is unchanged, but the anatomy is now explicit and can be
+    # tuned per asset. Moving one MOVES a clinically meaningful zone and needs SME review
+    # (the grid's own source references are still marked requires_sme_review).
+    #
+    # Y is cosmetic: the grid projects onto the lateral/longitudinal axes only.
+
+    # Lower half of the sternum: grid u 0.5, v 0.632.
+    def Xform "landmark_sternum"
+    {
+        float3 xformOp:translate = (0, 0.225, 0.095)
+        uniform token[] xformOpOrder = ["xformOp:translate"]
+    }
+
+    # Xiphoid process, the landmark compressions must stay clear of: u 0.5, v 0.87.
+    def Xform "landmark_xiphoid"
+    {
+        float3 xformOp:translate = (0, 0.225, 0.2664)
+        uniform token[] xformOpOrder = ["xformOp:translate"]
+    }
+
+    # Casualty's anatomical RIGHT clavicle (-X), cranial to the pad zone it defines.
+    # The grid shifts this landmark caudally by half the region height (0.21 / 2), so the
+    # marker sits at v 0.159 to resolve the pad centre back to v 0.264.
+    def Xform "landmark_right_clavicle"
+    {
+        float3 xformOp:translate = (-0.1449, 0.225, -0.2455)
+        uniform token[] xformOpOrder = ["xformOp:translate"]
+    }
+
+    # Casualty's anatomical LEFT lower ribs (+X), the lateral pad site: u 0.91, v 0.68.
+    def Xform "landmark_left_lower_ribs"
+    {
+        float3 xformOp:translate = (0.1886, 0.225, 0.1296)
+        uniform token[] xformOpOrder = ["xformOp:translate"]
+    }
+
     def Cube "base_mat" (
         prepend apiSchemas = ["MaterialBindingAPI"]
     )

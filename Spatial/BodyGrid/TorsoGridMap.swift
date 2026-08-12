@@ -344,6 +344,19 @@ struct TorsoGridMap: Equatable, Sendable {
         )
     }
 
+    /// The region's centre on the anterior surface, in world space.
+    ///
+    /// This is where a pad SEATS when released in its own section: the same normalized
+    /// rect centre `worldVolume(for:)` builds its detection volume around, projected
+    /// onto the torso surface, so the seated visual and the detection region can never
+    /// disagree about where the section is.
+    func worldSurfaceCenter(of regionID: TorsoRegionID) -> SIMD3<Float>? {
+        guard let rect = regions[regionID] else { return nil }
+        return worldPoint(
+            fromNormalized: SIMD3(Float(rect.centerU), Float(rect.centerV), 1)
+        )
+    }
+
     /// Debug/overlay support: the anterior-surface frame (local X lateral toward
     /// patient-left, Y anterior, Z longitudinal toward feet), centred on the chest.
     var anteriorSurfaceWorldTransform: simd_float4x4 {

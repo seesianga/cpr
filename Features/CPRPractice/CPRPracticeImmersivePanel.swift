@@ -42,6 +42,7 @@ struct CPRInterruptionPresentation: Sendable, Equatable {
 /// typed events through `CPRPracticeSessionModel`.
 struct CPRPracticeImmersivePanel: View {
     @Environment(\.lifesaverVisualStyle) private var visualStyle
+    @State private var isDistanceLogExpanded = false
     let model: CPRPracticeSessionModel
     let reduceMotion: Bool
     let learnerID: String
@@ -97,13 +98,104 @@ struct CPRPracticeImmersivePanel: View {
         if let summary = model.summary {
             summaryView(summary)
         } else {
+            gripStatusRow
             if model.state == .compressionCycles,
                model.handTrackingState != .running {
                 recordCompressionButton
             }
             metricsStrip
+            distanceLogSection
             controls
         }
+    }
+
+    /// Whether the trainer currently has the two-hand grip, so the learner knows
+    /// compressions are being counted without reaching for the fallback control.
+    private var gripStatusRow: some View {
+        Label(model.gripStatusText, systemImage: gripStatusSymbol)
+            .font(.footnote)
+            .lifesaverStatusChip(gripStatusRole)
+            .accessibilityLabel(model.gripStatusText)
+    }
+
+    private var gripStatusSymbol: String {
+        guard model.isAutomaticCountingActive else { return "hand.raised.slash" }
+        return model.handStacking == .likelyStacked
+            ? "hands.and.sparkles.fill"
+            : "hand.point.up.braille"
+    }
+
+    private var gripStatusRole: LifesaverStatusRole {
+        guard model.isAutomaticCountingActive else { return .warning }
+        return model.handStacking == .likelyStacked ? .success : .neutral
+    }
+
+    /// Per-descent contact distance log. Collapsed by default so the coaching panel stays
+    /// calm; expanded it explains why each descent did or did not count.
+    @ViewBuilder
+    private var distanceLogSection: some View {
+        let samples = model.compressionDistanceLog
+        if !samples.isEmpty {
+            let entries = CPRCompressionDistanceLogPresenter.entries(from: samples)
+            let summary = CPRCompressionDistanceLogPresenter.summary(from: samples)
+            DisclosureGroup(isExpanded: $isDistanceLogExpanded) {
+                VStack(alignment: .leading, spacing: 8) {
+                    distanceLogTable(entries)
+                    if samples.count > entries.count {
+                        Text(
+                            "Showing the most recent \(entries.count) of \(samples.count) descents."
+                        )
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                    }
+                }
+                .padding(.top, 6)
+            } label: {
+                VStack(alignment: .leading) {
+                    Text("Contact distance log (virtual)").font(.caption.bold())
+                    Text(summary.label)
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                }
+            }
+            .accessibilityHint("Lists the measured virtual travel of each recent descent")
+        }
+    }
+
+    private func distanceLogTable(
+        _ entries: [CPRCompressionDistanceLogEntry]
+    ) -> some View {
+        ScrollView(.vertical) {
+            Grid(alignment: .leadingFirstTextBaseline, horizontalSpacing: 10, verticalSpacing: 4) {
+                GridRow {
+                    Text("#")
+                    Text("Time")
+                    Text("Travel")
+                    Text("Band")
+                    Text("Result")
+                }
+                .font(.caption2.bold())
+                .foregroundStyle(.secondary)
+
+                ForEach(entries) { entry in
+                    GridRow {
+                        Text("\(entry.id)")
+                        Text(entry.elapsedLabel)
+                        Text(entry.travelLabel)
+                        Text(entry.travelBand.label)
+                            .foregroundStyle(
+                                entry.travelBand.isWithinTargetBand ? .green : .secondary
+                            )
+                        Text(entry.statusLabel)
+                            .foregroundStyle(entry.isCounted ? .primary : .secondary)
+                    }
+                    .font(.caption2.monospacedDigit())
+                    .accessibilityElement(children: .ignore)
+                    .accessibilityLabel(entry.accessibilityLabel)
+                }
+            }
+        }
+        .frame(maxHeight: 200)
     }
 
     private var metricsStrip: some View {

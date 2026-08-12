@@ -556,14 +556,15 @@ private enum ARKitPalmObservationExtractor {
             ? trackedPoints.reduce(SIMD3<Float>.zero, +) / Float(trackedPoints.count)
             : nil
 
+        // Only the palm proxy and wrist gate the reduction. Requiring the thumb and index
+        // tips here would drop the whole hand in a stacked CPR grip, which occludes
+        // exactly those two joints while leaving the contact nodes cleanly tracked.
         var nodes: TrackedHandNodes?
-        if let thumbTip = trackedWorldPosition(.thumbTip),
-           let indexTip = trackedWorldPosition(.indexFingerTip),
-           let middleMetacarpal = trackedWorldPosition(.middleFingerMetacarpal),
+        if let middleMetacarpal = trackedWorldPosition(.middleFingerMetacarpal),
            let wrist = trackedWorldPosition(.wrist) {
             nodes = TrackedHandNodes(
-                thumbTip: thumbTip,
-                indexTip: indexTip,
+                thumbTip: trackedWorldPosition(.thumbTip),
+                indexTip: trackedWorldPosition(.indexFingerTip),
                 middleMetacarpal: middleMetacarpal,
                 wrist: wrist,
                 middleTip: trackedWorldPosition(.middleFingerTip),

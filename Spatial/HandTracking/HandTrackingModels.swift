@@ -96,6 +96,12 @@ struct HandSignalDetectorConfiguration: Sendable, Equatable {
     let maximumHeightAboveTargetMetres: Float
     let maximumDistanceBelowTargetMetres: Float
     let maximumStackedPalmSeparationMetres: Float
+    /// Separation ACROSS the chest surface (the torso frontal plane) below which two
+    /// palms count as stacked. Straight-line distance alone cannot tell a stacked pair
+    /// from a side-by-side pair, because both sit within arm's reach: stacking is
+    /// specifically one palm ABOVE the other, so the across-the-chest component has to
+    /// be small while the height difference is free to be a hand's thickness.
+    let maximumStackedLateralSeparationMetres: Float
     /// How long a corridor exit may last before oscillation phase state resets.
     /// Zero preserves the original reset-on-exit behaviour.
     let corridorExitGraceSeconds: Double
@@ -112,6 +118,7 @@ struct HandSignalDetectorConfiguration: Sendable, Equatable {
         maximumHeightAboveTargetMetres: Float,
         maximumDistanceBelowTargetMetres: Float,
         maximumStackedPalmSeparationMetres: Float,
+        maximumStackedLateralSeparationMetres: Float = 0.10,
         corridorExitGraceSeconds: Double = 0
     ) {
         self.maximumHandSampleAgeSeconds = maximumHandSampleAgeSeconds
@@ -125,6 +132,7 @@ struct HandSignalDetectorConfiguration: Sendable, Equatable {
         self.maximumHeightAboveTargetMetres = maximumHeightAboveTargetMetres
         self.maximumDistanceBelowTargetMetres = maximumDistanceBelowTargetMetres
         self.maximumStackedPalmSeparationMetres = maximumStackedPalmSeparationMetres
+        self.maximumStackedLateralSeparationMetres = maximumStackedLateralSeparationMetres
         self.corridorExitGraceSeconds = corridorExitGraceSeconds
     }
 
@@ -179,11 +187,13 @@ struct TrackedPalmObservation: Sendable, Equatable {
 /// Reduced per-hand node positions for contact and pinch classification.
 ///
 /// This is a fixed, named reduction — never a skeleton, joint collection, or transform
-/// stream. Thumb, index, palm proxy, and wrist are required for classification; the
-/// remaining fingertips are optional because ARKit frequently loses them.
+/// stream. Only the palm proxy and wrist are required: they are the nodes contact
+/// classification actually reads, and they survive a stacked, palm-down CPR grip. Every
+/// fingertip is optional because ARKit routinely loses them to occlusion in that grip —
+/// the interlaced thumb and index tips most of all — and only the pinch tracker needs them.
 struct TrackedHandNodes: Sendable, Equatable {
-    let thumbTip: SIMD3<Float>
-    let indexTip: SIMD3<Float>
+    let thumbTip: SIMD3<Float>?
+    let indexTip: SIMD3<Float>?
     let middleMetacarpal: SIMD3<Float>
     let wrist: SIMD3<Float>
     let middleTip: SIMD3<Float>?
@@ -193,13 +203,17 @@ struct TrackedHandNodes: Sendable, Equatable {
     /// The stacked-pair contact proxy used for compression contact cycles.
     var palmProxy: SIMD3<Float> { middleMetacarpal }
 
-    var pinchMidpointWorld: SIMD3<Float> { (thumbTip + indexTip) / 2 }
-
-    var pinchGapMetres: Float { simd_distance(thumbTip, indexTip) }
+    /// Thumb-to-index geometry, available only while both tips are tracked.
+    var pinch: (midpointWorld: SIMD3<Float>, gapMetres: Float)? {
+        guard let thumbTip, let indexTip, thumbTip.allFinite, indexTip.allFinite else {
+            return nil
+        }
+        return ((thumbTip + indexTip) / 2, simd_distance(thumbTip, indexTip))
+    }
 
     init(
-        thumbTip: SIMD3<Float>,
-        indexTip: SIMD3<Float>,
+        thumbTip: SIMD3<Float>? = nil,
+        indexTip: SIMD3<Float>? = nil,
         middleMetacarpal: SIMD3<Float>,
         wrist: SIMD3<Float>,
         middleTip: SIMD3<Float>? = nil,

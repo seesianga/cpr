@@ -32,6 +32,10 @@ struct SimulationSpaceRootView: View {
     @State private var spatialSpeechCaption: SpatialSpeechCaptionPlayback?
     @State private var spatialAudioSceneStarted: SpatialSceneName?
     @State private var controlsAnchor: AnchorEntity?
+    @State private var visualModelPlacements = PracticeVisualModelPlacementStore()
+    @State private var alignmentReports = PracticeAlignmentReportStore()
+    @State private var attachedVisualModels: [PracticeVisualModel] = []
+    @State private var loadedSceneEntity: Entity?
     @State private var restartTask: Task<Void, Never>?
     @State private var restartGeneration = 0
 
@@ -72,6 +76,20 @@ struct SimulationSpaceRootView: View {
                 }
                 let scene = try await assetRegistry.loadScene(selectedScene)
                 try assetRegistry.decorateSemanticEntities(in: scene, for: selectedScene)
+                // After decoration, so stripping input from hidden set dressing wins
+                // over anything decoration added. The curated practice rooms are exempt
+                // inside SceneDeclutter itself.
+                SceneDeclutter.apply(in: scene, for: selectedScene)
+                // Imported Reality Composer Pro meshes are decoration hung on the
+                // authored skeleton, so they attach after the semantic entities exist
+                // and never replace a detection target.
+                attachedVisualModels = await PracticeVisualModelLoader.attachModels(
+                    in: scene,
+                    placements: visualModelPlacements,
+                    reports: alignmentReports,
+                    descriptor: assetRegistry.practiceAssetDescriptor
+                )
+                loadedSceneEntity = scene
                 scene.isEnabled = !appModel.isSimulationPaused
                 content.add(scene)
                 spatialAudioManager.configure(
@@ -140,6 +158,27 @@ struct SimulationSpaceRootView: View {
             let sceneName = appModel.selectedSimulationScene.rawValue
             content.entities.first { $0.name == sceneName }?.isEnabled = !appModel.isSimulationPaused
 
+            // Re-apply placement so headset adjustments move the model immediately.
+            if let scene = content.entities.first(where: { $0.name == sceneName }) {
+                // Read-only with respect to observable state: writing any here would
+                // re-enter update and spin forever. Cropping and accuracy measurement
+                // therefore run from `refreshVisualModel`, on the actions that change a
+                // placement, not on every frame.
+                for model in attachedVisualModels {
+                    let placement = visualModelPlacements.placement(for: model)
+                    PracticeVisualModelLoader.applyVisibility(
+                        for: model,
+                        placement: placement,
+                        in: scene
+                    )
+                    guard let entity = PracticeVisualModelLoader.firstEntity(
+                        named: model.semanticRootName,
+                        in: scene
+                    ) else { continue }
+                    PracticeVisualModelLoader.apply(placement, to: entity)
+                }
+            }
+
             if appModel.selectedPracticeExperience == .cpr,
                let scene = content.entities.first(where: { $0.name == sceneName }),
                let sternum = assetRegistry.firstEntity(named: "sternum_target", in: scene) {
@@ -168,6 +207,15 @@ struct SimulationSpaceRootView: View {
                     }
                     AudioCaptionOverlay(audioDirector: appModel.audioDirector)
                     SpatialSpeechCaptionOverlay(playback: spatialSpeechCaption)
+                    #if DEBUG
+                    PracticeVisualModelPlacementPanel(
+                        models: attachedVisualModels,
+                        store: visualModelPlacements,
+                        reports: alignmentReports,
+                        onAlign: alignVisualModel,
+                        onPlacementChanged: refreshVisualModel
+                    )
+                    #endif
                 }
             }
         }
@@ -178,6 +226,7 @@ struct SimulationSpaceRootView: View {
             await waitForOpenImmersion()
             guard appModel.immersionState == .open else { return }
             cprSession.setAudioDirector(appModel.audioDirector)
+            cprSession.setCountAnnouncer(SpeechCompressionCountAnnouncer())
             aedSession.setAudioDirector(appModel.audioDirector)
             switch appModel.selectedPracticeExperience {
             case .onboarding:
@@ -342,6 +391,10 @@ struct SimulationSpaceRootView: View {
                 await playSpatialAEDCue(for: newState)
             }
         }
+        .onChange(of: alignmentReports.snapEvent) { _, event in
+            guard let event else { return }
+            presentAlignmentSnap(event)
+        }
         .onChange(of: cprSession.summary) { _, summary in
             guard let summary else { return }
             persistCPRAttempt(summary)
@@ -389,6 +442,13 @@ struct SimulationSpaceRootView: View {
             spatialAudioManager.stopAll()
             spatialSpeechCaption = nil
             spatialAudioSceneStarted = nil
+            // Cropping keeps each original mesh so the toggle can restore it. Those are
+            // the largest allocations the import makes, so they are released with the
+            // scene rather than kept alive for a room the learner has left.
+            if let loadedSceneEntity {
+                PracticeVisualModelCrop.forget(loadedSceneEntity)
+            }
+            loadedSceneEntity = nil
             assetRegistry.releaseAllScenes()
             loadedScene = nil
             controlsAnchor = nil
@@ -628,11 +688,35 @@ struct SimulationSpaceRootView: View {
                         matching: ["aed_left_pad", "aed_right_pad"]
                       )
                 else { return }
+                let destinationZoneName = nearestPadZone(to: pad)
                 aedSession.placeDraggedPad(
                     padName: pad.name,
-                    destinationZoneName: nearestPadZone(to: pad)
+                    destinationZoneName: destinationZoneName
                 )
+                // Operator spec (2026-08-10): a pad dropped on its OWN zone seats on
+                // the zone rather than resting at the drag end-point; a wrong-zone
+                // drop stays where it landed so the offset reads as the error it is.
+                if let destinationZoneName,
+                   destinationZoneName == Self.matchingPadZoneName(forPad: pad.name),
+                   let scene = loadedSceneEntity,
+                   let zone = PracticeVisualModelLoader.firstEntity(
+                       named: destinationZoneName,
+                       in: scene
+                   ) {
+                    let seat = zone.position(relativeTo: nil)
+                    let zoneUp = zone.convert(direction: SIMD3<Float>(0, 1, 0), to: nil)
+                    // Half the zone slab plus half the pad, so the pad sits flush on
+                    // the section instead of embedded in it.
+                    pad.setPosition(seat + zoneUp * 0.016, relativeTo: nil)
+                }
             }
+    }
+
+    /// The zone that means "this pad's own section": right pad below the right
+    /// clavicle, left pad on the left lower lateral chest — the same rule the
+    /// reducer's correctness decision uses.
+    private static func matchingPadZoneName(forPad padName: String) -> String {
+        padName == "aed_right_pad" ? "aed_right_pad_zone" : "aed_left_pad_zone"
     }
 
     private func handleSpatialTap(on entity: Entity) {
@@ -777,10 +861,111 @@ struct SimulationSpaceRootView: View {
 
     /// Registers the descriptor-resolved pinch-grabbable items with the AED session.
     /// The physical path is additive; every gaze-pinch and button control remains.
+    /// Re-solves a model's registration onto the manikin and applies it.
+    ///
+    /// Runs from a button action, never from the RealityView update pass: it writes
+    /// observable placement and accuracy state, which update must not do.
+    private func alignVisualModel(_ model: PracticeVisualModel) {
+        guard let scene = loadedSceneEntity else { return }
+        let current = visualModelPlacements.placement(for: model)
+        alignmentReports.recordBaseline(
+            PracticeVisualModelAlignment.measureAccuracy(
+                for: model,
+                in: scene,
+                placement: current,
+                descriptor: assetRegistry.practiceAssetDescriptor
+            ),
+            for: model
+        )
+        guard let solved = PracticeVisualModelLoader.solvePlacement(
+            for: model,
+            in: scene,
+            placement: current,
+            descriptor: assetRegistry.practiceAssetDescriptor
+        ) else { return }
+        visualModelPlacements.update(solved, for: model)
+        refreshVisualModel(model)
+    }
+
+    /// Re-applies placement, visibility and cropping after a manual adjustment, then
+    /// re-measures how accurately the model now sits.
+    ///
+    /// The crop is mesh surgery, so it belongs on discrete actions rather than in the
+    /// per-frame update pass; the measurement has to follow it, because a crop changes the
+    /// bounds the measurement reads.
+    private func refreshVisualModel(_ model: PracticeVisualModel) {
+        guard let scene = loadedSceneEntity,
+              let host = PracticeVisualModelLoader.firstEntity(
+                  named: model.hostEntityName,
+                  in: scene
+              ),
+              let entity = PracticeVisualModelLoader.firstEntity(
+                  named: model.semanticRootName,
+                  in: host
+              )
+        else { return }
+        let placement = visualModelPlacements.placement(for: model)
+        PracticeVisualModelLoader.apply(placement, to: entity)
+        PracticeVisualModelLoader.applyVisibility(
+            for: model,
+            placement: placement,
+            in: scene
+        )
+        PracticeVisualModelLoader.applyCrop(
+            for: model,
+            entity: entity,
+            host: host,
+            scene: scene,
+            placement: placement,
+            descriptor: assetRegistry.practiceAssetDescriptor,
+            reports: alignmentReports
+        )
+        alignmentReports.recordAlignment(
+            PracticeVisualModelAlignment.measureAccuracy(
+                for: model,
+                in: scene,
+                placement: placement,
+                descriptor: assetRegistry.practiceAssetDescriptor
+            ),
+            for: model
+        )
+    }
+
+    /// Traces the manikin's chest once, the moment a body overlay registers onto it, and
+    /// confirms it with the same soft cue the rest of the interface uses for a landed
+    /// action.
+    private func presentAlignmentSnap(_ event: PracticeAlignmentReportStore.SnapEvent) {
+        defer { alignmentReports.acknowledgeSnap(event) }
+        guard event.model == .human,
+              let scene = loadedSceneEntity,
+              let host = PracticeVisualModelLoader.firstEntity(
+                  named: event.model.hostEntityName,
+                  in: scene
+              ),
+              let reference = PracticeVisualModelAlignment.bestReference(
+                  in: scene,
+                  host: host,
+                  descriptor: assetRegistry.practiceAssetDescriptor
+              )
+        else { return }
+        AlignmentSnapHighlight.present(
+            in: scene,
+            host: host,
+            reference: reference,
+            reduceMotion: effectiveReduceMotion
+        )
+        playInterfaceSFX("sfx.focus_confirm")
+    }
+
     private func configureAEDPhysicalInteraction(in scene: Entity) {
         let descriptor = assetRegistry.practiceAssetDescriptor
+        // Operator-hidden props must not stay pinch-targets: the hand-tracking pipeline
+        // associates by position, not collision, so without this an invisible power
+        // button still powers the unit on when a pinch lands near the visible AED.
+        let hidden = Set(PracticeVisualModel.aed.operatorHiddenEntityNames)
         let itemsByIdentifier = Dictionary(
             uniqueKeysWithValues: assetRegistry.pinchGrabItems(in: scene)
+                .filter { !hidden.contains($0.identifier) }
                 .map { ($0.identifier, $0) }
         )
         var padItems: [AEDPadSide: PinchGrabItem] = [:]

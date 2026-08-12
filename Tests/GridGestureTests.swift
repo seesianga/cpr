@@ -339,6 +339,80 @@ final class GridGestureTests: XCTestCase {
         ))
     }
 
+    /// The seat point for a pad is the region's surface centre, and it must be the SAME
+    /// centre the detection volume is built around — a seated visual disagreeing with
+    /// its own detection region would show a pad "on" a section the reducer scores as
+    /// off it.
+    func testWorldSurfaceCenterMatchesTheDetectionVolume() throws {
+        let grid = try XCTUnwrap(makeManikinGrid())
+        for region in TorsoRegionID.allCases {
+            let seat = try XCTUnwrap(grid.worldSurfaceCenter(of: region))
+            let volume = try XCTUnwrap(grid.worldVolume(for: region))
+            // The volume hangs its thickness below the surface, so the seat sits half a
+            // thickness anterior of the volume's world centre.
+            let volumeWorldCenter = (
+                volume.targetFromWorldTransform.inverse *
+                    SIMD4<Float>(volume.localCenter, 1)
+            )
+            let anteriorLift = seat - SIMD3<Float>(
+                volumeWorldCenter.x, volumeWorldCenter.y, volumeWorldCenter.z
+            )
+            XCTAssertEqual(
+                simd_length(anteriorLift),
+                volume.localExtents.y / 2,
+                accuracy: 0.001,
+                "\(region) seat must sit on the surface face of its detection volume"
+            )
+        }
+    }
+
+    /// Operator spec (2026-08-10): the blue (left) pad sticks AT the blue section and
+    /// the orange (right) pad at the orange section — a correct-section release seats
+    /// the pad on the region centre; a wrong-section release keeps the honest snap
+    /// position and an off-torso release keeps the raw release point.
+    func testPadReleaseSeatsOnItsOwnSectionOnly() throws {
+        let grid = try XCTUnwrap(makeManikinGrid())
+
+        // Left pad released slightly off the left-lateral centre: seats AT the centre.
+        let nearLeftCentre = grid.worldPoint(fromNormalized: [0.88, 0.66, 1])
+        let leftSnap = try XCTUnwrap(grid.snapResolution(forWorld: nearLeftCentre))
+        XCTAssertEqual(leftSnap.regionID, .padSiteLeftLateral)
+        let seated = AEDPracticeSessionModel.padRestingPosition(
+            snap: leftSnap,
+            padSide: .left,
+            releaseWorldPosition: nearLeftCentre,
+            grid: grid
+        )
+        XCTAssertEqual(
+            seated,
+            try XCTUnwrap(grid.worldSurfaceCenter(of: .padSiteLeftLateral)),
+            "A correct-section release must seat on the section centre"
+        )
+
+        // The RIGHT pad released on the LEFT section: rests at the snap position, not
+        // the section centre — the offset is the training signal.
+        let wrongSide = AEDPracticeSessionModel.padRestingPosition(
+            snap: leftSnap,
+            padSide: .right,
+            releaseWorldPosition: nearLeftCentre,
+            grid: grid
+        )
+        XCTAssertEqual(wrongSide, leftSnap.worldSnapPosition)
+        XCTAssertNotEqual(wrongSide, seated, "A wrong-section release must not seat")
+
+        // Off the torso entirely: the pad rests where it was released.
+        let offTorso = SIMD3<Float>(2, 0.5, 2)
+        XCTAssertEqual(
+            AEDPracticeSessionModel.padRestingPosition(
+                snap: nil,
+                padSide: .left,
+                releaseWorldPosition: offTorso,
+                grid: grid
+            ),
+            offTorso
+        )
+    }
+
     // MARK: - D3: Physical AED sequence through the existing state machine
 
     func testPhysicalPadPowerAndCPRHappyPathThroughAEDStateMachine() {

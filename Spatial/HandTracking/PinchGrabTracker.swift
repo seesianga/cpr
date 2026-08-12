@@ -51,9 +51,12 @@ struct PinchGrabItem: Sendable, Equatable {
 /// the grab threshold near a registered item; the item follows the pinch midpoint until
 /// the gap opens past the release threshold. Hand loss mid-drag cancels the grab.
 struct PinchGrabTracker: Sendable {
+    /// Pinch geometry resolved once on ingest, so a hand missing either tip is simply
+    /// absent from this tracker rather than partially represented.
     private struct HandSample: Sendable {
         let timestampSeconds: Double
-        let nodes: TrackedHandNodes
+        let pinchMidpointWorld: SIMD3<Float>
+        let pinchGapMetres: Float
     }
 
     private struct ActiveGrab: Sendable {
@@ -87,12 +90,11 @@ struct PinchGrabTracker: Sendable {
             return []
         }
 
-        if let nodes = observation.nodes,
-           nodes.thumbTip.allFinite,
-           nodes.indexTip.allFinite {
+        if let pinch = observation.nodes?.pinch {
             hands[observation.chirality] = HandSample(
                 timestampSeconds: observation.timestampSeconds,
-                nodes: nodes
+                pinchMidpointWorld: pinch.midpointWorld,
+                pinchGapMetres: pinch.gapMetres
             )
         } else {
             hands.removeValue(forKey: observation.chirality)
@@ -143,8 +145,8 @@ struct PinchGrabTracker: Sendable {
                 return outputs
             }
 
-            let midpoint = sample.nodes.pinchMidpointWorld
-            if sample.nodes.pinchGapMetres >= configuration.releaseDistanceMetres {
+            let midpoint = sample.pinchMidpointWorld
+            if sample.pinchGapMetres >= configuration.releaseDistanceMetres {
                 pinchedHands.remove(grab.chirality)
                 activeGrab = nil
                 outputs.append(
@@ -174,7 +176,7 @@ struct PinchGrabTracker: Sendable {
         // pinch cannot begin a second grab on the same closure.
         for chirality in [TrackedHandChirality.left, .right] {
             guard let sample = hands[chirality] else { continue }
-            let gap = sample.nodes.pinchGapMetres
+            let gap = sample.pinchGapMetres
             if pinchedHands.contains(chirality) {
                 if gap >= configuration.releaseDistanceMetres {
                     pinchedHands.remove(chirality)
@@ -184,7 +186,7 @@ struct PinchGrabTracker: Sendable {
             guard gap <= configuration.grabDistanceMetres else { continue }
             pinchedHands.insert(chirality)
 
-            let midpoint = sample.nodes.pinchMidpointWorld
+            let midpoint = sample.pinchMidpointWorld
             var candidates: [(item: PinchGrabItem, distance: Float)] = items.map { item in
                 (item: item, distance: simd_distance(item.worldPosition, midpoint))
             }

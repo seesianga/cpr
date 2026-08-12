@@ -441,6 +441,28 @@ final class RealityKitAssetTests: XCTestCase {
         XCTAssertTrue(registry.aedTrainerAccessibilityContracts().allSatisfy(\.isActionable))
     }
 
+    /// Operator spec (2026-08-10): the pads are the size of the body guide's painted
+    /// sections (~0.085 × 0.135 m), coloured by side — the casualty's LEFT pad blue,
+    /// the RIGHT pad orange — matching the guide's blue and orange sections. The
+    /// authored asset is the source of colour and size, so this loads it and measures.
+    func testAEDPadsMatchTheGuideSectionFootprint() async throws {
+        let registry = AssetRegistry()
+        let root = try await registry.loadEntity(named: "AEDTrainer")
+
+        for padName in ["aed_pad_left", "aed_pad_right"] {
+            let pad = try XCTUnwrap(registry.firstEntity(named: padName, in: root))
+            // Relative to the parent so the pad's own scale op is included; relative to
+            // the pad itself the cube reads as its unscaled unit size.
+            let extents = pad.visualBounds(
+                recursive: true,
+                relativeTo: try XCTUnwrap(pad.parent)
+            ).extents
+            XCTAssertEqual(extents.x, 0.085, accuracy: 0.002, "\(padName) width")
+            XCTAssertEqual(extents.z, 0.135, accuracy: 0.002, "\(padName) length")
+            XCTAssertLessThan(extents.y, 0.02, "\(padName) stays a thin electrode pad")
+        }
+    }
+
     func testStandaloneAEDTrainerDecoratesWithoutAManikinRoom() async throws {
         let registry = AssetRegistry()
         let root = try await registry.loadEntity(named: "AEDTrainer")

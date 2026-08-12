@@ -34,12 +34,25 @@ final class AEDPracticeSessionModelTests: XCTestCase {
             "sfx.electrode_packet_open"
         )
 
+        // A pad that lands in its anatomical region earns the confirmation tone at the
+        // moment of placement, rather than the same "it stuck" sound a misplacement gets.
         model.placePadUsingAccessibleControl(rightPad: true, inCorrectZone: true)
-        XCTAssertEqual(model.spatialCueRequest?.cue.rawValue, "sfx.pad_backing_peel")
+        XCTAssertEqual(model.spatialCueRequest?.cue.rawValue, "sfx.answer_correct")
 
         model.placePadUsingAccessibleControl(rightPad: false, inCorrectZone: true)
         XCTAssertEqual(model.state, .padsCorrect)
         XCTAssertEqual(model.spatialCueRequest?.cue.rawValue, "sfx.connector_insert")
+    }
+
+    /// The counterpart: a misplaced pad must not sound like a correct one, or the cue
+    /// stops carrying information.
+    func testMisplacedPadKeepsThePlainPlacementCue() throws {
+        let model = preparedModel()
+        completePreparation(in: model)
+
+        model.placePadUsingAccessibleControl(rightPad: true, inCorrectZone: false)
+
+        XCTAssertEqual(model.spatialCueRequest?.cue.rawValue, "sfx.pad_backing_peel")
     }
 
     func testPlacementRoomTaskDoesNotResetAcceptedPreparation() {

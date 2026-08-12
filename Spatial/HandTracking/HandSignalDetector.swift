@@ -428,8 +428,14 @@ struct HandSignalDetector: Sendable {
         }
         let leftLocal = targets.sternum.localPosition(of: left.worldPosition)
         let rightLocal = targets.sternum.localPosition(of: right.worldPosition)
-        let separation = simd_distance(leftLocal, rightLocal)
-        return separation <= configuration.maximumStackedPalmSeparationMetres
+        let delta = leftLocal - rightLocal
+        guard simd_length(delta) <= configuration.maximumStackedPalmSeparationMetres
+        else { return .separated }
+        // Stacking means one palm ABOVE the other. In the sternum's local frame Y is
+        // anterior, so the X/Z components are the offset across the chest: two hands
+        // resting side by side clear the straight-line test but not this one.
+        let acrossChest = simd_length(SIMD2<Float>(delta.x, delta.z))
+        return acrossChest <= configuration.maximumStackedLateralSeparationMetres
             ? .likelyStacked
             : .separated
     }
